@@ -23,13 +23,10 @@ jQuery(document).ready(function($) {
     var i,
     players = JSON.parse(mvp_block_data.players),
     playlists = JSON.parse(mvp_block_data.playlists),
-    media_arr = JSON.parse(mvp_block_data.media),
     ads = JSON.parse(mvp_block_data.ads),
     playerArr = [{label:'Select player..', value:''}], 
     playlistArr = [{label:'Select playlist..', value:''}],
-    mediaArr = [{label:'Loading..', value:''}],
-    adArr = [{label:'Select ad..', value:''}],
-    initDone
+    adArr = [{label:'Select ad..', value:''}]
 
     for (i = 0; i < players.length; i++){
         playerArr.push({label:players[i].title +' - ID #'+players[i].id, value:players[i].id})
@@ -70,18 +67,14 @@ jQuery(document).ready(function($) {
             playlist_id : {
                 type: 'string',
             },
-            media_id : {
-                type: 'string',
-            },
             ad_id : {
                 type: 'string',
             }
         },
-        edit({attributes, setAttributes}) {
+        edit({attributes, setAttributes, className, focus, id}) {
             //console.log(attributes)
 
             function onChangePlayerId(v) {
-                initDone = true;
                 setAttributes( {player_id: v} );
             }
 
@@ -89,28 +82,9 @@ jQuery(document).ready(function($) {
                 setAttributes( {playlist_id: v} );
             }
 
-            function onChangeMediaId(v) {
-                initDone = true;
-                setAttributes( {media_id: v} );
-            }
-
             function onChangeAdId(v) {
-                initDone = true;
                 setAttributes( {ad_id: v} );
             }
-
-            if(!initDone){
-                if(attributes.playlist_id != undefined){
-
-                    var i, arr = getPlaylistMedia(attributes)
-                    mediaArr = []
-                    for (i = 0; i < arr.length; i++){
-                        mediaArr.push({label:arr[i].options.title +' - ID #'+arr[i].id, value:arr[i].id})
-                    }
-                   
-                }
-            }
-            initDone = false;
 
             return [
 
@@ -161,17 +135,6 @@ jQuery(document).ready(function($) {
                                     }
                                 ),
 
-                                el(
-                                    wp.components.SelectControl,
-                                    {
-                                        label: 'Select media',
-                                        value: attributes.media_id,
-                                        options: mediaArr,
-                                        onChange: onChangeMediaId,
-                                        className: "aptean-mvp-media-id-select",
-                                    }
-                                ),    
-
                                 adArr.length > 1 && el(
                                     wp.components.SelectControl,
                                     {
@@ -200,8 +163,7 @@ jQuery(document).ready(function($) {
             if(attributes.player_id !== 'undefined' && attributes.playlist_id !== 'undefined'){
                 shortcode += '[apmvp player_id="' + attributes.player_id + '" playlist_id="' + attributes.playlist_id + '"';
             }
-            if(attributes.media_id != undefined)shortcode += ' media_id="' + attributes.media_id + '"';
-            if(attributes.ad_id != undefined)shortcode += ' ad_id="' + attributes.ad_id + '"';
+            if(attributes.ad_id !== 'undefined')shortcode += ' ad_id="' + attributes.ad_id + '"';
 
             shortcode += ']';
 
@@ -209,19 +171,6 @@ jQuery(document).ready(function($) {
 
         },
     } );
-
-    function getPlaylistMedia(atts){
-
-        var i, len = media_arr.length, data = []
-        for (i = 0; i < len; i++){
-            if(media_arr[i].playlist_id == atts.playlist_id){
-                data = media_arr[i].media
-                break;
-            }
-        }
-
-        return data
-    }
 
 
 });

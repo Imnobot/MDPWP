@@ -23,14 +23,12 @@ if(isset($_GET['player_id'])){
         $preset_options = mvp_player_options_preset()[$preset];
         $options = $player_options + $default_options + $preset_options;
         $title = $result['title'];
-        $custom_css = isset($result['custom_css']) ? stripslashes($result['custom_css']) : '';
-        $custom_js = isset($result['custom_js']) ? stripslashes($result['custom_js']) : '';
+        $custom_css = stripslashes($result['custom_css']);
+        $custom_js = stripslashes($result['custom_js']);
         $media_end_action_html = isset($player_options['media_end_action_html']) ? stripslashes($player_options['media_end_action_html']) : "";
         $media_end_action_css = isset($player_options['media_end_action_css']) ? stripslashes($player_options['media_end_action_css']) : "";
 
     }
-
-  
 
     $skin = $preset;
 
@@ -114,74 +112,17 @@ if(isset($_GET['player_id'])){
         $mvp_playbackRate_arr = $options['playbackRateArr'];
     }
 
-
-
-    $sectionTitle = esc_html__('Edit Player', MVP_TEXTDOMAIN); 
-
-
-
-
-
-    //language
-    $playerLanguage = $options["playerLanguage"];
-    $locale = mvp_locale_data($playerLanguage);
-    foreach ($locale as $key => $value) {
-        if(!isset($options[$key])){
-            $options[$key] = $value;
-        }
-    }
-
-
-
+    $sectionTitle = 'Edit Player';
 
 }
 
-$playerLanguageArr = array(   
-    'en' => 'English',
-    'de' => 'Deutsch',
-    'fr' => 'Français',
-    'it' => 'Italiano',
-    'hu' => 'Magyar',
-    'ro' => 'Romanian',
-    'ru' => 'Русский',
-    'tr' => 'Türkçe',
-    'cs' => 'Čeština',
-    'es' => 'Español',
-    'nl' => 'Nederlands',
-    'no' => 'Norsk',
-    'bg' => 'Bulgarian',
-    'lv' => 'Latvian',
-    'pl' => 'Polski',
-    'cs' => 'Czech',
-    'pt' => 'Português',
-    'sv' => 'Svenska',
-    'el' => 'Greek',
-    'hi' => 'हिन्दी',
-    'zh-HK' => '中文',
-    'ko' => '한국어',
-    'ja' => '日本語',
-);
-
-
-
-
 if(isset($_GET['mvp_msg'])){
     $msg = $_GET['mvp_msg'];
-    if($msg == 'player_created')$msg = esc_html__('Player created!', MVP_TEXTDOMAIN); 
+    if($msg == 'player_created')$msg = 'Player created!'; 
 }else{
     $msg = null;
 }
 
-
-
-$target_arr = array(    
-    '_blank' => '_blank',
-    '_parent' => '_parent',
-    '_self' => '_self'
-);
-
-//player custom icons
-$pi_icons = isset($options['pi_icons']) ? $options['pi_icons'] : '';
 
 
 
@@ -192,17 +133,11 @@ $pi_icons = isset($options['pi_icons']) ? $options['pi_icons'] : '';
     var mvp_elementsVisibility_arr = <?php echo(json_encode($mvp_elementsVisibility_arr, JSON_HEX_TAG)); ?>;
     var mvp_caption_breakPoint_arr = <?php echo(json_encode($mvp_caption_breakPoint_arr, JSON_HEX_TAG)); ?>;
     var mvp_playbackRate_arr = <?php echo(json_encode($mvp_playbackRate_arr, JSON_HEX_TAG)); ?>;
+    var mvp_allKeyboardControls_arr = <?php echo(json_encode($options['keyboardControlsArr'], JSON_HEX_TAG)); ?>;
     var mvp_keyboardControls_arr = <?php echo(json_encode($options['keyboardControls'], JSON_HEX_TAG)); ?>;
-    var mvp_keyboardActions_arr = <?php echo(json_encode($options['keyboardActions'], JSON_HEX_TAG)); ?>;
-    var mvp_pi_icons_arr = <?php echo(json_encode($pi_icons, JSON_HEX_TAG)); ?>;
 </script>
 
 <div class='wrap'>
-
-    <?php include("playeri.php"); ?>
-
-    <div class="mvp-settings-wrap-panel aptenv-ready">
-    <div id="mvp-player-manager-section">
 
     <?php include("notice.php"); ?>
 
@@ -251,30 +186,7 @@ $pi_icons = isset($options['pi_icons']) ? $options['pi_icons'] : '';
                     </div>
                 </div>
                 <div class="option-content">
-
-                    <table class="form-table">
-
-                        <tr valign="top">
-                            <th><?php esc_html_e('Choose player language', MVP_TEXTDOMAIN); ?></th>
-                            <td>
-                                <select name="playerLanguage" id="playerLanguage">
-                                    <?php foreach ($playerLanguageArr as $key => $value) : ?>
-                                        <option value="<?php echo($key); ?>" <?php if(isset($options['playerLanguage']) && $options['playerLanguage'] == $key) echo 'selected' ?>><?php echo($value); ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </td>
-                        </tr>
-
-                    </table>    
-
-                    <div id="mvp-translation-edit-content-field">
-
-                    <?php 
-                        require_once(dirname(__FILE__)."/translation.php");
-                    ?>
-
-                    </div>
-
+                    <?php require_once(dirname(__FILE__)."/translation.php"); ?>
                 </div>
             </div>
 
@@ -289,9 +201,6 @@ $pi_icons = isset($options['pi_icons']) ? $options['pi_icons'] : '';
                     </div>
                 </div>
                 <div class="option-content">
-
-                    <p><?php esc_html_e('If you dont want to apply this CSS, you can turn if off in General settings under Include player CSS. Then you can manually change or add your own css.', MVP_TEXTDOMAIN); ?></p>
-
                     <?php require_once(dirname(__FILE__)."/preset_config/colors.php"); ?>
                 </div>
                 <div class="option-content">
@@ -351,23 +260,6 @@ $pi_icons = isset($options['pi_icons']) ? $options['pi_icons'] : '';
 
     <div id="mvp-save-holder"></div>
 
-</div>
-</div>
-</div>
-
-<div id="mvp-icon-modal" class="mvp-modal">
-    <div class="mvp-modal-bg">
-        <div class="mvp-modal-inner">
-            <div class="mvp-modal-content">
-                <input type="search" id="mvp-icon-search" placeholder="<?php esc_attr_e('Search', MVP_TEXTDOMAIN); ?>">
-                <button class="mvp-icon-modal-close button-primary" type="button"><?php esc_html_e('Close', MVP_TEXTDOMAIN); ?></button> 
-                <ul id="icon-picker-list">
-                    
-                </ul>
-                <button class="mvp-icon-modal-close button-primary" type="button"><?php esc_html_e('Close', MVP_TEXTDOMAIN); ?></button> 
-            </div>
-        </div>
-    </div>
 </div>
 
 <div id="mvp-loader">

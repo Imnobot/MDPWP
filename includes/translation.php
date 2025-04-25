@@ -8,7 +8,6 @@
         <li id="mvp-tab-translation-transform"><?php esc_html_e('Video transform', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-translation-age-verify"><?php esc_html_e('Age verify', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-translation-right-click"><?php esc_html_e('Right click menu', MVP_TEXTDOMAIN); ?></li>
-        <li id="mvp-tab-translation-keyboard"><?php esc_html_e('Keyboard', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-translation-password"><?php esc_html_e('Password', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-translation-lightbox"><?php esc_html_e('Lightbox', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-translation-login"><?php esc_html_e('Login', MVP_TEXTDOMAIN); ?></li>
@@ -18,9 +17,6 @@
         <li id="mvp-tab-translation-chapters"><?php esc_html_e('Chapters', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-translation-transcript"><?php esc_html_e('Transcript', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-translation-advert"><?php esc_html_e('Adverts', MVP_TEXTDOMAIN); ?></li>
-        <li id="mvp-tab-translation-video-sort"><?php esc_html_e('Video sort buttons', MVP_TEXTDOMAIN); ?></li>
-        <li id="mvp-tab-translation-grid-pagination"><?php esc_html_e('Grid pagination', MVP_TEXTDOMAIN); ?></li>
-        <li id="mvp-tab-translation-favorites"><?php esc_html_e('Add to favorites', MVP_TEXTDOMAIN); ?></li>
     </ul>
 
     <div id="mvp-tab-translation-general-content" class="mvp-tab-content">
@@ -89,22 +85,6 @@
                 </td>
             </tr>
 
-            <tr valign="top">
-                <th><?php esc_html_e('Live stream scheduled text', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="upcomingLiveStreamText" value="<?php echo($options['upcomingLiveStreamText']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Play count text after play count number in playlist items', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="playCountText" value="<?php echo($options['playCountText']); ?>"><br>
-                </td>
-            </tr>
-
-            
-
         </table>
 
     </div>
@@ -138,6 +118,13 @@
                 </td>
             </tr>
             <tr valign="top">
+                <th><?php esc_html_e('WhatsApp warning', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <input type="text" name="whatsAppWarning" value="<?php echo($options['whatsAppWarning']); ?>"><br>
+                    <span class="info"><?php esc_html_e('Message which displays when user tries to share via WhatApp on desktop browser.', MVP_TEXTDOMAIN); ?></span>
+                </td>
+            </tr>
+            <tr valign="top">
                 <th><?php esc_html_e('Tooltip Share On Reddit', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     <input type="text" name="tooltipReddit" value="<?php echo($options['tooltipReddit']);?>"><br>
@@ -159,18 +146,6 @@
                 <th><?php esc_html_e('Tooltip Share On Pinterest', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     <input type="text" name="tooltipPinterest" value="<?php echo($options['tooltipPinterest']);?>"><br>
-                </td>
-            </tr>
-            <tr valign="top">
-                <th><?php esc_html_e('Tooltip Share On Email', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="tooltipEmail" value="<?php echo($options['tooltipEmail']);?>"><br>
-                </td>
-            </tr>
-            <tr valign="top">
-                <th><?php esc_html_e('Tooltip Share On Sms', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="tooltipSms" value="<?php echo($options['tooltipSms']);?>"><br>
                 </td>
             </tr>
             <tr valign="top">
@@ -228,23 +203,65 @@
         <table class="form-table">
 
             <tr valign="top">
-                <th><?php esc_html_e('Zoom to center button text', MVP_TEXTDOMAIN); ?></th>
+                <th><?php esc_html_e('Tooltip Move Left', MVP_TEXTDOMAIN); ?></th>
                 <td>
-                    <input type="text" name="tooltipZoomCenter" value="<?php echo($options['tooltipZoomCenter']);?>"><br>
+                    <input type="text" name="tooltipMoveLeft" value="<?php echo($options['tooltipMoveLeft']);?>"><br>
                 </td>
             </tr>
 
             <tr valign="top">
-                <th><?php esc_html_e('Reset zoom button text', MVP_TEXTDOMAIN); ?></th>
+                <th><?php esc_html_e('Tooltip Move right', MVP_TEXTDOMAIN); ?></th>
                 <td>
-                    <input type="text" name="tooltipZoomReset" value="<?php echo($options['tooltipZoomReset']);?>"><br>
+                    <input type="text" name="tooltipMoveRight" value="<?php echo($options['tooltipMoveRight']);?>"><br>
                 </td>
             </tr>
 
             <tr valign="top">
-                <th><?php esc_html_e('Settings menu Zoom button text', MVP_TEXTDOMAIN); ?></th>
+                <th><?php esc_html_e('Tooltip Move up', MVP_TEXTDOMAIN); ?></th>
                 <td>
-                    <input type="text" name="settingsMenuZoomText" value="<?php echo($options['settingsMenuZoomText']);?>"><br>
+                    <input type="text" name="tooltipMoveUp" value="<?php echo($options['tooltipMoveUp']);?>"><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Tooltip Move down', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <input type="text" name="tooltipMoveDown" value="<?php echo($options['tooltipMoveDown']);?>"><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Tooltip Zoom In', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <input type="text" name="tooltipZoomIn" value="<?php echo($options['tooltipZoomIn']);?>"><br>
+                </td>
+            </tr> 
+
+            <tr valign="top">
+                <th><?php esc_html_e('Tooltip Zoom Out', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <input type="text" name="tooltipZoomOut" value="<?php echo($options['tooltipZoomOut']);?>"><br>
+                </td>
+            </tr> 
+
+            <tr valign="top">
+                <th><?php esc_html_e('Tooltip Rotate Left', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <input type="text" name="tooltipRotateLeft" value="<?php echo($options['tooltipRotateLeft']);?>"><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Tooltip Rotate right', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <input type="text" name="tooltipRotateRight" value="<?php echo($options['tooltipRotateRight']);?>"><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Tooltip transform reset', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <input type="text" name="tooltipTransformReset" value="<?php echo($options['tooltipTransformReset']);?>"><br>
                 </td>
             </tr>
 
@@ -294,20 +311,6 @@
     <div id="mvp-tab-translation-player-controls-content" class="mvp-tab-content">
 
         <table class="form-table">
-
-            <tr valign="top">
-                <th><?php esc_html_e('Tooltip Play', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="tooltipPlay" value="<?php echo($options['tooltipPlay']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Tooltip Pause', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="tooltipPause" value="<?php echo($options['tooltipPause']); ?>"><br>
-                </td>
-            </tr>
 
             <tr valign="top">
                 <th><?php esc_html_e('Tooltip Description Toggle', MVP_TEXTDOMAIN); ?></th>
@@ -367,12 +370,6 @@
                 <th><?php esc_html_e('Tooltip Volume', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     <input type="text" name="tooltipVolume" value="<?php echo($options['tooltipVolume']); ?>"><br>
-                </td>
-            </tr>
-            <tr valign="top">
-                <th><?php esc_html_e('Tooltip Mute', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="tooltipMute" value="<?php echo($options['tooltipMute']); ?>"><br>
                 </td>
             </tr>
             <tr valign="top">
@@ -442,23 +439,6 @@
                 </td>
             </tr>
 
-            <tr valign="top">
-                <th><?php esc_html_e('Tooltip Seek', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="tooltipSeek" value="<?php echo($options['tooltipSeek']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Of text for seekbar (1:05 of 3:10)', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="ofText" value="<?php echo($options['ofText']); ?>"><br>
-                </td>
-            </tr>
-
-
-     
-
         </table>
 
     </div>
@@ -483,133 +463,6 @@
         </table>
 
     </div>
-
-    <div id="mvp-tab-translation-keyboard-content" class="mvp-tab-content">
-
-        <table class="form-table">
-
-            <tr valign="top">
-                <th><?php esc_html_e('Settings menu open keyboard dialog button text', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="keyboardInfoText" value="<?php echo($options['keyboardInfoText']); ?>"><br>
-                </td>
-            </tr>
-            <tr valign="top">
-                <th><?php esc_html_e('Keyboard dialog header text', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="keyboardPreferencesText" value="<?php echo($options['keyboardPreferencesText']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Close dialog (info, share..)', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_closeDialog" value="<?php echo($options['kb_closeDialog']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Seek backward', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_seekBackward" value="<?php echo($options['kb_seekBackward']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Seek forward', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_seekForward" value="<?php echo($options['kb_seekForward']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Toggle playback', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_togglePlayback" value="<?php echo($options['kb_togglePlayback']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Volume up', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_volumeUp" value="<?php echo($options['kb_volumeUp']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Volume down', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_volumeDown" value="<?php echo($options['kb_volumeDown']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Toggle mute', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_toggleMute" value="<?php echo($options['kb_toggleMute']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Next media', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_nextMedia" value="<?php echo($options['kb_nextMedia']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Previous media', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_previousMedia" value="<?php echo($options['kb_previousMedia']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Rewind', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_rewind" value="<?php echo($options['kb_rewind']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Toggle fullscreen', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_toggleFullscreen" value="<?php echo($options['kb_toggleFullscreen']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Toggle theater mode', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_toggleTheater" value="<?php echo($options['kb_toggleTheater']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Toggle subtitle', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_toggleSubtitle" value="<?php echo($options['kb_toggleSubtitle']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Subtitle size up', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_subtitleSizeUp" value="<?php echo($options['kb_subtitleSizeUp']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Subtitle size down', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="kb_subtitleSizeDown" value="<?php echo($options['kb_subtitleSizeDown']); ?>"><br>
-                </td>
-            </tr>
-           
-        </table>
-
-    </div>
-
 
     <div id="mvp-tab-translation-password-content" class="mvp-tab-content">
 
@@ -851,13 +704,6 @@
                 </td>
             </tr>
 
-            <tr valign="top">
-                <th><?php esc_html_e('Tooltip Repeat chapter', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="tooltipRepeat" value="<?php echo($options['tooltipRepeat']); ?>"><br>
-                </td>
-            </tr>
-
         </table>
 
     </div>
@@ -899,108 +745,6 @@
                 </td>
             </tr>
 
-            <tr valign="top">
-                <th><?php esc_html_e('Advertisement text', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="adTitleText" value="<?php echo($options['adTitleText']); ?>"><br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Advertisement skip in text', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="adSkipWaitText" value="<?php echo($options['adSkipWaitText']); ?>"><br>
-                </td>
-            </tr>
-
-        </table>
-
-    </div>
-
-    <div id="mvp-tab-translation-video-sort-content" class="mvp-tab-content">
-
-        <table class="form-table">
-
-            <tr valign="top">
-                <th><?php esc_html_e('Sort by newest Text', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="sortNewestText" value="<?php echo($options['sortNewestText']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Sort by oldest Text', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="sortOldestText" value="<?php echo($options['sortOldestText']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Sort by popular Text', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="sortPopularText" value="<?php echo($options['sortPopularText']); ?>">
-                </td>
-            </tr>
-
-
-        </table>
-
-    </div>
-
-    <div id="mvp-tab-translation-grid-pagination-content" class="mvp-tab-content">
-
-        <table class="form-table">
-
-            <tr valign="top">
-                <th><?php esc_html_e('Pagination previous button Title', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="paginationPreviousBtnTitle" value="<?php echo($options['paginationPreviousBtnTitle']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Pagination previous button text', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="paginationPreviousBtnText" value="<?php echo($options['paginationPreviousBtnText']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Pagination next button Title', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="paginationNextBtnTitle" value="<?php echo($options['paginationNextBtnTitle']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Pagination next button text', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="paginationNextBtnText" value="<?php echo($options['paginationNextBtnText']); ?>">
-                </td>
-            </tr>
-
-        </table>
-
-    </div>
-
-    <div id="mvp-tab-translation-favorites-content" class="mvp-tab-content">
-
-        <table class="form-table">
-
-            <tr valign="top">
-                <th><?php esc_html_e('Add video to Favorites Text', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="addToFavoritesText" value="<?php echo($options['addToFavoritesText']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Remove video from Favorites Text', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="removeFromFavoritesText" value="<?php echo($options['removeFromFavoritesText']); ?>">
-                </td>
-            </tr>
-          
         </table>
 
     </div>

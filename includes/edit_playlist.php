@@ -1,41 +1,8 @@
 <?php 
 
-
-
-
-
-
-global $wpdb;
-$settings_table = $wpdb->prefix . "mvp_settings";
-$stmt = $wpdb->get_row("SELECT options FROM {$settings_table} WHERE id = '0'", ARRAY_A);
-
-$default_settings = mvp_get_settings();
-
-if($stmt){
-	$result = unserialize($stmt['options']);
-	$settings = $result + $default_settings;
-}else{
-	$settings = $default_settings;
-}
-
-$capability = !empty($settings['playlistCapability']) ? $settings['playlistCapability'] : MVP_CAPABILITY;
-
-$user = wp_get_current_user();
-
-if(!current_user_can($capability)){
-    exit();
-}
-
-
-
-
-
-//load players
-$players = $wpdb->get_results("SELECT id, title FROM {$player_table} ORDER BY title ASC", ARRAY_A);
-
 if(isset($_GET['mvp_msg'])){
 	$msg = $_GET['mvp_msg'];
-	if($msg == 'playlist_created')$msg = esc_html__('Playlist created!', MVP_TEXTDOMAIN);
+	if($msg == 'playlist_created')$msg = 'Playlist created!'; 
 }else{
 	$msg = null;
 }
@@ -44,71 +11,29 @@ if(isset($_GET['playlist_id'])){//load media
 
 	$playlist_id = $_GET['playlist_id'];
 
-    $is_admin = mvp_isAdmin($user);
-
 	//playlist data
-	$playlist_data = $wpdb->get_row($wpdb->prepare("SELECT title, user_id, options FROM {$playlist_table} WHERE id = %d", $playlist_id), ARRAY_A);
-
-	
-	if(!$is_admin){
-		if(!$playlist_data)exit();
-		//prevent direct url enter to view playlist 
-		$user_id = $playlist_data['user_id'];
-		if(isset($user_id)){
-			if(intval($user_id) != intval($user->ID)){
-				exit();
-			}
-		}else{
-			//old playlists dont have user id!
-			exit();
-		}
-	}
-
-
-
-
-	$user_media_created = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$media_table} WHERE playlist_id=%d AND user_id=%d", $playlist_id, $user->ID));
-
-	$userLimit = mvp_checkUserLimit($settings, $user);
-
-	$userData = array('is_admin' => $is_admin, 'user_id' => $user->ID, 'limit' => $userLimit, 'video_created' => intval($user_media_created));
-
-
-
-	if($settings['trackPlaylistEdit'] == '1'){
-		//check who is editing playlist
-		$edit_data = $wpdb->get_row($wpdb->prepare("SELECT id, is_edit, edit_user_id FROM {$playlist_table} WHERE id=%d", $playlist_id), ARRAY_A);
-
-		if($is_admin){
-			if($edit_data['is_edit'] == '1' && $edit_data['edit_user_id'] != $user->ID){
-				exit(printf(__('User #%s is editing this playlist!', MVP_TEXTDOMAIN), $edit_data['edit_user_id']));
-			}
-		}else{
-			if($edit_data['is_edit'] == '1' && $edit_data['edit_user_id'] != $user->ID){
-				exit(__('Admin is editing this playlist!', MVP_TEXTDOMAIN));
-			}
-		}
-	}
-
-
+	$playlist_data = $wpdb->get_row($wpdb->prepare("SELECT title, options FROM {$playlist_table} WHERE id = %d", $playlist_id), ARRAY_A);
+	$pl_options = unserialize($playlist_data['options']);
 	$default_playlist_options = mvp_playlist_options();
-	if($playlist_data['options']){
-		$pl_options = unserialize($playlist_data['options']);
-		$playlist_options = $pl_options + $default_playlist_options;
-	}else{
+	if(!$pl_options){
 		$playlist_options = $default_playlist_options;
+	}else{
+		$playlist_options = $pl_options + $default_playlist_options;
 	}
-
-
 
 	//media
+	/*$stmt = $wpdb->prepare("SELECT id, disabled, title, options, order_id FROM $media_table WHERE playlist_id = %d 
+        ORDER BY order_id ASC", $playlist_id);*/
 
-	$stmt = $wpdb->prepare("SELECT * FROM $media_table WHERE playlist_id = %d ORDER BY order_id ASC", $playlist_id);
+	$stmt = $wpdb->prepare("
+				SELECT mt.id, mt.disabled, mt.title, mt.options, mt.order_id, st.c_play, st.c_finish
+				FROM $media_table as mt 
+				LEFT JOIN $statistics_table st on mt.id = st.media_id 
+				WHERE mt.playlist_id = %d
+				GROUP BY mt.id
+				ORDER BY order_id ASC", $playlist_id);
+
 	$medias = $wpdb->get_results($stmt, ARRAY_A);
-
-
-	$singleMediaSourcesArr = array('audio', 'video', 'image', 'youtube_single', 'vimeo_single', 'hls', 'dash');
-
 
 
 
@@ -116,16 +41,7 @@ if(isset($_GET['playlist_id'])){//load media
 
 ?>
 
-<script type="text/javascript">
-    var mvp_userData = <?php echo(json_encode($userData, JSON_HEX_TAG)); ?>;
-</script>
-
 <div class="wrap">
-
-	<?php include("playeri.php"); ?>
-
-	<div class="mvp-settings-wrap-panel aptenv-ready">
-	<div id="mvp-playlist-manager-section">
 
 	<?php include("notice.php"); ?>
 
@@ -153,10 +69,13 @@ if(isset($_GET['playlist_id'])){//load media
 				        <li id="mvp-tab-playlist-options-general"><?php esc_html_e('General', MVP_TEXTDOMAIN); ?></li>
 				        <li id="mvp-tab-playlist-options-global"><?php esc_html_e('Global options', MVP_TEXTDOMAIN); ?></li>
 				        <li id="mvp-tab-playlist-options-maintenance"><?php esc_html_e('Maintenance', MVP_TEXTDOMAIN); ?></li>
-				        <li id="mvp-tab-playlist-options-advanced"><?php esc_html_e('Advanced', MVP_TEXTDOMAIN); ?></li>
 				    </ul>
 
 				    <div id="mvp-tab-playlist-options-general-content" class="mvp-tab-content">
+
+				    	<input type="hidden" name="isAdminRetrieved" value="<?php echo $playlist_options['isAdminRetrieved'] ?>">
+				    	<input type="hidden" name="youtubeUrlType" id="youtubeUrlType" value="<?php echo (isset($playlist_options['youtubeUrlType']) ? $playlist_options['youtubeUrlType'] : ''); ?>">
+				    	<input type="hidden" name="youtubeUrl" id="youtubeUrl" value="<?php echo (isset($playlist_options['youtubeUrl']) ? $playlist_options['youtubeUrl'] : ''); ?>">
 
 				    	<table class="form-table" >
 
@@ -175,6 +94,55 @@ if(isset($_GET['playlist_id'])){//load media
 								<th><?php esc_html_e('Playlist description', MVP_TEXTDOMAIN); ?></th>
 								<td>
 									<textarea id="pl_description" name="description" rows="3" ><?php echo (isset($playlist_options['description']) ? $playlist_options['description'] : ''); ?></textarea>
+								</td>
+							</tr>
+
+							<tr valign="top">
+				                <th><?php esc_html_e('Get video details without API', MVP_TEXTDOMAIN); ?></th>
+				                <td>
+				                    <select name="getEmbedDetails">
+				                        <option value="0" <?php if(isset($playlist_options['getEmbedDetails']) && $playlist_options['getEmbedDetails'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+				                        <option value="1" <?php if(isset($playlist_options['getEmbedDetails']) && $playlist_options['getEmbedDetails'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+				                    </select>
+				                    <p class="info"><?php esc_html_e('Use this to load one or more Youtube or Vimeo single videos without an API key.', MVP_TEXTDOMAIN); ?></p>
+				                </td>
+				            </tr>
+
+							<tr valign="top">
+				                <th><?php esc_html_e('Retrieve more on total scroll', MVP_TEXTDOMAIN); ?></th>
+				                <td>
+				                    <select name="addMoreOnTotalScroll">
+				                        <option value="0" <?php if(isset($playlist_options['addMoreOnTotalScroll']) && $playlist_options['addMoreOnTotalScroll'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+				                        <option value="1" <?php if(isset($playlist_options['addMoreOnTotalScroll']) && $playlist_options['addMoreOnTotalScroll'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+				                    </select>
+				                    <p class="info"><?php esc_html_e('Limit number of videos shown in the playlist on start using this option. Works in conjuntion with Retrieve more limit (for example, set Retrieve more limit 10 which will show 10 videos in playlist on start, then when user scrolls to the bottom, it will load another 10, and so on.. Useful if you have a lot of videos in playlist and you want to deliver them in segments.', MVP_TEXTDOMAIN); ?></p>
+				                </td>
+				            </tr>
+
+				            <tr valign="top">
+								<th><?php esc_html_e('Retrieve more limit', MVP_TEXTDOMAIN); ?></th>
+								<td>
+									<input type="number" name="addMoreOnTotalScrollLimit" min="0" value="<?php echo ($playlist_options['addMoreOnTotalScrollLimit']); ?>">
+									<p class="info"><?php esc_html_e('Number of results to retrieve on total scroll', MVP_TEXTDOMAIN); ?></p>
+								</td>
+							</tr>
+
+							<tr valign="top">
+				                <th><?php esc_html_e('Use pagination', MVP_TEXTDOMAIN); ?></th>
+				                <td>
+				                    <select name="usePagination">
+				                        <option value="0" <?php if(isset($playlist_options['usePagination']) && $playlist_options['usePagination'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+				                        <option value="1" <?php if(isset($playlist_options['usePagination']) && $playlist_options['usePagination'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+				                    </select>
+				                    <p class="info"><?php esc_html_e('Use pagination with Grid layout and create pagination buttons. Pagination can only work with self hosted videos in this playlist! Youtube and Vimeo use load more feature instead of pagination.', MVP_TEXTDOMAIN); ?></p>
+				                </td>
+				            </tr>
+
+				            <tr valign="top">
+								<th><?php esc_html_e('Pagination items per page', MVP_TEXTDOMAIN); ?></th>
+								<td>
+									<input type="number" name="paginationPerPage" min="0" value="<?php echo ($playlist_options['paginationPerPage']); ?>">
+									<p class="info"><?php esc_html_e('How many items to display per page.', MVP_TEXTDOMAIN); ?></p>
 								</td>
 							</tr>
 
@@ -228,15 +196,6 @@ if(isset($_GET['playlist_id'])){//load media
 								</td>
 							</tr>
 
-							<tr valign="top" class="pl_field_wrap">
-								<th><?php esc_html_e('Seekbar preview thumbnail', MVP_TEXTDOMAIN); ?></th>
-								<td>
-									<input type="text" id="pl_preview_seek" name="pl_preview_seek" class="pl_field_val" value="<?php echo ($playlist_options['pl_preview_seek']); ?>">
-						            <button type="button" id="pl_preview_seek_upload"><?php esc_html_e('Upload', MVP_TEXTDOMAIN); ?></button>
-						            <p class="info"><?php esc_html_e('Enable thumbnail preview when seeking. Enter "auto" for automatic thumbnails (only for HTML5 video) or provide vtt file with time/image data (for all media types).', MVP_TEXTDOMAIN); ?></p>
-								</td>
-							</tr>
-
 							<tr valign="top" id="pl_vast_field">
 								<th><?php esc_html_e('Vast url', MVP_TEXTDOMAIN); ?></th>
 								<td>
@@ -245,19 +204,6 @@ if(isset($_GET['playlist_id'])){//load media
 									<p class="info"><?php esc_html_e('Add vast url (VAST / VMAP / IMA / VPAID)', MVP_TEXTDOMAIN); ?></p>
 								</td>
 							</tr>
-
-							<tr valign="top">
-						        <th><?php esc_html_e('Loop vast (play only VAST file)', MVP_TEXTDOMAIN); ?></th>
-						        <td>
-						            <select id="vast_loop" name="vast_loop">
-						                <option value="0" <?php if(isset($playlist_options['vast_loop']) && $playlist_options['vast_loop'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-						                <option value="1" <?php if(isset($playlist_options['vast_loop']) && $playlist_options['vast_loop'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-						            </select>
-						            <p class="info"><?php esc_html_e('Only for VAST with pre adverts! Use this is you have VAST with pre adverts and you just want to loop VAST without having any other videos in playlist.', MVP_TEXTDOMAIN); ?></p>
-						        </td>
-						    </tr>
-
-							<?php if ($is_admin) : ?>
 
 							<tr valign="top">
 		                        <th><?php esc_html_e('Lock video time', MVP_TEXTDOMAIN); ?></th>
@@ -278,7 +224,7 @@ if(isset($_GET['playlist_id'])){//load media
 					                    foreach ($userRoles as $key => $value) : ?>
 					                        <label class="container">
 					                            <input type="checkbox" name="lockVideoUserRoles[]" value="<?php echo($key); ?>" <?php if(in_array($key, $playlist_options['lockVideoUserRoles'])) echo 'checked' ?>><?php echo($value["name"]); ?>
-					                        </label><br>
+					                        </label>
 					                    <?php endforeach; ?>
 
 					                    <p class="info"><?php esc_html_e('Only selected user roles can view video without restriction. If no user roles selected everybody can access video. Valid only if Lock video time is set.', MVP_TEXTDOMAIN); ?></p>
@@ -295,8 +241,6 @@ if(isset($_GET['playlist_id'])){//load media
 		                        </td>
 		                    </tr>
 
-		                    <?php endif; ?>
-
 						</table>
 
 					</div>	
@@ -308,12 +252,10 @@ if(isset($_GET['playlist_id'])){//load media
 							<tr valign="top">
 				                <th><?php esc_html_e('Clear watched percentage', MVP_TEXTDOMAIN); ?></th>
 				                <td>
-				                    <button type="button" class="mvp-clear-watched-percentage" <?php disabled( !current_user_can($capability) ); ?>>Clear</button><br>
-				                    <span class="info"><?php esc_html_e('Player can display watched video percentage in playlist thumbnails (red line representing maximum reached time). Use this to clear watched percentage for all videos in this playlist. This will clear data only for current user.', MVP_TEXTDOMAIN); ?></span><div class="mvp-help-tip"><p><img src="<?php echo plugins_url().'/apmvp/images/displayWatchedPercentage.jpg' ?>"/></p></div>
+				                    <button type="button" class="mvp-clear-watched-percentage">Clear</button><br>
+				                    <span class="info"><?php esc_html_e('Player can display watched video percentage in playlist thumbnails (red line representing maximum reached time). Use this to clear watched percentage for all videos in this playlist.', MVP_TEXTDOMAIN); ?></span><div class="mvp-help-tip"><p><img src="<?php echo plugins_url().'/apmvp/images/displayWatchedPercentage.jpg' ?>"/></p></div>
 				                </td>
 				            </tr>
-
-				            <?php if ($is_admin) : ?>
 
 				            <tr valign="top">
 								<th><?php esc_html_e('Domain switch', MVP_TEXTDOMAIN); ?></th>
@@ -327,82 +269,21 @@ if(isset($_GET['playlist_id'])){//load media
 
 									<input type="text" id="mvp-domain-rename-to">
 
-									<button type="button" id="mvp-domain-rename" <?php disabled( !current_user_can($capability) ); ?>><?php esc_attr_e('Rename', MVP_TEXTDOMAIN); ?></button>
+									<button type="button" id="mvp-domain-rename"><?php esc_attr_e('Rename', MVP_TEXTDOMAIN); ?></button>
 
 									<p class="info"><?php esc_html_e('Use this to rename all video and other urls (thumbnail, subtitles...) in this playlist to new url.', MVP_TEXTDOMAIN); ?></p>
 
 								</td>
 							</tr>
 
-							<?php endif; ?>
-
 				        </table>
-
-					</div>	
-
-					<div id="mvp-tab-playlist-options-advanced-content" class="mvp-tab-content">
-
-						<p class="info"><?php esc_html_e('These are advanced playlist options. Change only if you know what you are doing!', MVP_TEXTDOMAIN); ?></p>
-
-				    	<table class="form-table" >
-
-				    		<tr valign="top">
-				                <th><?php esc_html_e('Get video details without API', MVP_TEXTDOMAIN); ?></th>
-				                <td>
-				                    <select name="getEmbedDetails">
-				                        <option value="0" <?php if(isset($playlist_options['getEmbedDetails']) && $playlist_options['getEmbedDetails'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-				                        <option value="1" <?php if(isset($playlist_options['getEmbedDetails']) && $playlist_options['getEmbedDetails'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-				                    </select>
-				                    <p class="info"><?php esc_html_e('Use this to load one or more Youtube or Vimeo single videos without an API key. Only works if this playlist contains just single Youtube or Vimeo videos, not other type of videos! For example, if you have 10 Youtube single videos in this playlist and you want to to get video title, description without using Youtube API to preverve quota.', MVP_TEXTDOMAIN); ?></p>
-				                </td>
-				            </tr>
-
-							<tr valign="top">
-				                <th><?php esc_html_e('Load more on total scroll', MVP_TEXTDOMAIN); ?></th>
-				                <td>
-				                    <select name="addMoreOnTotalScroll">
-				                        <option value="0" <?php if(isset($playlist_options['addMoreOnTotalScroll']) && $playlist_options['addMoreOnTotalScroll'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-				                        <option value="1" <?php if(isset($playlist_options['addMoreOnTotalScroll']) && $playlist_options['addMoreOnTotalScroll'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-				                    </select>
-				                    <p class="info"><?php esc_html_e('Limit number of videos shown in the playlist on start using this option. For example, show 50 videos in playlist on start, then when user scrolls to the bottom in playlist, it will load another 50, and so on.. Useful if you have a lot of videos in playlist and you want to deliver them in segments.', MVP_TEXTDOMAIN); ?></p>
-				                </td>
-				            </tr>
-
-				            <tr valign="top">
-								<th><?php esc_html_e('Load more limit', MVP_TEXTDOMAIN); ?></th>
-								<td>
-									<input type="number" name="addMoreOnTotalScrollLimit" min="0" value="<?php echo ($playlist_options['addMoreOnTotalScrollLimit']); ?>">
-									<p class="info"><?php esc_html_e('Number of results to retrieve on total scroll', MVP_TEXTDOMAIN); ?></p>
-								</td>
-							</tr>
-
-							<tr valign="top">
-				                <th><?php esc_html_e('Use pagination (only for Grid layout)', MVP_TEXTDOMAIN); ?></th>
-				                <td>
-				                    <select name="usePagination">
-				                        <option value="0" <?php if(isset($playlist_options['usePagination']) && $playlist_options['usePagination'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-				                        <option value="1" <?php if(isset($playlist_options['usePagination']) && $playlist_options['usePagination'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-				                    </select>
-				                    <p class="info"><?php esc_html_e('Use pagination with Grid layout to create pagination buttons for navigating between each page. Pagination can only work with self hosted videos in this playlist (not Youtube or Vimeo)', MVP_TEXTDOMAIN); ?></p>
-				                </td>
-				            </tr>
-
-				            <tr valign="top">
-								<th><?php esc_html_e('Pagination items per page', MVP_TEXTDOMAIN); ?></th>
-								<td>
-									<input type="number" name="paginationPerPage" min="0" value="<?php echo ($playlist_options['paginationPerPage']); ?>">
-									<p class="info"><?php esc_html_e('How many items to display per page.', MVP_TEXTDOMAIN); ?></p>
-								</td>
-							</tr>
-
-				    	</table>
 
 					</div>	
 
 		  	    </div>
 
 				<p class="mvp-actions"> 
-		            <button id="mvp-edit-playlist-form-submit" type="button" class="button-primary" <?php disabled( !current_user_can($capability) ); ?>><?php esc_html_e('Save Playlist options', MVP_TEXTDOMAIN); ?></button> 
+		            <button id="mvp-edit-playlist-form-submit" type="button" class="button-primary" <?php disabled( !current_user_can(MVP_CAPABILITY) ); ?>><?php esc_html_e('Save Playlist options', MVP_TEXTDOMAIN); ?></button> 
 		        </p>
 
         	</div>   
@@ -426,17 +307,13 @@ if(isset($_GET['playlist_id'])){//load media
 		  			<select id="mvp_playlist_action" >
 		  				<option value=""><?php esc_html_e('Select action..', MVP_TEXTDOMAIN); ?></option>
 						<option value="mvp-delete-media"><?php esc_html_e('Delete selected', MVP_TEXTDOMAIN); ?></option>
-						<?php if ($is_admin) : ?>
 						<option value="mvp-copy-media"><?php esc_html_e('Copy selected', MVP_TEXTDOMAIN); ?></option>
 						<option value="mvp-move-media"><?php esc_html_e('Move selected', MVP_TEXTDOMAIN); ?></option>
-						<?php endif; ?>
 						<option value="mvp-deactivate-media"><?php esc_html_e('Deactivate selected', MVP_TEXTDOMAIN); ?></option>
 						<option value="mvp-activate-media"><?php esc_html_e('Activate selected', MVP_TEXTDOMAIN); ?></option>
-						<option value="mvp-show-favorite"><?php esc_html_e('Show favorites', MVP_TEXTDOMAIN); ?></option>
-						<option value="mvp-show-all"><?php esc_html_e('Show all', MVP_TEXTDOMAIN); ?></option>
 					</select>
 
-					<button id="mvp_playlist_action_do" <?php disabled( !current_user_can($capability) ); ?>><?php esc_html_e('Apply', MVP_TEXTDOMAIN); ?></button>
+					<button id="mvp_playlist_action_do"><?php esc_html_e('Apply', MVP_TEXTDOMAIN); ?></button>
 
 			  		
 			  		<input type="text" id="mvp-filter-media" placeholder="<?php esc_attr_e('Search by title..', MVP_TEXTDOMAIN); ?>">
@@ -484,7 +361,7 @@ if(isset($_GET['playlist_id'])){//load media
 
 		    <div class="option-content mvp-edit-playlist">
 
-				<table id="media-table" class='mvp-table wp-list-table widefat' data-playlist-id="<?php echo($playlist_id); ?>" data-is-admin="<?php echo $is_admin; ?>" data-track-playlist-edit="<?php echo $settings['trackPlaylistEdit']; ?>">
+				<table id="media-table" class='mvp-table wp-list-table widefat' data-playlist-id="<?php echo($playlist_id); ?>">
 					<thead>
 						<tr>
 							<th style="width:1%"><input type="checkbox" class="mvp-media-all"></th>
@@ -499,7 +376,9 @@ if(isset($_GET['playlist_id'])){//load media
 
 							<th><?php esc_html_e('Path', MVP_TEXTDOMAIN); ?></th>
 
-							<th><?php esc_html_e('Favorite', MVP_TEXTDOMAIN); ?></th>
+							<th class="mvp-sort-field" data-type="play" title="<?php esc_attr_e('Sort by plays', MVP_TEXTDOMAIN); ?>"><a href="#"><?php esc_html_e('Plays', MVP_TEXTDOMAIN); ?> <span class="mvp-triangle-dir-wrap"><span class="mvp-triangle-dir mvp-triangle-dir-up">&#9660;</span><span class="mvp-triangle-dir mvp-triangle-dir-down">&#9650;</span></span></a></th>
+
+							<th class="mvp-sort-field" data-type="finish" title="<?php esc_attr_e('Sort by finishes', MVP_TEXTDOMAIN); ?>"><a href="#"><?php esc_html_e('Finishes', MVP_TEXTDOMAIN); ?> <span class="mvp-triangle-dir-wrap"><span class="mvp-triangle-dir mvp-triangle-dir-up">&#9660;</span><span class="mvp-triangle-dir mvp-triangle-dir-down">&#9650;</span></span></a></th>
 
 							<th><?php esc_html_e('Actions', MVP_TEXTDOMAIN); ?></th>
 						</tr>
@@ -523,9 +402,9 @@ if(isset($_GET['playlist_id'])){//load media
 							>
 								<td><input type="checkbox" class="mvp-media-indiv"></td>
 
-								<td class="media-id" title="<?php esc_attr_e('Sort', MVP_TEXTDOMAIN); ?>"><?php echo($media['id']); ?></td>
+								<td class="media-id"><?php echo($media['id']); ?></td>
 
-								<td class="media-type"><?php echo($media_options['type']); ?></td>
+								<td><?php echo($media_options['type']); ?></td>
 
 								<td>
 									<img class="mvp-media-thumb-img" src="<?php echo (isset($media_options['thumb']) ? esc_html($media_options['thumb']) : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D'); ?>" alt/>
@@ -544,27 +423,21 @@ if(isset($_GET['playlist_id'])){//load media
 
 								?></td>
 
-								<td>
-								<?php if(in_array($media_options['type'], $singleMediaSourcesArr)) : ?>
-									<input type="checkbox" class="mvp-media-favorite">
-								<?php endif; ?>
-								</td>
+								<td class="media-play"><?php 
+								$c_play = isset($media['c_play']) ? $media['c_play'] : 0;
+								echo($c_play); ?></td>
+
+								<td class="media-finish"><?php 
+								$c_finish = isset($media['c_finish']) ? $media['c_finish'] : 0;
+								echo($c_finish); ?></td>
 
 								<td>
-
-								<?php if( current_user_can($capability) ) : ?>
 
 								<a class="mvp-edit-media" href='#' title='<?php esc_attr_e('Edit media', MVP_TEXTDOMAIN); ?>'><?php esc_html_e('Edit', MVP_TEXTDOMAIN); ?></a>
 
 								&nbsp;&nbsp;|&nbsp;&nbsp;
 
 								<a class="mvp-delete-media" href='#' title='<?php esc_attr_e('Delete media', MVP_TEXTDOMAIN); ?>' style="color:#f00;"><?php esc_html_e('Delete', MVP_TEXTDOMAIN); ?></a>
-
-								<?php endif; ?>
-
-								&nbsp;&nbsp;|&nbsp;&nbsp;
-
-							<a class="mvp-get-link" href='#' title='<?php esc_attr_e('Get quick link to this video', MVP_TEXTDOMAIN); ?>'><?php esc_html_e('Link', MVP_TEXTDOMAIN); ?></a>
 
 								</td>
 
@@ -588,7 +461,9 @@ if(isset($_GET['playlist_id'])){//load media
 
 							<td class="media-path"></td>
 
-							<td><input type="checkbox" class="mvp-media-favorite"></td>
+							<td class="media-play">0</td>
+
+							<td class="media-finish">0</td>
 
 							<td>
 
@@ -597,12 +472,6 @@ if(isset($_GET['playlist_id'])){//load media
 							&nbsp;&nbsp;|&nbsp;&nbsp;
 
 							<a class="mvp-delete-media" href='#' title='<?php esc_attr_e('Delete media', MVP_TEXTDOMAIN); ?>' style="color:#f00;"><?php esc_html_e('Delete', MVP_TEXTDOMAIN); ?></a>
-
-							&nbsp;&nbsp;|&nbsp;&nbsp;
-
-							<a class="mvp-get-link" href='#' title='<?php esc_attr_e('Get link', MVP_TEXTDOMAIN); ?>'><?php esc_html_e('Link', MVP_TEXTDOMAIN); ?></a>
-
-							
 
 							</td>
 						</tr>
@@ -617,10 +486,10 @@ if(isset($_GET['playlist_id'])){//load media
 
 	<div id="mvp-sticky-action" class="mvp-sticky">
         <div id="mvp-sticky-action-inner">
-        
-        	<button id="mvp-add-media" type="button" class="button-primary" <?php disabled( !current_user_can($capability) ); ?>><?php esc_html_e('Add media', MVP_TEXTDOMAIN); ?></button> 
 
-        	<button id="mvp-upload-multiple-media" type="button" class="button-primary" <?php disabled( !current_user_can($capability) ); ?>><?php esc_html_e('Upload multiple', MVP_TEXTDOMAIN); ?></button> 
+			<button id="mvp-update-playlist" type="button" class="button-primary mvp-update-playlist-hidden" <?php disabled( !current_user_can(MVP_CAPABILITY) ); ?>><?php esc_html_e('Update playlist', MVP_TEXTDOMAIN); ?></button> 
+        
+        	<button id="mvp-add-media" type="button" class="button-primary" <?php disabled( !current_user_can(MVP_CAPABILITY) ); ?>><?php esc_html_e('Add media', MVP_TEXTDOMAIN); ?></button> 
 
             <a class="button-secondary" href="<?php echo admin_url("admin.php?page=mvp_playlist_manager"); ?>"><?php esc_html_e('Back to Playlist list', MVP_TEXTDOMAIN); ?></a>
 
@@ -629,8 +498,6 @@ if(isset($_GET['playlist_id'])){//load media
 
     <div id="mvp-save-holder"></div>
 	
-</div>
-</div>
 </div>
 
 <div id="mvp-edit-media-modal" class="mvp-modal">
@@ -659,37 +526,6 @@ if(isset($_GET['playlist_id'])){//load media
 </div>
 
 
-<div id="mvp-upload-multiple-type-modal" class="mvp-modal">
-    <div class="mvp-modal-bg">
-        <div class="mvp-modal-inner">
-        	<div class="mvp-modal-content">
-
-        		<table class="form-table">
-
-					<tr valign="top">
-						<th><?php esc_html_e('Select files types to upload', MVP_TEXTDOMAIN); ?></th>
-						<td>
-							<label for="mvp-upload-multiple-type-video"><input type="checkbox" value="video" id="mvp-upload-multiple-type-video" checked="checked"><?php esc_html_e('Video', MVP_TEXTDOMAIN); ?></label><br>
-
-							<label for="mvp-upload-multiple-type-audio"><input type="checkbox" value="audio" id="mvp-upload-multiple-type-audio"><?php esc_html_e('Audio', MVP_TEXTDOMAIN); ?></label><br>
-
-							<label for="mvp-upload-multiple-type-image"><input type="checkbox" value="image" id="mvp-upload-multiple-type-image"><?php esc_html_e('Images', MVP_TEXTDOMAIN); ?></label>
-			            </td>
-					</tr>
-
-				</table>
-
-        		<div class="mvp-modal-actions">	
-	        		<button id="mvp-upload-multiple-type-modal-cancel" class="button-secondary" type="button"><?php esc_html_e('Cancel', MVP_TEXTDOMAIN); ?></button>
-	        		<button id="mvp-upload-multiple-type-modal-ok" class="button-primary" type="button"><?php esc_html_e('Ok', MVP_TEXTDOMAIN); ?></button> 
-	        	</div>	
-
-    		</div>
-        </div>
-    </div>
-</div>
-
-
 <div id="mvp-icon-modal" class="mvp-modal">
     <div class="mvp-modal-bg">
         <div class="mvp-modal-inner">
@@ -700,159 +536,6 @@ if(isset($_GET['playlist_id'])){//load media
 					
 				</ul>
 				<button class="mvp-icon-modal-close button-primary" type="button"><?php esc_html_e('Close', MVP_TEXTDOMAIN); ?></button> 
-    		</div>
-        </div>
-    </div>
-</div>
-
-<div id="mvp-video-link-modal" class="mvp-modal">
-    <div class="mvp-modal-bg">
-        <div class="mvp-modal-inner">
-        	<div class="mvp-modal-content">
-
-	        	<?php
-
-	        		$options = array(
-
-		        		"presets" => array(
-			                'aviva' => 'aviva', 
-			                'pollux' => 'pollux', 
-			                'sirius' => 'sirius', 
-			            ),
-
-			            "playlistPositionArr" => array(    
-			                "vrb" => "Vertical right and bottom",
-			                "hb" => "Horizontal bottom",
-			                "vb" => "Vertical bottom",
-			                "outer" => "Outer (below player, endless scroll)",
-			                "wall" => "Thumbnail grid with lightbox",
-			                "no-playlist" => "No playlist (use just player)"
-			            )
-
-		            );
-
-	        	?>
-
-	        	<p class="vlpt-header"><?php esc_html_e('Generate quick shortcode to this video:', MVP_TEXTDOMAIN); ?>&nbsp;<span id="vlpt-title"></span></p>
-
-	        	<input type="hidden" id="vlpt-type">
-
-        		<table class="form-table">
-
-        			<tr valign="top">
-						<th><?php esc_html_e('Select player type', MVP_TEXTDOMAIN); ?></th>
-						<td>
-							<div>
-						      <label for="vlpt-anon"><input type="radio" id="vlpt-anon" name="vlpt" value="anon" checked> <?php esc_html_e('Anonymous', MVP_TEXTDOMAIN); ?></label>
-						    
-						      &nbsp;&nbsp;
-						   
-						      <label for="vlpt-player"><input type="radio" id="vlpt-player" name="vlpt" value="player"> <?php esc_html_e('Player', MVP_TEXTDOMAIN); ?></label>
-						    </div>
-			            </td>
-					</tr>
-
-					<tr valign="top" class="vlpt-player-field">
-						<th><?php esc_html_e('Select player', MVP_TEXTDOMAIN); ?></th>
-						<td>
-				            <select id="vlpt-player-id">
-								<?php foreach($players as $player) : ?>
-					                <option value="<?php echo($player['id']); ?>"><?php echo($player['title']); echo(' - ID #' . $player['id']); ?></option>
-								<?php endforeach; ?>	
-							</select>
-			            </td>
-					</tr>
-
-	        		<tr valign="top" class="vlpt-anon-field">
-						<th><?php esc_html_e('Select skin', MVP_TEXTDOMAIN); ?></th>
-						<td>
-							<select id="preset" name="preset">
-								<?php foreach ($options['presets'] as $key => $value) : ?>
-					                <option value="<?php echo($key); ?>"><?php echo(esc_html_e($value)); ?></option>
-					            <?php endforeach; ?>
-				            </select><br>
-			            </td>
-					</tr>
-
-			        <tr valign="top" class="vlpt-anon-field">
-			            <th><?php esc_html_e('Select layout', MVP_TEXTDOMAIN); ?></th>
-			            <td>
-			                <select id="playlistPosition" name="playlistPosition">
-			                    <?php foreach ($options['playlistPositionArr'] as $key => $value) : ?>
-			                        <option value="<?php echo($key); ?>"><?php echo($value); ?></option>
-			                    <?php endforeach; ?>
-			                </select>
-			            </td>
-			        </tr>
-
-			        <tr valign="top" class="vlpt-anon-field">
-			            <th></th>
-			            <td>
-			                <img id="playlist-position-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==" alt="playlist position"/>
-			                <p class="info playlist-position-info" id="vrb-info"><?php esc_html_e('Vertical playlist on the right, on narrow screens playlist goes below the player.', MVP_TEXTDOMAIN); ?></p>
-			                <p class="info playlist-position-info" id="vb-info"><?php esc_html_e('Vertical playlist below the player.', MVP_TEXTDOMAIN); ?></p>
-			                <p class="info playlist-position-info" id="hb-info"><?php esc_html_e('Horizontal playlist below the player.', MVP_TEXTDOMAIN); ?></p>
-			                <p class="info playlist-position-info" id="outer-info"><?php esc_html_e('Playlist stacked below player, endless scroll.', MVP_TEXTDOMAIN); ?></p>
-			                <p class="info playlist-position-info" id="wall-info"><?php esc_html_e('Thumbnail grid with player opening as lightbox above it.', MVP_TEXTDOMAIN); ?></p>
-			                <p class="info playlist-position-info" id="no-playlist-info"><?php esc_html_e('Hide visible playlist (display only player).', MVP_TEXTDOMAIN); ?></p>
-			            </td>
-			        </tr>
-
-			        <tr valign="top">
-		                <th><?php esc_html_e('Include whole playlist', MVP_TEXTDOMAIN); ?></th>
-		                <td>
-		                    <select id="includeWholePlaylist">
-		                        <option value="0"><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-		                        <option value="1" selected><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-		                    </select>
-		                    <p class="info"><?php esc_html_e('If false, only this video will be included.', MVP_TEXTDOMAIN); ?></p>
-		                </td>
-		            </tr>
-
-		            <tr valign="top">
-		                <th><?php esc_html_e('Auto play video', MVP_TEXTDOMAIN); ?></th>
-		                <td>
-		                    <select id="autoPlay">
-		                        <option value="0" selected><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-		                        <option value="1"><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-		                    </select><br>
-		                    <p class="info"><?php esc_html_e('Auto play media. This will mute video which is required for autoplay.', MVP_TEXTDOMAIN); ?></p>
-		                </td>
-		            </tr>
-
-		            <tr valign="top">
-		                <th><?php esc_html_e('Shortcode', MVP_TEXTDOMAIN); ?></th>
-		                <td>
-
-		                	<textarea id="mvp-pl-video-link" rows="3" ></textarea>
-		                	<button class="mvp-video-get-shortcode" type="button"><?php esc_html_e('Get shortcode', MVP_TEXTDOMAIN); ?></button> 
-
-		                 </td>
-		            </tr>
-
-			    </table>
-        		
-				<button class="mvp-video-link-modal-close button-primary" type="button"><?php esc_html_e('Close', MVP_TEXTDOMAIN); ?></button> 
-
-    		</div>
-        </div>
-    </div>
-</div>
-
-<div id="mvp-add-media-limit-modal" class="mvp-modal">
-    <div class="mvp-modal-bg">
-        <div class="mvp-modal-inner">
-        	<div class="mvp-modal-content">
-
-				<div class="mvp-modal-message">
-					<h2><?php esc_html_e('Notice', MVP_TEXTDOMAIN); ?></h2>
-					<p class="mvp-modal-message-content"><?php echo $settings['userVideoLimitText'] ?></p>
-				</div>
-
-				<div class="mvp-modal-actions">	
-					<button id="mvp-add-media-limit-close" type="button"><?php esc_html_e('Close', MVP_TEXTDOMAIN); ?></button>
-    			</div>
-
     		</div>
         </div>
     </div>

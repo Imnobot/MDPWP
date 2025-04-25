@@ -1,50 +1,53 @@
 jQuery(document).ready(function($) {
+
     "use strict"
 
-    var preloader = $('#mvp-loader'),
-     _body = $('body'),
+    var preloader = $('#mvp-loader').show(),
+    _body = $('body'),
     _doc = $(document),
-    empty_src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D',
+    statWrap = $('#mvp-stat-wrap'),
+    mediaItemList = $('#media-item-list'),
     mvp_translate = $('#mvp-translate'),
-    statSection = $('#mvp-stat-section'),
-    mediaItemListStat = $('#mvp-stat-media-item-list'),
     statTableHeader = $('.stat-table-header')
 
 
-    var statsUserList = $('#mvp-stats-user-list').on('change', function(){
-        loadStats(statsPlaylistList.val())
-    })
 
 
-    var statsPlaylistList = $('#mvp-stats-playlist-list'),
-    statsPlaylistDataList = $('#mvp-stats-playlist-list-select')
 
-    _doc.on('change', '#mvp-stats-playlist-list', function(){
-       
-        var options = statsPlaylistDataList[0].options;
-        var val = $(this).val();
-        for (var i = 0; i < options.length; i++) {
-            if (options[i].value === val) {
-                loadStats(val)
-                break;
+    var selectedPlaylistId,
+    statsPlaylistList = $('#mvp-stats-playlist-list').selectize({
+        onInitialize: function() {
+            this.trigger('change', this.getValue(), true);
+        },
+        onChange: function(value, isOnInitialize) {
+            console.log('Selectize playlist changed: ' + value);
+            
+            if(value){
+                selectedPlaylistId = value;
+                loadStats( 'playlist', value)
             }
+            
         }
-    })
-
-    statsPlaylistList.val('-1').change()//on start
-
-
-
+    });
    
 
-    function loadStats(playlist_id){
+
+
+
+
+
+
+
+    function loadStats(type, pid){
+        console.log('loadStats ' + type)
 
         preloader.show()
 
         var postData = [
             {name: 'action', value: 'mvp_get_stat_data'},
-            {name: 'playlist_id', value: playlist_id},
-            {name: 'user_id', value: statsUserList.val()},
+            {name: 'type', value: type},
+            {name: 'type_id', value: pid},
+            {name: 'options', value: pid},
             {name: 'security', value: mvp_data.security}
         ];
 
@@ -54,98 +57,100 @@ jQuery(document).ready(function($) {
             data: postData,
             dataType: 'json',
         }).done(function(r){
-console.log(r)
-            setStatData(r);
+
+            console.log(r)
+
+            var response = r.results
+
+            var mi = $('.media-item-container-hidden')
+
+            mediaItemList.find('.mvp-stat-row:not(.media-item-container-hidden)').remove()//clear current
+
+            var i, len = response.length, obj, media_item;
+            for(i = 0; i <len; i++){
+
+                obj = response[i]
+
+                if(obj.artist || obj.title){
+
+                    media_item = mi.clone().removeClass('media-item-container-hidden')
+                    .attr('data-media-id', obj.media_id)
+                    media_item.find('.media-title').html(obj.title)
+                    media_item.find('.media-duration').html(obj.total_time)
+                    media_item.find('.media-time').html(convertTime(obj.total_time));
+                    media_item.find('.media-play').html(nFormatter(parseInt(obj.total_play,10), 1));
+                    media_item.find('.media-download').html(nFormatter(parseInt(obj.total_download,10), 1));
+                    media_item.find('.media-finish').html(nFormatter(parseInt(obj.total_finish,10), 1));
+
+                    media_item.appendTo(mediaItemList)
+
+                }
+
+            }
+
+            statTableHeader.find('.mvp-sort-field[data-type="title"]').attr('data-asc', 'true')
+            setSortIndicator('title', true)
+
+
+
+
+            //summary 
+
+            if(r.total.c_time)$('.mvp-stats-total-time').html(convertTime(r.total.c_time))
+            else $('.mvp-stats-total-time').html('0')
+
+            if(r.total.c_play) $('.mvp-stats-total-play').html(nFormatter(parseInt(r.total.c_play,10), 1));
+            else $('.mvp-stats-total-play').html('0')
+
+            if(r.total.c_download) $('.mvp-stats-total-download').html(nFormatter(parseInt(r.total.c_download,10), 1));
+            else $('.mvp-stats-total-download').html('0')
+
+            if(r.total.c_finish) $('.mvp-stats-total-finish').html(nFormatter(parseInt(r.total.c_finish,10), 1));
+            else $('.mvp-stats-total-finish').html('0')
+
+
+
+
+
+            //top
+
+            getBox(r.top_day, $('.mvp-box-top-play-day'))
+            getGrandTotal(r.top_day, $('.mvp-box-top-play-day'))
+
+            getBox(r.top_week, $('.mvp-box-top-play-week'))
+            getGrandTotal(r.top_week, $('.mvp-box-top-play-week'))
+
+            getBox(r.top_month, $('.mvp-box-top-play-month'))
+            getGrandTotal(r.top_month, $('.mvp-box-top-play-month'))
+
+            getBox(r.top_plays, $('.mvp-box-top-play-all-time'))
+            getGrandTotal(r.top_plays, $('.mvp-box-top-play-all-time'))
+
+            getBox(r.top_downloads, $('.mvp-box-top-download-all-time'))
+            getGrandTotal(r.top_downloads, $('.mvp-box-top-download-all-time'))
+
+            getBox(r.top_finish, $('.mvp-box-top-finish-all-time'))
+            getGrandTotal(r.top_finish, $('.mvp-box-top-finish-all-time'))
+
+            getBox2(r.top_plays_country, $('.mvp-box-top-plays-country-all-time'))
+            getGrandTotal(r.top_plays_country, $('.mvp-box-top-plays-country-all-time'))
+
+            getBox3(r.top_plays_user, $('.mvp-box-top-plays-user-all-time'))
+            getGrandTotal(r.top_plays_user, $('.mvp-box-top-plays-user-all-time'))
+
+
+            makeTotalGraph(r.top_day_grand_total)
+
+
+            preloader.hide()
+
+            initPagination()
 
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText, textStatus, errorThrown);
             preloader.hide();
             
         });
-
-    }
-
-    function setStatData(r){
-
-        var response = r.results
-
-        var mi = $('.media-item-container-hidden')
-
-        mediaItemListStat.find('.mvp-stat-row:not(.media-item-container-hidden)').remove()//clear current
-
-        var i, len = response.length, obj, media_item;
-        for(i = 0; i <len; i++){
-
-            obj = response[i]
-
-            if(obj.artist || obj.title){
-
-                media_item = mi.clone().removeClass('media-item-container-hidden')
-                .attr('data-media-id', obj.media_id)
-                media_item.find('.media-title').html(obj.title)
-                media_item.find('.media-duration').html(obj.total_time)
-                media_item.find('.media-time').html(convertTime(obj.total_time));
-                media_item.find('.media-play').html(nFormatter(parseInt(obj.total_play,10), 1));
-                media_item.find('.media-download').html(nFormatter(parseInt(obj.total_download,10), 1));
-                media_item.find('.media-finish').html(nFormatter(parseInt(obj.total_finish,10), 1));
-
-                media_item.appendTo(mediaItemListStat)
-
-            }
-
-        }
-
-        statTableHeader.find('.mvp-sort-field[data-type="title"]').attr('data-asc', 'true')
-        setSortIndicatorStat('title', true)
-
-
-
-
-        //summary 
-
-        if(r.total.c_time)$('.mvp-stats-total-time').html(convertTime(r.total.c_time))
-        else $('.mvp-stats-total-time').html('0')
-
-        if(r.total.c_play) $('.mvp-stats-total-play').html(nFormatter(parseInt(r.total.c_play,10), 1));
-        else $('.mvp-stats-total-play').html('0')
-
-        if(r.total.c_download) $('.mvp-stats-total-download').html(nFormatter(parseInt(r.total.c_download,10), 1));
-        else $('.mvp-stats-total-download').html('0')
-
-        if(r.total.c_finish) $('.mvp-stats-total-finish').html(nFormatter(parseInt(r.total.c_finish,10), 1));
-        else $('.mvp-stats-total-finish').html('0')
-
-
-
-
-
-        //top
-
-        getBox(r.top_day, $('.mvp-box-top-play-day'))
-        getGrandTotal(r.top_day, $('.mvp-box-top-play-day'))
-
-        getBox(r.top_week, $('.mvp-box-top-play-week'))
-        getGrandTotal(r.top_week, $('.mvp-box-top-play-week'))
-
-        getBox(r.top_month, $('.mvp-box-top-play-month'))
-        getGrandTotal(r.top_month, $('.mvp-box-top-play-month'))
-
-        getBox(r.top_plays, $('.mvp-box-top-play-all-time'))
-        getGrandTotal(r.top_plays, $('.mvp-box-top-play-all-time'))
-
-        getBox(r.top_downloads, $('.mvp-box-top-download-all-time'))
-        getGrandTotal(r.top_downloads, $('.mvp-box-top-download-all-time'))
-
-        getBox(r.top_finish, $('.mvp-box-top-finish-all-time'))
-        getGrandTotal(r.top_finish, $('.mvp-box-top-finish-all-time'))
-
-
-        makeTotalGraph(r.top_day_grand_total)
-
-
-        preloader.hide()
-
-        initPaginationStat()
 
     }
 
@@ -157,12 +162,12 @@ console.log(r)
             gt += parseInt(obj.total_count,10)
         }
 
-        box.find('.mvp-top-box-content-total-value').html(gt)
+        box.find('.top-box-content-total-value').html(gt)
 
         if(gt > 0){
-            box.find('.mvp-top-box-content-total').addClass('mvp-top-box-content-total-shown')
+            box.find('.top-box-content-total').show()
         }else{
-            box.find('.mvp-top-box-content-total').removeClass('mvp-top-box-content-total-shown')
+            box.find('.top-box-content-total').hide()
         }
 
     }
@@ -174,7 +179,7 @@ console.log(r)
         if(arr.length){
 
             var ids = []
-            var s = '<tr class="mvp-top-stat-list">'
+            var s = '<ol class="mvp-top-stat-list">'
 
             var i, len = arr.length, obj;
             for(i = 0; i <len; i++){
@@ -183,59 +188,203 @@ console.log(r)
 
                 if(obj.media_id != undefined && ids.indexOf(obj.media_id) == -1) ids.push(obj.media_id);
        
-                 s += '<tr class="mvp-top-stat-list">'+
+                s += '<li>'
 
-                    '<td>'+(i+1).toString()+'</td>'+
-                    '<td>'+obj.title +'</td>'+
-                    '<td>'+obj.total_count+'</td>'+
-      
-                '</tr>'
+                if(obj.title && obj.artist){
+                    s += '<b>' + obj.artist + '</b>' + ' - ' + obj.title
+                }else if(obj.title){
+                    s += '<b>' + obj.title + '</b>'
+                }else if(obj.artist){
+                    s += '<b>' + obj.artist + '</b>'
+                }
+
+               // s += ' <b>' + obj.media_id + '</b>'
+
+                s += '<span class="mvp-stat-info"> ('+obj.total_count+')</span></li>';
 
             }
+                   
+            s += '</ol>';
+
+            box.find('.top-box-content').append(s)//add new
 
             var top_id = ids.join('_');
 
             box.find('.mvp-stat-no-data').addClass('mvp-stat-hidden')   
-            box.find('.mvp-create-playlist-from-stat').removeClass('mvp-stat-hidden').attr('data-media-id', top_id)
-
-            box.find('.inline-stat-table').removeClass('inline-stat-table-hidden').find('tbody').html(s)
-
-            box.find('.mvp-stat-export').removeClass('mvp-stat-hidden') 
+            box.find('.mvp-create-playlist-from-stat').removeClass('mvp-stat-hidden').attr('data-media-id', top_id) 
 
         }else{
             box.find('.mvp-stat-no-data').removeClass('mvp-stat-hidden')   
             box.find('.mvp-create-playlist-from-stat').addClass('mvp-stat-hidden').removeAttr('data-media-id')  
 
-            box.find('.mvp-stat-export').addClass('mvp-stat-hidden') 
-
-            box.find('.inline-stat-table').addClass('inline-stat-table-hidden')
-
         }
 
     }
 
+    function getBox2(arr, box){
+
+        box.find('.mvp-top-stat-list').remove()//clear current
+        
+        if(arr.length){
+
+            var i, len = arr.length, obj, s = '';
+            for(i = 0; i <len; i++){
+
+                obj = arr[i]
+
+                s += '<tr class="mvp-top-stat-list">'+
+
+                    '<td>'+obj.country+' ('+obj.country_code+')</td>'+
+                    '<td>'+ obj.continent +'</td>'+
+                    '<td>'+obj.total_count+'</td>'+
+                    '<td>'+convertTime(obj.c_time)+'</td>'+
+      
+                '</tr>'
+
+            }
+
+            box.find('.mvp-stat-no-data').addClass('mvp-stat-hidden')   
+            box.find('.inline-stat-table').removeClass('inline-stat-table-hidden').find('tbody').html(s)
+
+        }else{
+            box.find('.mvp-stat-no-data').removeClass('mvp-stat-hidden')   
+        }
+
+    }
+
+    function getBox3(arr, box){
+
+        box.find('.mvp-top-stat-list').remove()//clear current
+        
+        if(arr.length){
+            
+            var i, len = arr.length, obj, s = '';
+            for(i = 0; i <len; i++){
+
+                obj = arr[i]
+
+                s += '<tr class="mvp-top-stat-list">'+
+
+                    '<td><a href="#" class="mvp-user-id" data-user-id="'+obj.user_id+'" title="'+mvp_translate.attr('data-view-detail')+'">'+obj.user_display_name+'</a></td>'+
+                    '<td>'+ obj.user_role +'</td>'+
+                    '<td>'+obj.total_count+'</td>'+
+                    '<td>'+convertTime(obj.c_time)+'</td>'+
+      
+                '</tr>'
+
+            }
+
+            box.find('.mvp-stat-no-data').addClass('mvp-stat-hidden')   
+            box.find('.inline-stat-table').removeClass('inline-stat-table-hidden').find('tbody').html(s)
+
+        }else{
+            box.find('.mvp-stat-no-data').removeClass('mvp-stat-hidden')   
+        }
+    }
+
+    //user data
+
+    statWrap.on('click', '.mvp-user-id', function(){
+        var user_id = $(this).attr('data-user-id')
+
+        preloader.show()
+
+        var postData = [
+            {name: 'action', value: 'mvp_get_stat_user_data'},
+            {name: 'user_id', value: user_id},
+            {name: 'security', value: mvp_data.security}
+        ];
+
+        $.ajax({
+            url: mvp_data.ajax_url,
+            type: 'post',
+            data: postData,
+            dataType: 'json',
+        }).done(function(arr){
+
+            if(arr.length){
+            
+                var i, len = arr.length, obj, s = '';
+                for(i = 0; i <len; i++){
+
+                    obj = arr[i]
+
+                    s += '<tr class="mvp-top-stat-list">'+
+
+                        '<td>'+obj.title+'</td>'+
+                        '<td>'+obj.total_count+'</td>'+
+                        '<td>'+convertTime(obj.c_time)+'</td>'+
+          
+                    '</tr>'
+
+                }
+
+                userDataModal.find('.inline-stat-table').removeClass('inline-stat-table-hidden').find('tbody').html(s)
+
+            }
+
+            var title = obj.user_display_name + ' (' + obj.user_role + ')'
+            userDataModal.find('.user-data-modal-title').html(title)
+
+            showUserDataModal()
+
+            preloader.hide()
+
+            
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR.responseText, textStatus, errorThrown);
+            removeUserDataModal()
+            preloader.hide()
+        });
+
+        return false;
+    })
+
+
+    //user data modal
+
+    var userDataModal = $('#mvp-user-data-modal'),
+    userDataModalBg = $('.mvp-modal-bg').on('click',function(e){
+        if(e.target == this){ 
+            removeUserDataModal()
+        }
+    });
+
+    $('#mvp-user-data-close').on('click',function(e){
+        removeUserDataModal()
+    });
+
+    function removeUserDataModal(){
+        userDataModal.hide();  
+    }
+
+    function showUserDataModal(){
+        userDataModal.show();
+        userDataModalBg.scrollTop(0);
+    }
+
+  
 
 
 
     //pagination
 
-    var paginationPerPageNumStat = $('#mvp-stat-pag-per-page-num')
+    var paginationPerPageNum = $('#mvp-pag-per-page-num')
 
     if(localStorage && localStorage.getItem('mvp_stat_media_paginaton_per_page')){
-        paginationPerPageNumStat.val(localStorage.getItem('mvp_stat_media_paginaton_per_page'))
+        paginationPerPageNum.val(localStorage.getItem('mvp_stat_media_paginaton_per_page'))
     }
 
     var paginationArr = [],
     paginationCurrentPage = 0,
-    paginationPerPage = parseInt(paginationPerPageNumStat.val(),10),
+    paginationPerPage = parseInt(paginationPerPageNum.val(),10),
     paginationTotalPages,
     paginationInited, 
     lastActivePaginationBtn,
     lastPaginationPage,
-    paginationWrapStat = $('.mvp-stat-pagination-wrap')
+    paginationWrap = $('.mvp-pagination-wrap')
 
-
-    function updatePaginationStat(jump_to_last_page){
+    function updatePagination(jump_to_last_page){
         //after delete, move, copy, add tracks
 
         lastPaginationPage = paginationTotalPages - 1;
@@ -247,7 +396,7 @@ console.log(r)
 
         //get all tracks again
         var i = 0;
-        mediaItemListStat.find('.media-item').each(function(){
+        mediaItemList.find('.media-item').each(function(){
             paginationArr.push($(this).addClass('mvp-pagination-hidden').attr('data-id', i))
             i++;
         })
@@ -260,41 +409,43 @@ console.log(r)
 
         if(paginationCurrentPage > paginationTotalPages - 1)paginationCurrentPage = paginationTotalPages - 1;
 
-        if(paginationTotalPages > 1)createPaginationBtnStat(paginationCurrentPage);
-        else paginationWrapStat.html('');
+        if(paginationTotalPages > 1)createPaginationBtn(paginationCurrentPage);
+        else paginationWrap.html('');
 
-        if(paginationArr.length)showPaginationTracksStat()
+        if(paginationArr.length)showPaginationTracks()
 
     }
 
-    function initPaginationStat(){
+    function initPagination(){
 
         paginationArr = []
 
         var i = 0;
-        mediaItemListStat.find('.media-item').each(function(){
+        mediaItemList.find('.media-item').each(function(){
             paginationArr.push($(this).attr('data-id', i))
             i++;
         })
 
         paginationTotalPages = Math.ceil(paginationArr.length / paginationPerPage)
 
-        if(paginationTotalPages > 1)createPaginationBtnStat(paginationCurrentPage);
+        if(paginationTotalPages > 1)createPaginationBtn(paginationCurrentPage);
 
-        if(paginationArr.length)showPaginationTracksStat()//show tracks on start
+        if(paginationArr.length)showPaginationTracks()//show tracks on start
 
     }
 
-    //adjust per page
-    var statPerPageBtn = $('#mvp-stat-pag-per-page-btn').on('click', function(){
+    
 
-        if(isEmpty(paginationPerPageNumStat.val())){
-            paginationPerPageNumStat.focus()
+    //adjust per page
+    $('#mvp-pag-per-page-btn').on('click', function(){
+
+        if(isEmpty(paginationPerPageNum.val())){
+            paginationPerPageNum.focus()
             alert("Enter number!")
             return false;
         }
 
-        paginationPerPage = parseInt(paginationPerPageNumStat.val(),10)
+        paginationPerPage = parseInt(paginationPerPageNum.val(),10)
 
         //save
         if(localStorage)localStorage.setItem('mvp_stat_media_paginaton_per_page', paginationPerPage);
@@ -303,17 +454,17 @@ console.log(r)
 
         paginationCurrentPage = 0;
 
-        if(paginationTotalPages > 1)createPaginationBtnStat(paginationCurrentPage);
-        else paginationWrapStat.html('');
+        if(paginationTotalPages > 1)createPaginationBtn(paginationCurrentPage);
+        else paginationWrap.html('');
 
-        if(paginationArr.length)showPaginationTracksStat()
+        if(paginationArr.length)showPaginationTracks()
 
     })
 
-    function showPaginationTracksStat(){
+    function showPaginationTracks(){
 
         //hide visible playlist items
-        mediaItemListStat.find('.media-item').addClass('mvp-pagination-hidden')
+        mediaItemList.find('.media-item').addClass('mvp-pagination-hidden')
 
         var i, z = paginationCurrentPage * paginationPerPage, len = z + paginationPerPage
         if(len > paginationArr.length) len = paginationArr.length;
@@ -324,7 +475,7 @@ console.log(r)
 
     }
     
-    function createPaginationBtnStat(page){
+    function createPaginationBtn(page){
 
         page += 1;
 
@@ -378,12 +529,12 @@ console.log(r)
 
         str += '<div class="mvp-pagination-total">Page '+page+' of '+paginationTotalPages+'</div>';
 
-        paginationWrapStat.html(str);
+        paginationWrap.html(str);
         
         if(!paginationInited){
             paginationInited = true;
 
-            paginationWrapStat.on('click', '.mvp-pagination-page:not(.mvp-pagination-currentpage)', function() {
+            paginationWrap.on('click', '.mvp-pagination-page:not(.mvp-pagination-currentpage)', function() {
 
                 if(lastActivePaginationBtn)lastActivePaginationBtn.removeClass('mvp-pagination-currentpage');
                 lastActivePaginationBtn = $(this).addClass('mvp-pagination-currentpage');
@@ -396,14 +547,14 @@ console.log(r)
                 else if(page == 'last')paginationCurrentPage = paginationTotalPages - 1; 
                 else paginationCurrentPage = parseInt(page,10);
 
-                if(paginationTotalPages > 1)createPaginationBtnStat(paginationCurrentPage);
-                else paginationWrapStat.html('');
+                if(paginationTotalPages > 1)createPaginationBtn(paginationCurrentPage);
+                else paginationWrap.html('');
 
-                if(paginationArr.length)showPaginationTracksStat()
+                if(paginationArr.length)showPaginationTracks()
                 
             });
 
-            lastActivePaginationBtn = paginationWrapStat.find('.mvp-pagination-currentpage')
+            lastActivePaginationBtn = paginationWrap.find('.mvp-pagination-currentpage')
 
         }
 
@@ -419,7 +570,7 @@ console.log(r)
 
         var btn = $(this),
         asc = btn.attr('data-asc') == 'true',
-        items = mediaItemListStat.find('.media-item'), len = items.length,
+        items = mediaItemList.find('.media-item'), len = items.length,
         type = btn.attr('data-type')
 
         if(type == 'title' || type == 'artist')keysrtStr(paginationArr, '.media-'+type, asc);
@@ -434,35 +585,32 @@ console.log(r)
         }
 
         //reposition data
-        mediaItemListStat.append($.map(arr, function(v) {
+        mediaItemList.append($.map(arr, function(v) {
             return items[v];
         }));
 
         //update id
         var i = 0;
-        mediaItemListStat.find('.media-item').each(function(){
+        mediaItemList.find('.media-item').each(function(){
             $(this).attr('data-id', i)
             i++;
         })
 
         //place graphs below rows
-        mediaItemListStat.find('.mvp-stat-graph-holder-row').each(function(){
+        mediaItemList.find('.mvp-stat-graph-holder-row').each(function(){
             var graph = $(this),
             id = graph.attr('data-parent-id'),
-            parent = mediaItemListStat.find('.mvp-stat-row[data-parent-id="'+id+'"]')
+            parent = mediaItemList.find('.mvp-stat-row[data-parent-id="'+id+'"]')
 
             parent.after(graph)   
         })
 
 
-        setSortIndicatorStat(type, asc)
-
-        //update pagination
-        statPerPageBtn.trigger('click')
+        setSortIndicator(type, asc)
 
     })
 
-    function setSortIndicatorStat(type, dir){
+    function setSortIndicator(type, dir){
 
         statTableHeader.find('.mvp-triangle-dir-wrap, .mvp-triangle-dir').hide()//hide all
 
@@ -476,35 +624,39 @@ console.log(r)
 
 
 
+
+
+
+
    
 
     //search songs
 
-    var mediafilterInitedStat
+    var mediafilterInited
 
-    $('#mvp-stat-filter-media').on('keyup.apfilter',function(){
+    $('#mvp-filter-media').on('keyup.apfilter',function(){
 
-        var value = $(this).val().toLowerCase(), i, j = 0, item, title, len = mediaItemListStat.children('.media-item').length;
+        var value = $(this).val(), i, j = 0, item, title, len = mediaItemList.children('.media-item').length;
 
-        if(!mediafilterInitedStat){
-            mediaItemListStat.children('.media-item').each(function(){
+        if(!mediafilterInited){
+            mediaItemList.children('.media-item').each(function(){
                 var item = $(this)
                 if(item.hasClass('mvp-pagination-hidden')){
                     item.addClass('mvp-was-pagination-hidden').removeClass('mvp-pagination-hidden')
                 }
             })
-            mediafilterInitedStat = true;
+            mediafilterInited = true;
         }
 
         for(i = 0; i < len; i++){
 
-            item = mediaItemListStat.children('.media-item').eq(i)
+            item = mediaItemList.children('.media-item').eq(i)
 
             title = item.find('.media-title').html().toLowerCase();
 
             if(value == ''){
 
-                mediaItemListStat.children('.media-item').each(function(){
+                mediaItemList.children('.media-item').each(function(){
                     var item = $(this).removeClass('mvp-filter-hidden mvp-filter-shown')
 
                     if(item.hasClass('mvp-was-pagination-hidden')){
@@ -512,7 +664,7 @@ console.log(r)
                     }
                 });
 
-                mediafilterInitedStat = false;
+                mediafilterInited = false;
 
             }else{
 
@@ -534,10 +686,6 @@ console.log(r)
     //top plays total graps
 
     function makeTotalGraph(arr){
-
-        var canvas = $('.mvp-stats-total-grap-canvas')[0],
-        ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         if(arr.length == 0)return
 
@@ -632,7 +780,12 @@ console.log(r)
 
     }
 
-   
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
 
 
 
@@ -654,7 +807,7 @@ console.log(r)
 
     //create graph
 
-    _doc.on('click', '.mvp-stat-create-graph', function(e){
+    $('.mvp-stat-create-graph').on('click', function(e){
         e.preventDefault();
 
         if(creatingGraph)return false;
@@ -685,7 +838,6 @@ console.log(r)
             {name: 'action', value: 'mvp_stat_create_graph'},
             {name: 'media_id', value: row.attr('data-media-id')},
             {name: 'title', value: row.attr('data-title')},
-            {name: 'user_id', value: statsUserList.val()}, 
             {name: 'data_display', value: JSON.stringify(dataDisplay)}, 
             {name: 'return_days', value: returnDays},
             {name: 'security', value: mvp_data.security}
@@ -820,36 +972,48 @@ console.log(r)
 
     //modal
 
-    var addPlaylistModalTT = $('#mvp-add-playlist-modal-stat'),
-    modalBgTT = $('.mvp-modal-bg').on('click',function(e){
+    var addPlaylistModal = $('#mvp-add-playlist-modal'),
+    modalBg = $('.mvp-modal-bg').on('click',function(e){
         if(e.target == this){ 
-            removePlaylistModalTT()
+            removePlaylistModal()
         }
     });
 
-    $('#mvp-add-playlist-cancel-stat').on('click',function(e){
-        removePlaylistModalTT()
+    _doc.on('keyup', function(e) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        
+        var key = e.keyCode, target = $(e.target);
+        
+        if(key == 27) {//esc
+            removePlaylistModal()
+        } 
+    }); 
+
+    $('#mvp-add-playlist-cancel').on('click',function(e){
+        removePlaylistModal()
     });
 
-    var addPlaylistSubmitTT
-    $('#mvp-add-playlist-submit-stat').on('click',function(e){
+
+    var addPlaylistSubmit
+    $('#mvp-add-playlist-submit').on('click',function(e){
 
         var title_field = $('#playlist-title')
 
         if(isEmpty(title_field.val())){
             title_field.addClass('aprf'); 
-            modalBgTT.scrollTop(0);
+            modalBg.scrollTop(0);
             alert(mvp_translate.attr('data-title-required'));
             return false;
         }
 
-        if(addPlaylistSubmitTT)return false;
-        addPlaylistSubmitTT = true;
+        if(addPlaylistSubmit)return false;
+        addPlaylistSubmit = true;
 
         var title = title_field.val()
 
         preloader.show()
-        removePlaylistModalTT()
+        removePlaylistModal()
 
         var postData = [
             {name: 'action', value: 'mvp_create_playlist'},
@@ -866,34 +1030,34 @@ console.log(r)
         }).done(function(response){
 
             //go to edit playlist page
-            window.location = statSection.attr('data-admin-url') + '?page=mvp_playlist_manager&action=edit_playlist&mvp_msg=playlist_created&playlist_id=' + response
+            window.location = statWrap.attr('data-admin-url') + '?page=mvp_playlist_manager&action=edit_playlist&mvp_msg=playlist_created&playlist_id=' + response
 
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText, textStatus, errorThrown);
-            addPlaylistSubmitTT = false;
-            removePlaylistModalTT()
+            addPlaylistSubmit = false;
+            removePlaylistModal()
         });
 
         return false;
 
     });
 
-    function removePlaylistModalTT(){
-        addPlaylistModalTT.hide();  
+    function removePlaylistModal(){
+        addPlaylistModal.hide();  
 
-        addPlaylistModalTT.find('#playlist-title').val('').removeClass('aprf'); 
+        addPlaylistModal.find('#playlist-title').val('').removeClass('aprf'); 
     }
 
-    function showPlaylistModalTT(){
-        addPlaylistModalTT.show();
+    function showPlaylistModal(){
+        addPlaylistModal.show();
         $('#playlist-title').focus()
-        modalBgTT.scrollTop(0);
+        modalBg.scrollTop(0);
     }
 
     var playlistFromStatMediaId
     _doc.on('click', '.mvp-create-playlist-from-stat', function(){
         playlistFromStatMediaId = $(this).attr('data-media-id')
-        showPlaylistModalTT()
+        showPlaylistModal()
     })
 
 
@@ -907,12 +1071,13 @@ console.log(r)
         var result = confirm(mvp_translate.attr('data-sure-to-clear-stat'));
         if(result){
 
+            var playlist_id = $('#mvp-stat-wrap').attr('data-playlist-id')
+
             preloader.show();
 
             var postData = [
                 {name: 'action', value: 'mvp_stat_clear'},
-                {name: 'playlist_id', value: statsPlaylistList.val()},
-                {name: 'user_id', value: statsUserList.val()},
+                {name: 'playlist_id', value: playlist_id},
                 {name: 'security', value: mvp_data.security}
             ];
 
@@ -928,7 +1093,7 @@ console.log(r)
                 if(response){
                     if(response == 'SUCCESS'){
 
-                        mediaItemListStat.find('.mvp-stat-row:not(.media-item-container-hidden)').remove()//clear current
+                        mediaItemList.find('.mvp-stat-row:not(.media-item-container-hidden)').remove()//clear current
 
                         $('.mvp-stats-total-time').html('')
                         $('.mvp-stats-total-play').html('')
@@ -954,6 +1119,12 @@ console.log(r)
                         getBox([], $('.mvp-box-top-finish-all-time'))
                         getGrandTotal([], $('.mvp-box-top-finish-all-time'))
 
+                        getBox2([], $('.mvp-box-top-plays-country-all-time'))
+                        getGrandTotal([], $('.mvp-box-top-plays-country-all-time'))
+
+                        getBox3([], $('.mvp-box-top-plays-user-all-time'))
+                        getGrandTotal([], $('.mvp-box-top-plays-user-all-time'))
+
 
                         var canvas = $('.mvp-stats-total-grap-canvas')[0],
                         ctx = canvas.getContext('2d');
@@ -965,8 +1136,6 @@ console.log(r)
                     }
                 }
 
-                preloader.hide();
-
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText, textStatus, errorThrown);
                 preloader.hide();
@@ -977,125 +1146,45 @@ console.log(r)
 
     });
 
+    var statsPlaylistList = $('#mvp-stats-playlist-list').on('change',function(){
 
+        var playlist_id = $(this).val();
 
-    //export
+        insertParam('playlist_id', playlist_id);
 
-    statSection.on('click', '.mvp-stat-export', function() {
-      var titles = [];
-      var data = [];
-
-      var parent = $(this).closest('.top-box'),
-      table = parent.find('.inline-stat-table')
-
-   
-
-      /*
-       * Get the table headers, this will be CSV headers
-       * The count of headers will be CSV string separator
-       */
-      table.find('th').each(function() {
-        titles.push($(this).text());
-      });
-
-      /*
-       * Get the actual data, this will contain all the data, in 1 array
-       */
-      table.find('td').each(function() {
-        data.push($(this).text());
-      });
-      
-      /*
-       * Convert our data to CSV string
-       */
-      var CSVString = prepCSVRow(titles, titles.length, '');
-      CSVString = prepCSVRow(data, titles.length, CSVString);
-
-      /*
-       * Make CSV downloadable
-       */
-
-        var table_title = $.trim(parent.find('.top-box-title').text())
-
-        var today = new Date();
-        var dd = String(today.getDate()).padStart(2, '0');
-        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-        var yyyy = today.getFullYear();
-
-        today = mm + '-' + dd + '-' + yyyy;
-
-        var file_name = table_title+'_'+today
-
-
-
-      var downloadLink = document.createElement("a");
-      var blob = new Blob(["\ufeff", CSVString]);
-      var url = URL.createObjectURL(blob);
-      downloadLink.href = url;
-      downloadLink.download = file_name+".csv";
-
-      /*
-       * Actually download CSV
-       */
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
     });
 
-       /*
-    * Convert data array to CSV string
-    * @param arr {Array} - the actual data
-    * @param columnCount {Number} - the amount to split the data into columns
-    * @param initial {String} - initial string to append to CSV string
-    * return {String} - ready CSV string
-    */
-    function prepCSVRow(arr, columnCount, initial) {
-      var row = ''; // this will hold data
-      var delimeter = ','; // data slice separator, in excel it's `;`, in usual CSv it's `,`
-      var newLine = '\r\n'; // newline separator for CSV row
+    var urlParams = getUrlParameter();
+    if(urlParams.playlist_id){
+        statsPlaylistList.val(urlParams.playlist_id);
+    }
 
-      /*
-       * Convert [1,2,3,4] into [[1,2], [3,4]] while count is 2
-       * @param _arr {Array} - the actual array to split
-       * @param _count {Number} - the amount to split
-       * return {Array} - splitted array
-       */
-      function splitArray(_arr, _count) {
-        var splitted = [];
-        var result = [];
-        _arr.forEach(function(item, idx) {
-          if ((idx + 1) % _count === 0) {
-            splitted.push(item);
-            result.push(splitted);
-            splitted = [];
-          } else {
-            splitted.push(item);
-          }
-        });
-        return result;
-      }
-      var plainArr = splitArray(arr, columnCount);
-      // don't know how to explain this
-      // you just have to like follow the code
-      // and you understand, it's pretty simple
-      // it converts `['a', 'b', 'c']` to `a,b,c` string
-      plainArr.forEach(function(arrItem) {
-        arrItem.forEach(function(item, idx) {
-          row += item + ((idx + 1) === arrItem.length ? '' : delimeter);
-        });
-        row += newLine;
-      });
-      return initial + row;
+    function insertParam(key, value){
+
+        key = encodeURI(key); value = encodeURI(value);
+
+        var kvp = document.location.search.substr(1).split('&');
+
+        var i=kvp.length; var x; while(i--){
+            x = kvp[i].split('=');
+
+            if (x[0]==key){
+                x[1] = value;
+                kvp[i] = x.join('=');
+                break;
+            }
+        }
+
+        if(i<0) {kvp[kvp.length] = [key,value].join('=');}
+
+        document.location.search = kvp.join('&'); 
     }
 
 
 
-
-    
     //############################################//
     /* helpers */
     //############################################//
-
 
     function formatDate(date){
         var dd = date.getDate(),
@@ -1116,8 +1205,16 @@ console.log(r)
         });
     }
 
+    function keysrtNum(arr, selector, reverse) {
+        var sortOrder = 1;
+        if(reverse)sortOrder = -1;
+        return arr.sort(function(a, b) {
+            var x = parseInt(a.find(selector).html(),10); var y =  parseInt(b.find(selector).html(),10);
+            return sortOrder * ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        });
+    }
 
-     function convertTime(time){
+    function convertTime(time){
         if(!time)return '0';
 
         if (time < 60) {
@@ -1179,33 +1276,15 @@ console.log(r)
         }
     } 
 
-    function keysrtNum(arr, selector, reverse) {
-        var sortOrder = 1;
-        if(reverse)sortOrder = -1;
-        return arr.sort(function(a, b) {
-            var x = parseInt(a.find(selector).html(),10); var y =  parseInt(b.find(selector).html(),10);
-            return sortOrder * ((x < y) ? -1 : ((x > y) ? 1 : 0));
-        });
-    }
-
-
     function getUrlParameter(k) {
         var p={};
         window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi,function(s,k,v){p[k]=v})
         return k?p[k]:p;
     };
 
-
-  
-
-
     function isEmpty(str){
         return str.replace(/^\s+|\s+$/g, '').length == 0;
     }
-
-
-
-
 	
 
 });

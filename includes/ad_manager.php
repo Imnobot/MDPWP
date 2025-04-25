@@ -7,11 +7,6 @@ $ads = $wpdb->get_results("SELECT id, title FROM {$global_ad_table} ORDER BY tit
 
 <div class="wrap">
 
-	<?php include("playeri.php"); ?>
-
-	<div class="mvp-settings-wrap-panel aptenv-ready">
-	<div id="mvp-ad-manager-section">
-
 	<?php include("notice.php"); ?>
 
 	<h2><?php esc_html_e('Manage ads', MVP_TEXTDOMAIN); ?></h2>
@@ -80,8 +75,6 @@ $ads = $wpdb->get_results("SELECT id, title FROM {$global_ad_table} ORDER BY tit
 
     <div id="mvp-save-holder"></div>  
 	
-</div>
-</div>
 </div>
 
 <div id="mvp-add-ad-modal" class="mvp-modal">

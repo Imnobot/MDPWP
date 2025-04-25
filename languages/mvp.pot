@@ -1,0 +1,4284 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Package Name\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-09-20 22:32+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: includes/add_media.php:10
+msgid "Media"
+msgstr ""
+
+#: includes/add_media.php:11 includes/edit_ad.php:69 includes/general.php:23
+#: includes/translation.php:15 includes/translation.php:519
+msgid "Adverts"
+msgstr ""
+
+#: includes/add_media.php:12 includes/edit_ad.php:70
+msgid "Annotations"
+msgstr ""
+
+#: includes/add_media.php:32 includes/ad_manager.php:101
+#: includes/edit_playlist.php:269 includes/player_manager.php:131
+#: includes/playlist_manager.php:112 includes/statistics_display.php:388
+msgid "Cancel"
+msgstr ""
+
+#: includes/add_media.php:33
+msgid "Save changes"
+msgstr ""
+
+#: includes/add_media_fields.php:93 includes/ad_section.php:69
+msgid "Select media type"
+msgstr ""
+
+#: includes/add_media_fields.php:97 includes/ad_section.php:73
+msgid "video"
+msgstr ""
+
+#: includes/add_media_fields.php:98
+msgid "Folder with video files"
+msgstr ""
+
+#: includes/add_media_fields.php:101
+msgid "HLS Live Streaming"
+msgstr ""
+
+#: includes/add_media_fields.php:102
+msgid "MPEG DASH Live Streaming"
+msgstr ""
+
+#: includes/add_media_fields.php:105
+msgid "udio"
+msgstr ""
+
+#: includes/add_media_fields.php:106
+msgid "Folder with audio files"
+msgstr ""
+
+#: includes/add_media_fields.php:109 includes/ad_section.php:79
+#: includes/annotation_section.php:30
+msgid "image"
+msgstr ""
+
+#: includes/add_media_fields.php:110
+msgid "Folder with image files"
+msgstr ""
+
+#: includes/add_media_fields.php:113
+msgid "Read bucket of video files"
+msgstr ""
+
+#: includes/add_media_fields.php:114
+msgid "Add single video from the bucket"
+msgstr ""
+
+#: includes/add_media_fields.php:117
+msgid "Google Drive folder"
+msgstr ""
+
+#: includes/add_media_fields.php:120 includes/ad_section.php:82
+msgid "Youtube single video"
+msgstr ""
+
+#: includes/add_media_fields.php:121
+msgid "multiple Youtube single videos"
+msgstr ""
+
+#: includes/add_media_fields.php:122
+msgid "Youtube playlist"
+msgstr ""
+
+#: includes/add_media_fields.php:123
+msgid "Youtube playlist in backend"
+msgstr ""
+
+#: includes/add_media_fields.php:124
+msgid "Youtube channel"
+msgstr ""
+
+#: includes/add_media_fields.php:125
+msgid "Youtube channel in backend"
+msgstr ""
+
+#: includes/add_media_fields.php:128 includes/ad_section.php:85
+msgid "Vimeo single video"
+msgstr ""
+
+#: includes/add_media_fields.php:129
+msgid "Vimeo channel"
+msgstr ""
+
+#: includes/add_media_fields.php:130
+msgid "Vimeo album (showcase)"
+msgstr ""
+
+#: includes/add_media_fields.php:131
+msgid "Vimeo album (showcase) by username"
+msgstr ""
+
+#: includes/add_media_fields.php:132
+msgid "Vimeo group"
+msgstr ""
+
+#: includes/add_media_fields.php:133
+msgid "Vimeo user"
+msgstr ""
+
+#: includes/add_media_fields.php:134
+msgid "Vimeo collection"
+msgstr ""
+
+#: includes/add_media_fields.php:135
+msgid "Vimeo folder"
+msgstr ""
+
+#: includes/add_media_fields.php:138
+msgid "XML file"
+msgstr ""
+
+#: includes/add_media_fields.php:141
+msgid "JSON file"
+msgstr ""
+
+#: includes/add_media_fields.php:144
+msgid "custom HTML"
+msgstr ""
+
+#: includes/add_media_fields.php:145
+msgid "custom HTML from external file"
+msgstr ""
+
+#: includes/add_media_fields.php:151 includes/add_media_fields.php:263
+#: includes/edit_playlist.php:308
+msgid "Path"
+msgstr ""
+
+#: includes/add_media_fields.php:156 includes/add_media_fields.php:268
+#: includes/add_media_fields.php:422 includes/add_media_fields.php:442
+#: includes/add_media_fields.php:457 includes/add_media_fields.php:473
+#: includes/add_media_fields.php:493 includes/add_media_fields.php:519
+#: includes/add_media_fields.php:527 includes/add_media_fields.php:538
+#: includes/ad_section.php:130 includes/annotation_section.php:46
+#: includes/edit_playlist.php:77 includes/general.php:779
+#: includes/general.php:878 includes/general.php:935 includes/style.php:313
+msgid "Upload"
+msgstr ""
+
+#: includes/add_media_fields.php:157 includes/add_media_fields.php:423
+#: includes/add_media_fields.php:458 includes/ad_section.php:174
+#: includes/annotation_section.php:47 includes/annotation_section.php:197
+#: includes/edit_playlist.php:78 includes/general.php:373
+#: includes/general.php:434 includes/general.php:780 includes/general.php:879
+#: includes/general.php:936 includes/style.php:86 includes/style.php:314
+msgid "Remove"
+msgstr ""
+
+#: includes/add_media_fields.php:159
+msgid "Place your folder with files in wordpress uploads directory "
+msgstr ""
+
+#: includes/add_media_fields.php:161
+msgid "Enter folder ID which needs to be public, for example:"
+msgstr ""
+
+#: includes/add_media_fields.php:163
+msgid "Enter m3u8 url. Example:"
+msgstr ""
+
+#: includes/add_media_fields.php:165
+msgid ""
+"Enter manifest url. Example: <span class=\"info-highlight\">https://dash."
+"akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd</span></p>\n"
+"\n"
+"            <p id=\"yt_video_info\" class=\"info\">Enter video ID, only bold "
+"part, example:"
+msgstr ""
+
+#: includes/add_media_fields.php:169
+msgid "Enter one or more video IDs separated by comma. Example:"
+msgstr ""
+
+#: includes/add_media_fields.php:171
+msgid "Enter playlist ID, only bold part, example:"
+msgstr ""
+
+#: includes/add_media_fields.php:173
+msgid ""
+"Videos will be retrieved now, and all the videos you see here will be "
+"visible in the player on the front page. This means if you add new videos to "
+"your Youtube account later on, new videos will not be visible in the player "
+"unless you add the videos here again using the \"Update playlist\" button. "
+"Use this if you have a lot of traffic on your website and Youtube quota is "
+"not enough for you."
+msgstr ""
+
+#: includes/add_media_fields.php:175 includes/add_media_fields.php:181
+msgid "Enter channel ID, only bold part, example:"
+msgstr ""
+
+#: includes/add_media_fields.php:177
+msgid "Enter only bold part, example:"
+msgstr ""
+
+#: includes/add_media_fields.php:179
+msgid "Enter video ID, only bold part, example:"
+msgstr ""
+
+#: includes/add_media_fields.php:183
+msgid "Enter groud ID, only bold part, example:"
+msgstr ""
+
+#: includes/add_media_fields.php:185
+msgid "Enter album ID, only bold part, example:"
+msgstr ""
+
+#: includes/add_media_fields.php:187
+msgid "Enter on demand ID, only bold part, example:"
+msgstr ""
+
+#: includes/add_media_fields.php:189
+msgid "Enter folder ID"
+msgstr ""
+
+#: includes/add_media_fields.php:191
+msgid ""
+"Enter XML url. File needs to be located on the same domain. Example of xml "
+"file is located in plugin help package."
+msgstr ""
+
+#: includes/add_media_fields.php:193
+msgid ""
+"Enter json or txt url. File needs to be located on the same domain. Example "
+"of json file is located in plugin help package."
+msgstr ""
+
+#: includes/add_media_fields.php:195
+#, php-format
+msgid ""
+"Enter HTML here. <a href=\"%s\" target=\"_blank\">Validate your HTML</a> to "
+"make sure it doesnt break the player markup."
+msgstr ""
+
+#: includes/add_media_fields.php:195 includes/annotation_section.php:55
+msgid "Do not place javascript code here."
+msgstr ""
+
+#: includes/add_media_fields.php:197
+msgid ""
+"Load custom HTML in the player over external file. Use this to load any "
+"iframe into the player for example. Example of custom file is located in "
+"plugin help package."
+msgstr ""
+
+#: includes/add_media_fields.php:199
+msgid "Add bucket name"
+msgstr ""
+
+#: includes/add_media_fields.php:205
+msgid "Object key"
+msgstr ""
+
+#: includes/add_media_fields.php:208
+msgid ""
+"This is basically file name in bucket. When you right click on the file in "
+"bucket you will get its properties, one of them is key."
+msgstr ""
+
+#: includes/add_media_fields.php:213
+msgid "MP4 url"
+msgstr ""
+
+#: includes/add_media_fields.php:216
+msgid ""
+"Add url to mp4 video as a backup for browsers that do not support live "
+"streaming (IOS does not support HLS currently)"
+msgstr ""
+
+#: includes/add_media_fields.php:221
+msgid "Read ID3 tags"
+msgstr ""
+
+#: includes/add_media_fields.php:224 includes/add_media_fields.php:365
+#: includes/add_media_fields.php:374 includes/add_media_fields.php:394
+#: includes/add_media_fields.php:404 includes/ad_section.php:14
+#: includes/ad_section.php:43 includes/ad_section.php:109
+#: includes/annotation_section.php:162 includes/edit_playlist.php:94
+#: includes/edit_playlist.php:113 includes/edit_playlist.php:150
+#: includes/general.php:63 includes/general.php:74 includes/general.php:85
+#: includes/general.php:108 includes/general.php:119 includes/general.php:130
+#: includes/general.php:141 includes/general.php:172 includes/general.php:183
+#: includes/general.php:194 includes/general.php:213 includes/general.php:224
+#: includes/general.php:235 includes/general.php:255 includes/general.php:274
+#: includes/general.php:285 includes/general.php:296 includes/general.php:316
+#: includes/general.php:327 includes/general.php:385 includes/general.php:396
+#: includes/general.php:454 includes/general.php:521 includes/general.php:532
+#: includes/general.php:560 includes/general.php:614 includes/general.php:678
+#: includes/general.php:705 includes/general.php:716 includes/general.php:789
+#: includes/general.php:819 includes/general.php:830 includes/general.php:850
+#: includes/general.php:924 includes/general.php:1083
+#: includes/general.php:1094 includes/general.php:1105
+#: includes/general.php:1116 includes/general.php:1126
+#: includes/general.php:1149 includes/general.php:1159
+#: includes/general.php:1169 includes/general.php:1179
+#: includes/general.php:1189 includes/general.php:1199
+#: includes/general.php:1209 includes/general.php:1219
+#: includes/general.php:1229 includes/general.php:1249
+#: includes/general.php:1278 includes/general.php:1289
+#: includes/general.php:1308 includes/general.php:1319
+#: includes/general.php:1342 includes/general.php:1361
+#: includes/general.php:1398 includes/general.php:1419
+#: includes/general.php:1498 includes/general.php:1538
+#: includes/settings.php:162 includes/settings.php:173
+#: includes/settings.php:184 includes/settings.php:195
+#: includes/settings.php:206 includes/settings.php:217
+#: includes/settings.php:228 includes/settings.php:247
+#: includes/shortcode_manager.php:251 includes/shortcode_manager.php:270
+#: includes/shortcode_manager.php:281 includes/shortcode_manager.php:292
+#: includes/shortcode_manager.php:333 includes/shortcode_manager.php:343
+#: includes/shortcode_manager.php:354 includes/shortcode_manager.php:364
+#: includes/shortcode_manager.php:375 includes/shortcode_manager.php:385
+#: includes/shortcode_manager.php:395 includes/shortcode_manager.php:405
+#: includes/shortcode_manager.php:415 includes/shortcode_manager.php:425
+#: includes/shortcode_manager.php:435 includes/shortcode_manager.php:445
+#: includes/shortcode_manager.php:455 includes/shortcode_manager.php:466
+#: includes/shortcode_manager.php:476 includes/shortcode_manager.php:486
+#: includes/shortcode_manager.php:496 includes/shortcode_manager.php:506
+#: includes/shortcode_manager.php:516 includes/shortcode_manager.php:526
+#: includes/shortcode_manager.php:536 includes/shortcode_manager.php:546
+#: includes/shortcode_manager.php:557 includes/shortcode_manager.php:567
+#: includes/style.php:242 includes/style.php:301 includes/style.php:326
+#: includes/style.php:336 includes/style.php:347 includes/style.php:357
+#: includes/style.php:367 includes/style.php:377 includes/style.php:387
+#: includes/style.php:397 includes/style.php:407 includes/style.php:417
+#: includes/style.php:427 includes/style.php:438 includes/style.php:449
+#: includes/style.php:459 includes/style.php:469 includes/style.php:479
+#: includes/style.php:489 includes/style.php:499 includes/style.php:509
+#: includes/style.php:519 includes/style.php:530 includes/style.php:540
+#: includes/style.php:551 includes/style.php:561
+msgid "no"
+msgstr ""
+
+#: includes/add_media_fields.php:225 includes/add_media_fields.php:364
+#: includes/add_media_fields.php:375 includes/add_media_fields.php:395
+#: includes/add_media_fields.php:405 includes/ad_section.php:15
+#: includes/ad_section.php:44 includes/ad_section.php:110
+#: includes/annotation_section.php:163 includes/edit_playlist.php:95
+#: includes/edit_playlist.php:114 includes/edit_playlist.php:151
+#: includes/general.php:64 includes/general.php:75 includes/general.php:86
+#: includes/general.php:109 includes/general.php:120 includes/general.php:131
+#: includes/general.php:142 includes/general.php:173 includes/general.php:184
+#: includes/general.php:195 includes/general.php:214 includes/general.php:225
+#: includes/general.php:236 includes/general.php:256 includes/general.php:275
+#: includes/general.php:286 includes/general.php:297 includes/general.php:317
+#: includes/general.php:328 includes/general.php:386 includes/general.php:397
+#: includes/general.php:455 includes/general.php:522 includes/general.php:533
+#: includes/general.php:561 includes/general.php:615 includes/general.php:679
+#: includes/general.php:706 includes/general.php:717 includes/general.php:790
+#: includes/general.php:820 includes/general.php:831 includes/general.php:851
+#: includes/general.php:925 includes/general.php:1084
+#: includes/general.php:1095 includes/general.php:1106
+#: includes/general.php:1117 includes/general.php:1127
+#: includes/general.php:1150 includes/general.php:1160
+#: includes/general.php:1170 includes/general.php:1180
+#: includes/general.php:1190 includes/general.php:1200
+#: includes/general.php:1210 includes/general.php:1220
+#: includes/general.php:1230 includes/general.php:1250
+#: includes/general.php:1279 includes/general.php:1290
+#: includes/general.php:1309 includes/general.php:1320
+#: includes/general.php:1343 includes/general.php:1362
+#: includes/general.php:1399 includes/general.php:1420
+#: includes/general.php:1499 includes/general.php:1539
+#: includes/settings.php:163 includes/settings.php:174
+#: includes/settings.php:185 includes/settings.php:196
+#: includes/settings.php:207 includes/settings.php:218
+#: includes/settings.php:229 includes/settings.php:248
+#: includes/shortcode_manager.php:252 includes/shortcode_manager.php:271
+#: includes/shortcode_manager.php:282 includes/shortcode_manager.php:293
+#: includes/shortcode_manager.php:334 includes/shortcode_manager.php:344
+#: includes/shortcode_manager.php:355 includes/shortcode_manager.php:365
+#: includes/shortcode_manager.php:376 includes/shortcode_manager.php:386
+#: includes/shortcode_manager.php:396 includes/shortcode_manager.php:406
+#: includes/shortcode_manager.php:416 includes/shortcode_manager.php:426
+#: includes/shortcode_manager.php:436 includes/shortcode_manager.php:446
+#: includes/shortcode_manager.php:456 includes/shortcode_manager.php:467
+#: includes/shortcode_manager.php:477 includes/shortcode_manager.php:487
+#: includes/shortcode_manager.php:497 includes/shortcode_manager.php:507
+#: includes/shortcode_manager.php:517 includes/shortcode_manager.php:527
+#: includes/shortcode_manager.php:537 includes/shortcode_manager.php:547
+#: includes/shortcode_manager.php:558 includes/shortcode_manager.php:568
+#: includes/style.php:243 includes/style.php:302 includes/style.php:327
+#: includes/style.php:337 includes/style.php:348 includes/style.php:358
+#: includes/style.php:368 includes/style.php:378 includes/style.php:388
+#: includes/style.php:398 includes/style.php:408 includes/style.php:418
+#: includes/style.php:428 includes/style.php:439 includes/style.php:450
+#: includes/style.php:460 includes/style.php:470 includes/style.php:480
+#: includes/style.php:490 includes/style.php:500 includes/style.php:510
+#: includes/style.php:520 includes/style.php:531 includes/style.php:541
+#: includes/style.php:552 includes/style.php:562
+msgid "yes"
+msgstr ""
+
+#: includes/add_media_fields.php:231 includes/add_media_fields.php:243
+msgid "Sort method"
+msgstr ""
+
+#: includes/add_media_fields.php:238 includes/add_media_fields.php:250
+msgid "Sort method when reading files from directory."
+msgstr ""
+
+#: includes/add_media_fields.php:255
+msgid "Vimeo username"
+msgstr ""
+
+#: includes/add_media_fields.php:258
+msgid "Enter only bold part:"
+msgstr ""
+
+#: includes/add_media_fields.php:271
+msgid "Make this quality default on start"
+msgstr ""
+
+#: includes/add_media_fields.php:273
+msgid "Remove quality"
+msgstr ""
+
+#: includes/add_media_fields.php:276
+msgid "Add quality"
+msgstr ""
+
+#: includes/add_media_fields.php:282 includes/add_media_fields.php:292
+#: includes/add_media_fields.php:302 includes/add_media_fields.php:312
+#: includes/add_media_fields.php:322 includes/add_media_fields.php:332
+msgid "Video sort order"
+msgstr ""
+
+#: includes/add_media_fields.php:342
+msgid "Video sort order direction"
+msgstr ""
+
+#: includes/add_media_fields.php:353
+msgid "Results limit"
+msgstr ""
+
+#: includes/add_media_fields.php:356
+msgid "How many videos to show on start."
+msgstr ""
+
+#: includes/add_media_fields.php:361
+msgid "Enable Load more option"
+msgstr ""
+
+#: includes/add_media_fields.php:367
+msgid "Load more videos when user scrolls to the bottom."
+msgstr ""
+
+#: includes/add_media_fields.php:371 includes/ad_section.php:106
+msgid "Is 360"
+msgstr ""
+
+#: includes/add_media_fields.php:377 includes/ad_section.php:112
+msgid "Is 360 virtual reality video or image panorama."
+msgstr ""
+
+#: includes/add_media_fields.php:381 includes/ad_section.php:116
+msgid "Virtual reality mode"
+msgstr ""
+
+#: includes/add_media_fields.php:384 includes/ad_section.php:119
+msgid "monoscopic"
+msgstr ""
+
+#: includes/add_media_fields.php:385 includes/ad_section.php:120
+msgid "stereoscopic"
+msgstr ""
+
+#: includes/add_media_fields.php:387 includes/ad_section.php:122
+msgid "Select virtual reality video mode."
+msgstr ""
+
+#: includes/add_media_fields.php:391
+msgid "Use without api"
+msgstr ""
+
+#: includes/add_media_fields.php:397
+msgid ""
+"Select yes if you want to play Youtube or Vimeo single videos by providing "
+"video thumbnail, title and description yourself so it doesnt use quota to "
+"retrieve them."
+msgstr ""
+
+#: includes/add_media_fields.php:401
+msgid "Is live stream"
+msgstr ""
+
+#: includes/add_media_fields.php:407
+msgid ""
+"Select yes if video is a live stream. This will show \"LIVE\" indicator in "
+"controls. When LIVE is active, seekbar and video time are hidden."
+msgstr ""
+
+#: includes/add_media_fields.php:411 includes/edit_playlist.php:179
+msgid "Lock video time"
+msgstr ""
+
+#: includes/add_media_fields.php:414 includes/edit_playlist.php:182
+msgid ""
+"Lock video from users who are not logged in. Enter time in seconds (0 means "
+"video is locked from beginning). Users who are not logged in will be "
+"presented with a message to login or register."
+msgstr ""
+
+#: includes/add_media_fields.php:418 includes/ad_section.php:126
+msgid "Poster"
+msgstr ""
+
+#: includes/add_media_fields.php:424
+msgid ""
+"Note: if you have poster set on video, autoplay is off by default and poster "
+"is always shown before video starts. You can disable poster from showing on "
+"videos with \"Skip poster\" option in Edit player."
+msgstr ""
+
+#: includes/add_media_fields.php:425 includes/ad_section.php:131
+msgid "Poster is shown in video area while audio plays."
+msgstr ""
+
+#: includes/add_media_fields.php:429
+msgid "Video frame as poster"
+msgstr ""
+
+#: includes/add_media_fields.php:432
+msgid ""
+"Set any video frame time as poster. For example, set 2 to display frame at 2 "
+"seconds into the video as poster.<br>Requires video auto play false in "
+"Player settings. Do not set Poster and video start time if you want this "
+"feature."
+msgstr ""
+
+#: includes/add_media_fields.php:437
+msgid "Image slideshow"
+msgstr ""
+
+#: includes/add_media_fields.php:443
+msgid "Remove all"
+msgstr ""
+
+#: includes/add_media_fields.php:447
+msgid "Upload images that will play in slideshow while audio plays."
+msgstr ""
+
+#: includes/add_media_fields.php:453
+msgid "Thumbnail"
+msgstr ""
+
+#: includes/add_media_fields.php:459
+msgid "Thumbnail image for playlist."
+msgstr ""
+
+#: includes/add_media_fields.php:463
+msgid "Thumbnail alt text"
+msgstr ""
+
+#: includes/add_media_fields.php:466
+msgid "Set alt text. Default is video title."
+msgstr ""
+
+#: includes/add_media_fields.php:470
+msgid "Thumbnail hover preview"
+msgstr ""
+
+#: includes/add_media_fields.php:474
+msgid ""
+"Show animated preview when hovering over playlist item thumbnail. Upload gif "
+"or a small video."
+msgstr ""
+
+#: includes/add_media_fields.php:478 includes/ad_manager.php:28
+#: includes/edit_playlist.php:307 includes/player_manager.php:32
+#: includes/playlist_manager.php:29 includes/statistics_display.php:309
+msgid "Title"
+msgstr ""
+
+#: includes/add_media_fields.php:484
+msgid "Description"
+msgstr ""
+
+#: includes/add_media_fields.php:490
+msgid "Download path"
+msgstr ""
+
+#: includes/add_media_fields.php:497 includes/annotation_section.php:92
+#: includes/edit_playlist.php:158
+msgid "Start time"
+msgstr ""
+
+#: includes/add_media_fields.php:500
+msgid ""
+"You can use start and end time to loop video between 5 and 10 seconds for "
+"example."
+msgstr ""
+
+#: includes/add_media_fields.php:504 includes/annotation_section.php:99
+#: includes/edit_playlist.php:165
+msgid "End time"
+msgstr ""
+
+#: includes/add_media_fields.php:510 includes/edit_playlist.php:172
+#: includes/general.php:16
+msgid "Playback rate"
+msgstr ""
+
+#: includes/add_media_fields.php:516
+msgid "Seekbar preview thumbnail"
+msgstr ""
+
+#: includes/add_media_fields.php:520
+msgid ""
+"Enable thumbnail preview when seeking. Enter \"auto\" for automatic "
+"thumbnails (only for HTML5 video) or provide vtt file with time/image data "
+"(for all media types)."
+msgstr ""
+
+#: includes/add_media_fields.php:524 includes/general.php:28
+#: includes/translation.php:14
+msgid "Chapters"
+msgstr ""
+
+#: includes/add_media_fields.php:528
+msgid "Add video chapters. Requires vtt file with chapter data."
+msgstr ""
+
+#: includes/add_media_fields.php:533 includes/general.php:15
+msgid "Subtitles"
+msgstr ""
+
+#: includes/add_media_fields.php:541
+msgid "Make this subtitle default on start"
+msgstr ""
+
+#: includes/add_media_fields.php:543
+msgid "Remove subtitle"
+msgstr ""
+
+#: includes/add_media_fields.php:546
+msgid "Add subtitle"
+msgstr ""
+
+#: includes/add_media_fields.php:548
+msgid "Add subtitle in srt / vtt format."
+msgstr ""
+
+#: includes/add_media_fields.php:553
+msgid "Duration"
+msgstr ""
+
+#: includes/add_media_fields.php:556
+msgid "How long to show image, in seconds."
+msgstr ""
+
+#: includes/add_media_fields.php:557
+msgid ""
+"Media duration in seconds. Add duration manually for self hosted media if "
+"you want to show duration in video description."
+msgstr ""
+
+#: includes/add_media_fields.php:561 includes/ad_section.php:156
+#: includes/annotation_section.php:113
+msgid "Url link"
+msgstr ""
+
+#: includes/add_media_fields.php:564
+msgid ""
+"Url link to open when you click on video area (Not valid for 360 videos and "
+"images). Can be used for clicktag ads."
+msgstr ""
+
+#: includes/add_media_fields.php:568 includes/ad_section.php:163
+#: includes/annotation_section.php:120
+msgid "Url target"
+msgstr ""
+
+#: includes/add_media_fields.php:578
+msgid "End Url link"
+msgstr ""
+
+#: includes/add_media_fields.php:581
+msgid "Url link to open when media is finished."
+msgstr ""
+
+#: includes/add_media_fields.php:585
+msgid "End Url target"
+msgstr ""
+
+#: includes/add_media_fields.php:595 includes/edit_playlist.php:139
+msgid "Password protected content"
+msgstr ""
+
+#: includes/add_media_fields.php:598 includes/edit_playlist.php:142
+msgid "Enter password to view this media."
+msgstr ""
+
+#: includes/add_media_fields.php:603
+msgid "Add video to additional playlists"
+msgstr ""
+
+#: includes/add_media_fields.php:615
+msgid "Clear selected"
+msgstr ""
+
+#: includes/add_media_fields.php:619
+msgid ""
+"By default, media is added to current working playlist. You can select "
+"additional playlists to add this media to."
+msgstr ""
+
+#: includes/ad_manager.php:12
+msgid "Manage ads"
+msgstr ""
+
+#: includes/ad_manager.php:14
+msgid "From this section you can create and edit ads."
+msgstr ""
+
+#: includes/ad_manager.php:18 includes/edit_playlist.php:250
+#: includes/player_manager.php:22 includes/playlist_manager.php:18
+msgid "Delete selected"
+msgstr ""
+
+#: includes/ad_manager.php:19 includes/edit_playlist.php:255
+#: includes/player_manager.php:23 includes/playlist_manager.php:19
+msgid "Search by title.."
+msgstr ""
+
+#: includes/ad_manager.php:29 includes/edit_playlist.php:309
+#: includes/player_manager.php:34 includes/playlist_manager.php:30
+#: includes/statistics_display.php:315
+msgid "Actions"
+msgstr ""
+
+#: includes/ad_manager.php:43 includes/edit_playlist.php:347
+#: includes/edit_playlist.php:377 includes/player_manager.php:49
+#: includes/playlist_manager.php:48
+msgid "Edit"
+msgstr ""
+
+#: includes/ad_manager.php:47 includes/player_manager.php:51
+#: includes/playlist_manager.php:50
+msgid "Duplicate"
+msgstr ""
+
+#: includes/ad_manager.php:52 includes/player_manager.php:54
+#: includes/playlist_manager.php:53
+msgid "Export"
+msgstr ""
+
+#: includes/ad_manager.php:55 includes/edit_playlist.php:351
+#: includes/edit_playlist.php:381 includes/player_manager.php:57
+#: includes/playlist_manager.php:56
+msgid "Delete"
+msgstr ""
+
+#: includes/ad_manager.php:66
+msgid "Add New ad section"
+msgstr ""
+
+#: includes/ad_manager.php:70
+msgid "Upload ad previously exported zip file."
+msgstr ""
+
+#: includes/ad_manager.php:70
+msgid "Import Ad"
+msgstr ""
+
+#: includes/ad_manager.php:92
+msgid "Ad section title"
+msgstr ""
+
+#: includes/ad_manager.php:93
+msgid "Enter ad title"
+msgstr ""
+
+#: includes/ad_manager.php:102
+msgid "Add ad"
+msgstr ""
+
+#: includes/ad_section.php:1
+msgid ""
+"Adverts can be video, audio, image, Youtube single video or Vimeo single "
+"video with chromeless player. They can be added before main media starts, "
+"during main media play and after main media ends. Drag adverts up and down "
+"to change order."
+msgstr ""
+
+#: includes/ad_section.php:4
+msgid ""
+"Add preroll advert that will play before main media starts. If multiple are "
+"added, they will play in sequence and after they all finish, main video will "
+"start."
+msgstr ""
+
+#: includes/ad_section.php:6
+msgid "Add preroll"
+msgstr ""
+
+#: includes/ad_section.php:11
+msgid "Randomize prerolls"
+msgstr ""
+
+#: includes/ad_section.php:17
+msgid "If you have multiple prerolls, randomize their order."
+msgstr ""
+
+#: includes/ad_section.php:25
+msgid ""
+"Add midroll advert that will play during main media. Midrolls are always "
+"sorted by Start time."
+msgstr ""
+
+#: includes/ad_section.php:27
+msgid "Add midroll"
+msgstr ""
+
+#: includes/ad_section.php:33
+msgid ""
+"Add endroll advert that will play after main media ends. If multiple are "
+"added, they will play in sequence and after they all finish, next media will "
+"be called."
+msgstr ""
+
+#: includes/ad_section.php:35
+msgid "Add endroll"
+msgstr ""
+
+#: includes/ad_section.php:40
+msgid "Randomize endrolls"
+msgstr ""
+
+#: includes/ad_section.php:46
+msgid "If you have multiple endrolls, randomize their order."
+msgstr ""
+
+#: includes/ad_section.php:76
+msgid "audio"
+msgstr ""
+
+#: includes/ad_section.php:91
+msgid ""
+"Path *, MVP_TEXTDOMAIN); ?></th>\n"
+"\t\t\t\t<td>\n"
+"\t\t\t\t\t<img class=\"ad_path_preview mvp-img-preview\" src=\"data:image/"
+"gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D\" alt=\"\">\n"
+"\t\t            <input type=\"text\" class=\"ad_path ad_elem\" name=\"\" "
+"data-cname=\"path\" pattern=\".*\\S+.*\" value=\"\">\n"
+"\t\t            <button class=\"ad_path_upload\">Upload"
+msgstr ""
+
+#: includes/ad_section.php:97
+msgid "Enter video url"
+msgstr ""
+
+#: includes/ad_section.php:98
+msgid "Enter audio url"
+msgstr ""
+
+#: includes/ad_section.php:99 includes/annotation_section.php:49
+msgid "Enter image url"
+msgstr ""
+
+#: includes/ad_section.php:100
+msgid "Enter youtube video ID. For example, video ID is bold part:"
+msgstr ""
+
+#: includes/ad_section.php:101
+msgid "Note: Vimeo player needs to be chromeless for adverts to work!"
+msgstr ""
+
+#: includes/ad_section.php:101
+msgid "Enter vimeo video ID. For example, video ID is bold part:"
+msgstr ""
+
+#: includes/ad_section.php:129
+msgid "Enter poster path"
+msgstr ""
+
+#: includes/ad_section.php:135
+msgid "Duration *"
+msgstr ""
+
+#: includes/ad_section.php:137
+msgid "Enter duration\""
+msgstr ""
+
+#: includes/ad_section.php:138
+msgid "How long to show the image, in seconds. Rounded to full second."
+msgstr ""
+
+#: includes/ad_section.php:142
+msgid "Start time *"
+msgstr ""
+
+#: includes/ad_section.php:144 includes/annotation_section.php:94
+msgid "Enter start time"
+msgstr ""
+
+#: includes/ad_section.php:145
+msgid "When to start mid roll, in seconds. Rounded to full second."
+msgstr ""
+
+#: includes/ad_section.php:149
+msgid "Skip time"
+msgstr ""
+
+#: includes/ad_section.php:152
+msgid ""
+"When to show skip advert button, in seconds. Rounded to full second. Leave "
+"empty and no skip button will be shown. Zero means skip button is shown from "
+"the start."
+msgstr ""
+
+#: includes/ad_section.php:158 includes/annotation_section.php:115
+msgid "Enter url link"
+msgstr ""
+
+#: includes/ad_section.php:159
+msgid "Url link to open when ad is paused (user clicks on the ad)."
+msgstr ""
+
+#: includes/ad_section.php:166 includes/annotation_section.php:123
+msgid "blank"
+msgstr ""
+
+#: includes/ad_section.php:167 includes/annotation_section.php:124
+msgid "parent"
+msgstr ""
+
+#: includes/annotation_section.php:1
+msgid ""
+"Annotations can be image, iframe, AdSense or any HTML placed over video area "
+"during playback. Start and end time when annotations is displayed can be "
+"defined."
+msgstr ""
+
+#: includes/annotation_section.php:5
+msgid "Add annotation"
+msgstr ""
+
+#: includes/annotation_section.php:22
+msgid "* required fields"
+msgstr ""
+
+#: includes/annotation_section.php:27
+msgid "Annotation type"
+msgstr ""
+
+#: includes/annotation_section.php:31
+msgid "iframe"
+msgstr ""
+
+#: includes/annotation_section.php:32
+msgid "HTML"
+msgstr ""
+
+#: includes/annotation_section.php:33
+msgid "shortcode"
+msgstr ""
+
+#: includes/annotation_section.php:34
+msgid "AdSense details"
+msgstr ""
+
+#: includes/annotation_section.php:35
+msgid "AdSense full code"
+msgstr ""
+
+#: includes/annotation_section.php:37
+msgid "Enter AdSense details (client, slot, width and height)"
+msgstr ""
+
+#: includes/annotation_section.php:41
+msgid "Content *"
+msgstr ""
+
+#: includes/annotation_section.php:51
+msgid "Enter iframe src attribute ONLY!"
+msgstr ""
+
+#: includes/annotation_section.php:53
+#, php-format
+msgid ""
+"Enter HTML which will be placed inside annotation. <a href=\"%s\" target="
+"\"_blank\">Validate your HTML</a> to make sure it doesnt break the player "
+"markup."
+msgstr ""
+
+#: includes/annotation_section.php:57
+msgid ""
+"Add shortcode which will be executed in annotation. Nested shortcodes are "
+"not supported."
+msgstr ""
+
+#: includes/annotation_section.php:61
+msgid "AdSense full code *"
+msgstr ""
+
+#: includes/annotation_section.php:64
+msgid ""
+"Enter AdSense ins tag, do not enter script tag here. If you have AdSense "
+"CSS, enter it below in CSS styling field."
+msgstr ""
+
+#: includes/annotation_section.php:68
+msgid "AdSense client *"
+msgstr ""
+
+#: includes/annotation_section.php:70
+msgid "Enter AdSense client"
+msgstr ""
+
+#: includes/annotation_section.php:74
+msgid "AdSense slot *"
+msgstr ""
+
+#: includes/annotation_section.php:76
+msgid "Enter AdSense slot"
+msgstr ""
+
+#: includes/annotation_section.php:80
+msgid "AdSense width [px]"
+msgstr ""
+
+#: includes/annotation_section.php:82
+msgid "Enter AdSense width"
+msgstr ""
+
+#: includes/annotation_section.php:86
+msgid "AdSense height [px]"
+msgstr ""
+
+#: includes/annotation_section.php:88
+msgid "Enter AdSense height"
+msgstr ""
+
+#: includes/annotation_section.php:95
+msgid ""
+"When to show annotation, in seconds. If not defined, it will be shown from "
+"the start."
+msgstr ""
+
+#: includes/annotation_section.php:101
+msgid "Enter end time"
+msgstr ""
+
+#: includes/annotation_section.php:102
+msgid ""
+"When to hide annotation, in seconds. If not defined, it will be shown till "
+"the end."
+msgstr ""
+
+#: includes/annotation_section.php:106
+msgid "Annotation opacity"
+msgstr ""
+
+#: includes/annotation_section.php:108
+msgid "Enter opacity"
+msgstr ""
+
+#: includes/annotation_section.php:109
+msgid ""
+"Annotation default opacity when inactive (no mouse hover). You can set lower "
+"opacity to make annotation partialy transparent when inactive (for example "
+"0.7), then on hover, default opacity is set to 1."
+msgstr ""
+
+#: includes/annotation_section.php:116
+msgid ""
+"Url link to open when annotation is clicked. This will wrap whole annotation "
+"in hyperlink tag."
+msgstr ""
+
+#: includes/annotation_section.php:129
+msgid "Url rel attribute"
+msgstr ""
+
+#: includes/annotation_section.php:131
+msgid "Enter url rel"
+msgstr ""
+
+#: includes/annotation_section.php:135
+msgid "Annotation position"
+msgstr ""
+
+#: includes/annotation_section.php:138
+msgid "not defined"
+msgstr ""
+
+#: includes/annotation_section.php:139 includes/annotation_section.php:172
+msgid "top left"
+msgstr ""
+
+#: includes/annotation_section.php:140 includes/annotation_section.php:173
+msgid "top right"
+msgstr ""
+
+#: includes/annotation_section.php:141 includes/annotation_section.php:174
+msgid "bottom left"
+msgstr ""
+
+#: includes/annotation_section.php:142 includes/annotation_section.php:175
+msgid "bottom right"
+msgstr ""
+
+#: includes/annotation_section.php:143
+msgid "center"
+msgstr ""
+
+#: includes/annotation_section.php:145
+msgid ""
+"Choose annotation position in the player or leave as not defined.<br>Other "
+"way to set annotation position is to attach a CSS class to annotation and "
+"use custom CSS for positioning."
+msgstr ""
+
+#: includes/annotation_section.php:149
+msgid "Annotation margins"
+msgstr ""
+
+#: includes/annotation_section.php:151
+msgid "top margin"
+msgstr ""
+
+#: includes/annotation_section.php:152
+msgid "right margin"
+msgstr ""
+
+#: includes/annotation_section.php:153
+msgid "bottom margin"
+msgstr ""
+
+#: includes/annotation_section.php:154
+msgid "left margin"
+msgstr ""
+
+#: includes/annotation_section.php:155
+msgid ""
+"Choose margins around annotation (top, right, bottom, left).<br>Works only "
+"if Annotation position is defined."
+msgstr ""
+
+#: includes/annotation_section.php:159
+msgid "Use close button"
+msgstr ""
+
+#: includes/annotation_section.php:165
+msgid ""
+"Use annotation close button. Without close button annotation cannot be "
+"closed."
+msgstr ""
+
+#: includes/annotation_section.php:169
+msgid "Close button position"
+msgstr ""
+
+#: includes/annotation_section.php:177
+msgid "Choose annotation close button position."
+msgstr ""
+
+#: includes/annotation_section.php:181
+msgid "Annotation classes"
+msgstr ""
+
+#: includes/annotation_section.php:184
+msgid ""
+"Enter additional classes which will be attached to annotation (separated by "
+"space)."
+msgstr ""
+
+#: includes/annotation_section.php:188
+msgid "CSS styling"
+msgstr ""
+
+#: includes/annotation_section.php:191
+msgid "Add custom CSS for annotation."
+msgstr ""
+
+#: includes/demo.php:23
+msgid "Quick Import examples"
+msgstr ""
+
+#: includes/demo.php:25
+#, php-format
+msgid ""
+"Here are some demo examples on different player styles. For more details on "
+"shortcodes, check <a href=\"%s\" target=\"_blank\">Shortcode</a> section and "
+"plugin documentation."
+msgstr ""
+
+#: includes/demo.php:27
+msgid ""
+"Note: if you are using Youtube or Vimeo videos set API keys in Credentails!"
+msgstr ""
+
+#: includes/demo.php:37
+msgid "Shortcode:"
+msgstr ""
+
+#: includes/edit_ad.php:53
+msgid "Edit ad"
+msgstr ""
+
+#: includes/edit_ad.php:62
+msgid "Ad section"
+msgstr ""
+
+#: includes/edit_ad.php:94 includes/edit_player.php:246
+#: includes/settings.php:276
+msgid "Save Changes"
+msgstr ""
+
+#: includes/edit_ad.php:96
+msgid "Back to Ad manager"
+msgstr ""
+
+#: includes/edit_player.php:144
+msgid "Style"
+msgstr ""
+
+#: includes/edit_player.php:159
+msgid "General settings"
+msgstr ""
+
+#: includes/edit_player.php:174
+msgid "Translation"
+msgstr ""
+
+#: includes/edit_player.php:189
+msgid "Colors"
+msgstr ""
+
+#: includes/edit_player.php:207
+msgid "Custom CSS"
+msgstr ""
+
+#: includes/edit_player.php:215
+msgid "Add custom CSS for the player."
+msgstr ""
+
+#: includes/edit_player.php:225
+msgid "Custom Javascript"
+msgstr ""
+
+#: includes/edit_player.php:233
+msgid "Add custom javascript for the player."
+msgstr ""
+
+#: includes/edit_player.php:248
+msgid "Back to Player manager"
+msgstr ""
+
+#: includes/edit_playlist.php:38 includes/playlist_manager.php:48
+msgid "Edit playlist"
+msgstr ""
+
+#: includes/edit_playlist.php:47
+msgid "Playlist options"
+msgstr ""
+
+#: includes/edit_playlist.php:59 includes/general.php:11
+#: includes/translation.php:4 includes/preset_config/colors.php:4
+msgid "General"
+msgstr ""
+
+#: includes/edit_playlist.php:60
+msgid "Global options"
+msgstr ""
+
+#: includes/edit_playlist.php:61
+msgid "Maintenance"
+msgstr ""
+
+#: includes/edit_playlist.php:73
+msgid "Playlist thumbnail"
+msgstr ""
+
+#: includes/edit_playlist.php:79
+msgid "Set playlist thumbnail which describes this playlist."
+msgstr ""
+
+#: includes/edit_playlist.php:84
+msgid "Playlist description"
+msgstr ""
+
+#: includes/edit_playlist.php:91
+msgid "Retrieve more on total scroll"
+msgstr ""
+
+#: includes/edit_playlist.php:97
+msgid ""
+"Limit number of videos shown in the playlist on start using this option. "
+"Works in conjuntion with Retrieve more limit (for example, set Retrieve more "
+"limit 10 which will show 10 videos in playlist on start, then when user "
+"scrolls to the bottom, it will load another 10, and so on.. Useful if you "
+"have a lot of videos in playlist and you want to deliver them in segments."
+msgstr ""
+
+#: includes/edit_playlist.php:102
+msgid "Retrieve more limit"
+msgstr ""
+
+#: includes/edit_playlist.php:105
+msgid "Number of results to retrieve on total scroll"
+msgstr ""
+
+#: includes/edit_playlist.php:110
+msgid "Use pagination"
+msgstr ""
+
+#: includes/edit_playlist.php:116
+msgid ""
+"Use pagination with Grid layout and create pagination buttons. Pagination "
+"can only work with self hosted videos in this playlist! Youtube and Vimeo "
+"use load more feature instead of pagination."
+msgstr ""
+
+#: includes/edit_playlist.php:121
+msgid "Pagination items per page"
+msgstr ""
+
+#: includes/edit_playlist.php:124
+msgid "How many items to display per page."
+msgstr ""
+
+#: includes/edit_playlist.php:134
+msgid "Global playlist options will be applied to every media in playlist."
+msgstr ""
+
+#: includes/edit_playlist.php:147
+msgid "Encrypt media paths"
+msgstr ""
+
+#: includes/edit_playlist.php:153
+msgid "Hide video and subtitle urls from page source with encryption."
+msgstr ""
+
+#: includes/edit_playlist.php:161
+msgid "Enter media start time in seconds."
+msgstr ""
+
+#: includes/edit_playlist.php:168
+msgid "Enter media end time in seconds."
+msgstr ""
+
+#: includes/edit_playlist.php:187
+msgid "Select user role which is able to access video"
+msgstr ""
+
+#: includes/edit_playlist.php:200
+msgid ""
+"Only selected user roles can view video without restriction. If no user "
+"roles selected everybody can access video. Valid only if Lock video time is "
+"set."
+msgstr ""
+
+#: includes/edit_playlist.php:215 includes/settings.php:132
+msgid "Clear watched percentage"
+msgstr ""
+
+#: includes/edit_playlist.php:218
+msgid ""
+"Player can display watched video percentage in playlist thumbnails (red line "
+"representing maximum reached time). Use this to clear watched percentage for "
+"all videos in this playlist."
+msgstr ""
+
+#: includes/edit_playlist.php:229
+msgid "Save Playlist options"
+msgstr ""
+
+#: includes/edit_playlist.php:240
+msgid ""
+"From this section you can create and edit playlist tracks. Drag the tracks "
+"by ID column to change sort order in which they appear in the player. You "
+"can also sort by ID (created date), title field."
+msgstr ""
+
+#: includes/edit_playlist.php:251
+msgid "Copy selected"
+msgstr ""
+
+#: includes/edit_playlist.php:253
+msgid "Move selected"
+msgstr ""
+
+#: includes/edit_playlist.php:260
+msgid "Select destination playlist:"
+msgstr ""
+
+#: includes/edit_playlist.php:268
+msgid "Ok"
+msgstr ""
+
+#: includes/edit_playlist.php:277
+msgid "Videos per page"
+msgstr ""
+
+#: includes/edit_playlist.php:279
+msgid "Set"
+msgstr ""
+
+#: includes/edit_playlist.php:291
+msgid "Playlist media"
+msgstr ""
+
+#: includes/edit_playlist.php:305
+msgid "Type"
+msgstr ""
+
+#: includes/edit_playlist.php:306 includes/playlist_manager.php:28
+msgid "Thumb"
+msgstr ""
+
+#: includes/edit_playlist.php:347 includes/edit_playlist.php:377
+msgid "Edit media"
+msgstr ""
+
+#: includes/edit_playlist.php:351 includes/edit_playlist.php:381
+msgid "Delete media"
+msgstr ""
+
+#: includes/edit_playlist.php:363
+msgid "Sort"
+msgstr ""
+
+#: includes/edit_playlist.php:397
+msgid "Update playlist"
+msgstr ""
+
+#: includes/edit_playlist.php:399
+msgid "Add media"
+msgstr ""
+
+#: includes/edit_playlist.php:401
+msgid "Back to Playlist list"
+msgstr ""
+
+#: includes/general.php:10
+msgid "Playback"
+msgstr ""
+
+#: includes/general.php:12
+msgid "Keyboard"
+msgstr ""
+
+#: includes/general.php:13 includes/preset_config/colors.php:13
+msgid "Playlist"
+msgstr ""
+
+#: includes/general.php:14 includes/translation.php:9
+#: includes/preset_config/colors.php:12
+msgid "Lightbox"
+msgstr ""
+
+#: includes/general.php:17
+msgid "Youtube Player"
+msgstr ""
+
+#: includes/general.php:18
+msgid "Vimeo Player"
+msgstr ""
+
+#: includes/general.php:19
+msgid "Audio"
+msgstr ""
+
+#: includes/general.php:20
+msgid "Amazon S3"
+msgstr ""
+
+#: includes/general.php:21
+msgid "Virtual reality"
+msgstr ""
+
+#: includes/general.php:22
+msgid "Live streaming"
+msgstr ""
+
+#: includes/general.php:24
+msgid "Logo"
+msgstr ""
+
+#: includes/general.php:25
+msgid "Preloader"
+msgstr ""
+
+#: includes/general.php:26
+msgid "Context menu"
+msgstr ""
+
+#: includes/general.php:27 includes/translation.php:13
+msgid "Casting"
+msgstr ""
+
+#: includes/general.php:29 includes/translation.php:6
+msgid "Social sharing"
+msgstr ""
+
+#: includes/general.php:30
+msgid "Google Analytics"
+msgstr ""
+
+#: includes/general.php:31
+msgid "Statistics"
+msgstr ""
+
+#: includes/general.php:32
+msgid "Folder playlist"
+msgstr ""
+
+#: includes/general.php:33
+msgid "Minimize on scroll"
+msgstr ""
+
+#: includes/general.php:34
+msgid "Theater mode"
+msgstr ""
+
+#: includes/general.php:35
+msgid "Restrict content"
+msgstr ""
+
+#: includes/general.php:36
+msgid "Restrict ads"
+msgstr ""
+
+#: includes/general.php:44
+msgid "Active media on player start"
+msgstr ""
+
+#: includes/general.php:47
+msgid ""
+"Enter number, counting starts from zero (-1 = no media loaded, 0 = first "
+"media, 1 = second media etc..). If you are using a Wall layout with "
+"lightbox, its advisable to set this to -1, so no video is loaded on start, "
+"only when user clicks on thumbnail, video will open in lightbox."
+msgstr ""
+
+#: includes/general.php:52
+msgid "Default volume"
+msgstr ""
+
+#: includes/general.php:55
+msgid "Enter number between 0 and 1."
+msgstr ""
+
+#: includes/general.php:60 includes/shortcode_manager.php:267
+msgid "Auto play"
+msgstr ""
+
+#: includes/general.php:66 includes/shortcode_manager.php:273
+msgid "Auto play media. This will mute video which is required for autoplay."
+msgstr ""
+
+#: includes/general.php:71
+msgid "Auto play after first"
+msgstr ""
+
+#: includes/general.php:77
+msgid ""
+"Auto play media after first media has been manually started (user needs to "
+"click to start first video, other videos will play automatically)."
+msgstr ""
+
+#: includes/general.php:82 includes/shortcode_manager.php:278
+msgid "Auto play in viewport"
+msgstr ""
+
+#: includes/general.php:88 includes/shortcode_manager.php:284
+msgid ""
+"Start playing media when player is visible on the page when user scrolls "
+"down the page."
+msgstr ""
+
+#: includes/general.php:93
+msgid "Preload media attribute"
+msgstr ""
+
+#: includes/general.php:100
+msgid "Valid for HTML5 video."
+msgstr ""
+
+#: includes/general.php:105 includes/shortcode_manager.php:289
+msgid "Random play"
+msgstr ""
+
+#: includes/general.php:111 includes/shortcode_manager.php:295
+msgid "Randomize playback of videos in playlist."
+msgstr ""
+
+#: includes/general.php:116
+msgid "Loop playlist on playlist end"
+msgstr ""
+
+#: includes/general.php:122
+msgid "Go to first video when last video in playlist finishes playing."
+msgstr ""
+
+#: includes/general.php:127
+msgid "Display poster on mobile"
+msgstr ""
+
+#: includes/general.php:133
+msgid ""
+"Display poster on mobile instead of playing video to preserve bandwidth. "
+"Note: each video in playlist needs to have poster defined for this to work."
+msgstr ""
+
+#: includes/general.php:138
+msgid "Show poster on video pause"
+msgstr ""
+
+#: includes/general.php:144
+msgid ""
+"Show poster everytime video is paused. Video needs to have poster set for "
+"this to work."
+msgstr ""
+
+#: includes/general.php:149
+msgid "Media end action"
+msgstr ""
+
+#: includes/general.php:156
+msgid "Action to apply when each media finishes playing."
+msgstr ""
+
+#: includes/general.php:161
+msgid "Coming next video screen"
+msgstr ""
+
+#: includes/general.php:164
+msgid ""
+"How long is Coming next video screen shown before next video starts (in "
+"seconds)."
+msgstr ""
+
+#: includes/general.php:169
+msgid "Disable skiping video"
+msgstr ""
+
+#: includes/general.php:175
+msgid ""
+"Disable user to skip video in any way (disable seekbar, previous, next "
+"buttons, click playlist item)."
+msgstr ""
+
+#: includes/general.php:180
+msgid "Disable seeking through video"
+msgstr ""
+
+#: includes/general.php:186
+msgid "Disable user to seek through video."
+msgstr ""
+
+#: includes/general.php:191
+msgid "Disable seeking past watched time"
+msgstr ""
+
+#: includes/general.php:197
+msgid ""
+"This will prevent user from seeking into not yet watched part of the video."
+msgstr ""
+
+#: includes/general.php:202
+msgid "Default skip time"
+msgstr ""
+
+#: includes/general.php:205
+msgid ""
+"Default skip time value for skip backward / skip forward commands (seconds)."
+msgstr ""
+
+#: includes/general.php:210
+msgid "Create advert markers in seekbar"
+msgstr ""
+
+#: includes/general.php:216
+msgid "Create markers for the mid-roll adverts in seekbar."
+msgstr ""
+
+#: includes/general.php:221
+msgid "Play adverts only once per media"
+msgstr ""
+
+#: includes/general.php:227
+msgid ""
+"If user seeks back in time, adverts that were already shown will not be "
+"shown again."
+msgstr ""
+
+#: includes/general.php:232
+msgid "Show annotations only once per media"
+msgstr ""
+
+#: includes/general.php:238
+msgid ""
+"If user seeks back in time, annotations that were closed will not be shown "
+"again."
+msgstr ""
+
+#: includes/general.php:243
+msgid "Up Next screen"
+msgstr ""
+
+#: includes/general.php:245
+msgid "Enter seconds"
+msgstr ""
+
+#: includes/general.php:247
+msgid ""
+"Time before \"Up Next\" thumbnail is shown for next playing media. For "
+"example, setting it to 20 will make it appear 20 seconds before current "
+"media ends. Leave empty to disable this feature."
+msgstr ""
+
+#: includes/general.php:252
+msgid "Remember playback position"
+msgstr ""
+
+#: includes/general.php:258
+msgid ""
+"Remember playback position and ask user to continue watching where left off "
+"or start from the beginning."
+msgstr ""
+
+#: includes/general.php:271
+msgid "Use swipe navigation"
+msgstr ""
+
+#: includes/general.php:277
+msgid ""
+"Use swipe navigation on touch sensitive devices to move to next or previous "
+"media when swiping on player. Note: Works with self hosted audio, video and "
+"images, Youtube or Vimeo chromeless players. It does not work with 360 "
+"videos or images which require gesture control to move!"
+msgstr ""
+
+#: includes/general.php:282
+msgid "Use IOS native player"
+msgstr ""
+
+#: includes/general.php:288
+msgid ""
+"Use native player on IOS. If this is true, you will loose ability to have "
+"video subtitles, annotations and some other options displayed above the "
+"video area on IOS."
+msgstr ""
+
+#: includes/general.php:293
+msgid "Show next and previous video thumbnail"
+msgstr ""
+
+#: includes/general.php:299
+msgid ""
+"Show next and previous video thumbnail when hovering next and previous "
+"buttons."
+msgstr ""
+
+#: includes/general.php:313
+msgid "Use lightbox next and previous buttons"
+msgstr ""
+
+#: includes/general.php:319
+msgid ""
+"Next and previous buttons in lightbox allow to advance video. If you have "
+"single video in player you can remove them."
+msgstr ""
+
+#: includes/general.php:324
+msgid "Click on background closes lightbox"
+msgstr ""
+
+#: includes/general.php:330
+msgid ""
+"When player is opened in lightbox, click on background around the player "
+"closes ligthbox."
+msgstr ""
+
+#: includes/general.php:335
+msgid "Lightbox border size [px]"
+msgstr ""
+
+#: includes/general.php:339
+msgid "Border around the lightbox."
+msgstr ""
+
+#: includes/general.php:351
+msgid "Captions font size breakpoints"
+msgstr ""
+
+#: includes/general.php:358 includes/style.php:69 includes/style.php:677
+msgid "Add breakpoint"
+msgstr ""
+
+#: includes/general.php:363 includes/style.php:74
+msgid "Player width"
+msgstr ""
+
+#: includes/general.php:364
+msgid "Font size"
+msgstr ""
+
+#: includes/general.php:382
+msgid "Keep caption font size after manual resize"
+msgstr ""
+
+#: includes/general.php:388
+msgid "Keep caption font size after manual resize using keyboard controls"
+msgstr ""
+
+#: includes/general.php:393
+msgid "Remember last used subtitle"
+msgstr ""
+
+#: includes/general.php:399
+msgid ""
+"For example, if your last used subtitle was English, everytime the player "
+"runs in page and goes to a different video English subtitle would be used."
+msgstr ""
+
+#: includes/general.php:412
+msgid "Playback rate menu values"
+msgstr ""
+
+#: includes/general.php:419
+msgid "Add playback rate"
+msgstr ""
+
+#: includes/general.php:424
+msgid "Value"
+msgstr ""
+
+#: includes/general.php:425
+msgid "Menu title"
+msgstr ""
+
+#: includes/general.php:451
+msgid "Use keyboard navigation for playback"
+msgstr ""
+
+#: includes/general.php:457
+msgid "Use keyboard buttons to toggle player actions."
+msgstr ""
+
+#: includes/general.php:462
+msgid "Keyboard controls"
+msgstr ""
+
+#: includes/general.php:468
+msgid "Enter key here"
+msgstr ""
+
+#: includes/general.php:469
+msgid "Key"
+msgstr ""
+
+#: includes/general.php:470
+msgid "Action"
+msgstr ""
+
+#: includes/general.php:480
+msgid "Disable"
+msgstr ""
+
+#: includes/general.php:493
+msgid "Modifier key"
+msgstr ""
+
+#: includes/general.php:496
+msgid ""
+"Add modifier key (Shift, Alt, or Control) to be used as double keys so you "
+"can control with double press."
+msgstr ""
+
+#: includes/general.php:498
+msgid "None"
+msgstr ""
+
+#: includes/general.php:518 includes/shortcode_manager.php:248
+msgid "Playlist opened on start"
+msgstr ""
+
+#: includes/general.php:524 includes/shortcode_manager.php:254
+msgid "Choose whether the playlist is visible on player start."
+msgstr ""
+
+#: includes/general.php:529
+msgid "Hide playlist on fullscreen enter"
+msgstr ""
+
+#: includes/general.php:535
+msgid "Hide playlist (if opened) when player enters fullscreen."
+msgstr ""
+
+#: includes/general.php:540
+msgid "Limit description text"
+msgstr ""
+
+#: includes/general.php:543
+msgid ""
+"Choose number of lines to show in playlist description. If there is more "
+"text to show, description will be stripped down to chosen number of lines. "
+"Set zero (0) for no limit."
+msgstr ""
+
+#: includes/general.php:549
+msgid "Custom Search field"
+msgstr ""
+
+#: includes/general.php:552
+msgid ""
+"Use your own input search field for the playlist items and specify dom "
+"selector (ID/Classname) for this element."
+msgstr ""
+
+#: includes/general.php:557
+msgid "Display watched percentage in thumbnails"
+msgstr ""
+
+#: includes/general.php:563
+msgid ""
+"Display video percentage played in thumbnails. Creates a red line in "
+"thumbnail representing how much of the video has been watched so far."
+msgstr ""
+
+#: includes/general.php:576 includes/shortcode_manager.php:300
+msgid "Youtube player type"
+msgstr ""
+
+#: includes/general.php:583 includes/shortcode_manager.php:307
+msgid "Youtube player type. Chromeless has custom controls."
+msgstr ""
+
+#: includes/general.php:588
+msgid "Youtube player color"
+msgstr ""
+
+#: includes/general.php:595
+msgid "This parameter specifies the color that will be used in the player"
+msgstr ""
+
+#: includes/general.php:611
+msgid "Block Youtube right click"
+msgstr ""
+
+#: includes/general.php:617
+msgid ""
+"Place transparent div over youtube iframe to disable right click over the "
+"player (only for Youtube chromeless player)."
+msgstr ""
+
+#: includes/general.php:631 includes/shortcode_manager.php:312
+msgid "Vimeo player type"
+msgstr ""
+
+#: includes/general.php:638 includes/shortcode_manager.php:319
+msgid ""
+"Vimeo player type. Chromeless is only available for videos hosted by a Plus "
+"account or higher!"
+msgstr ""
+
+#: includes/general.php:643
+msgid "Vimeo player color"
+msgstr ""
+
+#: includes/general.php:646
+msgid "Specify the color of the video controls."
+msgstr ""
+
+#: includes/general.php:651
+msgid "Vimeo preffered thumbnail size in playlist"
+msgstr ""
+
+#: includes/general.php:658
+msgid ""
+"Note that Vimeo does not always respect those heights but widths are "
+"accurate."
+msgstr ""
+
+#: includes/general.php:668
+msgid ""
+"While audio plays there are several options to show in the player area. You "
+"can show single poster image, image slideshow or audio visualizer."
+msgstr ""
+
+#: includes/general.php:670
+msgid "Audio visualizer settings:"
+msgstr ""
+
+#: includes/general.php:675
+msgid "Use audio visualizer"
+msgstr ""
+
+#: includes/general.php:681
+msgid ""
+"Audio visualizer as alternative to poster showing while audio plays. On IOS "
+"audio visualizer is not available."
+msgstr ""
+
+#: includes/general.php:689
+msgid "Image slideshow settings:"
+msgstr ""
+
+#: includes/general.php:694
+msgid "Slideshow duration (seconds)"
+msgstr ""
+
+#: includes/general.php:697
+msgid "How long to show each image in slideshow."
+msgstr ""
+
+#: includes/general.php:702
+msgid "Randomize slideshow images"
+msgstr ""
+
+#: includes/general.php:708
+msgid "Shuffle slideshow images"
+msgstr ""
+
+#: includes/general.php:713
+msgid "Pause slideshow with audio"
+msgstr ""
+
+#: includes/general.php:719
+msgid "Wheater to pause slideshow while audio is paused"
+msgstr ""
+
+#: includes/general.php:729
+msgid "Settings when reading video files from Amazon S3:"
+msgstr ""
+
+#: includes/general.php:734
+msgid "S3 URL expire time"
+msgstr ""
+
+#: includes/general.php:737
+msgid ""
+"The time at which the URL should expire. This can be a Unix timestamp, a PHP "
+"DateTime object, or a string that can be evaluated by strtotime(). Valid for "
+"both video and thumbnails!"
+msgstr ""
+
+#: includes/general.php:742
+msgid "AWS region"
+msgstr ""
+
+#: includes/general.php:745
+msgid "Add region that bucket was created with."
+msgstr ""
+
+#: includes/general.php:750
+msgid "Read image thumbnails from bucket"
+msgstr ""
+
+#: includes/general.php:752
+msgid ""
+"Use this to automatically fetch image thumbnails from a bucket. Requires "
+"CORS set on bucket. Your thumbnails in the bucket need to have the same name "
+"as video files!"
+msgstr ""
+
+#: includes/general.php:757
+msgid "Thumb extension"
+msgstr ""
+
+#: includes/general.php:760
+msgid ""
+"Specify extension that thumbnails in the bucket will have (all thumbnails "
+"are expected to have the same extension)."
+msgstr ""
+
+#: includes/general.php:770
+msgid "Here are settings for 360 virtual reality video and image panorama."
+msgstr ""
+
+#: includes/general.php:775
+msgid "360 image/video indicator"
+msgstr ""
+
+#: includes/general.php:781
+msgid ""
+"Image which is shown over the player when 360 virtual reality video or image "
+"panorama starts to remind user this is 360 media and can be dragged around. "
+"Valid for self hosted media."
+msgstr ""
+
+#: includes/general.php:786
+msgid "Auto rotate panorama images"
+msgstr ""
+
+#: includes/general.php:792
+msgid "Auto rotate panorama images (like rotating camera)."
+msgstr ""
+
+#: includes/general.php:798
+msgid "Auto rotate panorama speed"
+msgstr ""
+
+#: includes/general.php:801
+msgid ""
+"Speed of auto rotation. Positive number rotates in the left direction. If "
+"you want to rotate in the right direction enter negative number (-0.5)"
+msgstr ""
+
+#: includes/general.php:811
+msgid "Here are settings for live streaming in the player (hls, dash)"
+msgstr ""
+
+#: includes/general.php:816
+msgid "Show video quality menu"
+msgstr ""
+
+#: includes/general.php:822
+msgid "Show video bitrate menu for live streaming."
+msgstr ""
+
+#: includes/general.php:827
+msgid "Show audio quality menu"
+msgstr ""
+
+#: includes/general.php:833
+msgid "Show audio bitrate menu for live streaming."
+msgstr ""
+
+#: includes/general.php:846
+msgid "Show Ad upcoming message for midroll adverts"
+msgstr ""
+
+#: includes/general.php:853
+msgid "Show \"Ad will start in... seconds\" message while main video plays."
+msgstr ""
+
+#: includes/general.php:858
+msgid "Ad upcoming message show time"
+msgstr ""
+
+#: includes/general.php:861
+msgid "Time before midroll advert starts to show message (seconds)"
+msgstr ""
+
+#: includes/general.php:874
+msgid "Player logo image url"
+msgstr ""
+
+#: includes/general.php:880
+msgid "Show your logo above the video."
+msgstr ""
+
+#: includes/general.php:885
+msgid "Logo url"
+msgstr ""
+
+#: includes/general.php:888
+msgid "Make logo clickable by providing url link."
+msgstr ""
+
+#: includes/general.php:893
+msgid "Logo url target"
+msgstr ""
+
+#: includes/general.php:904
+msgid "Logo rel attribute"
+msgstr ""
+
+#: includes/general.php:916
+msgid ""
+"Preloader shown over the player while video is loading. By default css "
+"spinner is shown, but you can upload your own image instead."
+msgstr ""
+
+#: includes/general.php:921
+msgid "Use preloader above the player"
+msgstr ""
+
+#: includes/general.php:931
+msgid "Preloader image url"
+msgstr ""
+
+#: includes/general.php:952
+msgid "Right click context menu"
+msgstr ""
+
+#: includes/general.php:959
+msgid "Use browser default context menu, custom or disable right click."
+msgstr ""
+
+#: includes/general.php:965
+msgid "Custom context menu Url link"
+msgstr ""
+
+#: includes/general.php:968
+msgid "Set url link which will appear in context menu."
+msgstr ""
+
+#: includes/general.php:973
+msgid "Custom context menu Url link target"
+msgstr ""
+
+#: includes/general.php:980
+msgid "Set url link target."
+msgstr ""
+
+#: includes/general.php:985
+msgid "Custom context menu Url title"
+msgstr ""
+
+#: includes/general.php:988
+msgid "Set url link title."
+msgstr ""
+
+#: includes/general.php:998
+msgid "Casting with Chromecast subtitle settings"
+msgstr ""
+
+#: includes/general.php:1003
+msgid "Font sizing"
+msgstr ""
+
+#: includes/general.php:1010
+msgid "Subtitle foreground color"
+msgstr ""
+
+#: includes/general.php:1017
+msgid "Subtitle background color"
+msgstr ""
+
+#: includes/general.php:1024
+msgid "Subtitle edge color"
+msgstr ""
+
+#: includes/general.php:1031
+msgid "Subtitle edge type"
+msgstr ""
+
+#: includes/general.php:1042
+msgid "Subtitle font style"
+msgstr ""
+
+#: includes/general.php:1053
+msgid "Font family"
+msgstr ""
+
+#: includes/general.php:1056
+msgid ""
+"If Font family is not available in the receiver Generic font family will be "
+"used."
+msgstr ""
+
+#: includes/general.php:1061
+msgid "Generic font family"
+msgstr ""
+
+#: includes/general.php:1080
+msgid "Seek to chapter start"
+msgstr ""
+
+#: includes/general.php:1086
+msgid ""
+"Setting to this to true will seek to chapter start when user clicks anywhere "
+"inside chapter area on the seekbar."
+msgstr ""
+
+#: includes/general.php:1091
+msgid "Auto open chapters menu"
+msgstr ""
+
+#: includes/general.php:1097
+msgid "Auto open chapters menu on start if video has chapters."
+msgstr ""
+
+#: includes/general.php:1102
+msgid "Hide chapter menu on select chapter"
+msgstr ""
+
+#: includes/general.php:1108
+msgid "Hide chapter menu after we click on chapter menu item."
+msgstr ""
+
+#: includes/general.php:1113
+msgid "Show chapter title above video"
+msgstr ""
+
+#: includes/general.php:1123
+msgid "Show chapter title above the video"
+msgstr ""
+
+#: includes/general.php:1129
+msgid ""
+"Show controls before video is played (including chapter menu if video has "
+"chapters). The use this feature video poster is required.\n"
+"                    Additional:\n"
+"                    For self hosted videos you need to set video duration in "
+"seconds when adding videos to playlist.\n"
+"                    For Youtube videos select duration in "
+msgstr ""
+
+#: includes/general.php:1132
+msgid "playlist item content"
+msgstr ""
+
+#: includes/general.php:1146 includes/shortcode_manager.php:330
+msgid "Use social sharing in player"
+msgstr ""
+
+#: includes/general.php:1156
+msgid "Use Facebook share"
+msgstr ""
+
+#: includes/general.php:1166
+msgid "Use Twitter share"
+msgstr ""
+
+#: includes/general.php:1176
+msgid "Use Tumblr share"
+msgstr ""
+
+#: includes/general.php:1186
+msgid "Use WhatsApp share"
+msgstr ""
+
+#: includes/general.php:1196
+msgid "Use Reddit share"
+msgstr ""
+
+#: includes/general.php:1206
+msgid "Use Digg share"
+msgstr ""
+
+#: includes/general.php:1216
+msgid "Use LinkedIn share"
+msgstr ""
+
+#: includes/general.php:1226
+msgid "Use Pinterest share"
+msgstr ""
+
+#: includes/general.php:1241
+msgid ""
+"Activate Google Analytics in player so you can track player events inside "
+"Google Analytics dashboard."
+msgstr ""
+
+#: includes/general.php:1246
+msgid "Use Google Analytics"
+msgstr ""
+
+#: includes/general.php:1256
+msgid "Google Analytics tracking ID"
+msgstr ""
+
+#: includes/general.php:1259
+#, php-format
+msgid "Get tracking ID <a href=\"%s\" target=\"_blank\">here</a>"
+msgstr ""
+
+#: includes/general.php:1270
+msgid "Here are settings for when loading playlist from folder."
+msgstr ""
+
+#: includes/general.php:1275
+msgid "Require poster from folder"
+msgstr ""
+
+#: includes/general.php:1281
+msgid ""
+"If true, player will assume you have poster images as per required folder "
+"organization when loading playlist from folder."
+msgstr ""
+
+#: includes/general.php:1286
+msgid "Require thumbnails from folder"
+msgstr ""
+
+#: includes/general.php:1292
+msgid ""
+"If true, player will assume you have thumbnail images as per required folder "
+"organization when loading playlist from folder."
+msgstr ""
+
+#: includes/general.php:1305
+msgid "Minimize on page scroll"
+msgstr ""
+
+#: includes/general.php:1311
+msgid ""
+"Minimize player on page scroll when it gets out of visible area.<br>Works "
+"will all player layouts except Outer and Grid wall with lightbox."
+msgstr ""
+
+#: includes/general.php:1316
+msgid "Minimize on page scroll only if playing"
+msgstr ""
+
+#: includes/general.php:1322
+msgid ""
+"Minimize on page scroll when player gets out of visible area only if video "
+"is playing.<br>Minimize on page scroll needs to be true as well for this to "
+"work."
+msgstr ""
+
+#: includes/general.php:1327
+msgid "Minimize on scroll position"
+msgstr ""
+
+#: includes/general.php:1334
+msgid "Choose position to minimize the player to."
+msgstr ""
+
+#: includes/general.php:1339
+msgid "Hide playlist on minimize"
+msgstr ""
+
+#: includes/general.php:1345
+msgid "Hide playlist when player is minimized."
+msgstr ""
+
+#: includes/general.php:1350
+msgid "Minimize player max width (px or %)"
+msgstr ""
+
+#: includes/general.php:1353
+msgid "Max width of the player when minimized. Enter value like 900px or 70%."
+msgstr ""
+
+#: includes/general.php:1358
+msgid "Use minimize close button"
+msgstr ""
+
+#: includes/general.php:1364
+msgid "Use button to close player when minimized."
+msgstr ""
+
+#: includes/general.php:1374
+msgid ""
+"Theater mode is available with all layouts except Grid wall with lightbox. "
+"You can restrict the width of the player in Player style / layout tab, and "
+"when theater mode is requested, player will become full width. Ideally if "
+"you have player in empty fullwidth container in your webpage, when theater "
+"mode is activated, you dont need to do anything. Otherwise if you have multi "
+"column layout or some kind of width restriction, margin or padding on the "
+"parent that holds the player, then you would need to make parent have "
+"fullwidth before theater mode happens. You can attach custom class to DOM "
+"selector when theater mode happens. When theater mode happens, your DOM "
+"selector will get custom class, and in there you can adjust parent to have "
+"full width available."
+msgstr ""
+
+#: includes/general.php:1379
+msgid "Theater element"
+msgstr ""
+
+#: includes/general.php:1382
+msgid ""
+"Add DOM selector which will get class attached when player enters theater "
+"mode (you can add multiple classes, for example: "
+msgstr ""
+
+#: includes/general.php:1387
+msgid "Theater element class"
+msgstr ""
+
+#: includes/general.php:1390
+msgid ""
+"Add class which will be attached to DOM selector when player enters theater "
+"mode (for example: "
+msgstr ""
+
+#: includes/general.php:1395
+msgid "Focus video in theater"
+msgstr ""
+
+#: includes/general.php:1401
+msgid "Scroll page to video top when theater mode is activated."
+msgstr ""
+
+#: includes/general.php:1411
+msgid ""
+"Restrict access from non logged in users or users with specific user roles. "
+"Set custom url to redirect user."
+msgstr ""
+
+#: includes/general.php:1416
+msgid "Allow only logged in users to download video"
+msgstr ""
+
+#: includes/general.php:1422
+msgid ""
+"Users who are not logged in will be presented with a message to login for "
+"download."
+msgstr ""
+
+#: includes/general.php:1427
+msgid "Select user role which is able to download video"
+msgstr ""
+
+#: includes/general.php:1440
+msgid ""
+"Only selected user roles can download video. If no user roles are selected "
+"everybody can download video."
+msgstr ""
+
+#: includes/general.php:1447
+msgid "Restrict video download url"
+msgstr ""
+
+#: includes/general.php:1450
+msgid "Set custom url for restrict video download."
+msgstr ""
+
+#: includes/general.php:1455
+msgid "Restrict video download url target"
+msgstr ""
+
+#: includes/general.php:1466
+msgid "Restrict video watch download url"
+msgstr ""
+
+#: includes/general.php:1474
+msgid "Restrict video watch url target"
+msgstr ""
+
+#: includes/general.php:1490
+msgid ""
+"Select which users can view video without ads (pre advert, mid advert, end "
+"advert)."
+msgstr ""
+
+#: includes/general.php:1495
+msgid "Allow only logged in users to view video without ads"
+msgstr ""
+
+#: includes/general.php:1501
+msgid "Users who are not logged in will have ads playing."
+msgstr ""
+
+#: includes/general.php:1506
+msgid "Select user role which is able to view video without ads"
+msgstr ""
+
+#: includes/general.php:1518
+msgid ""
+"Only selected user roles can view video without ads. If no user roles are "
+"selected everybody will have ads playing."
+msgstr ""
+
+#: includes/general.php:1530
+msgid "Statistics options"
+msgstr ""
+
+#: includes/general.php:1535
+msgid "Use video statistics"
+msgstr ""
+
+#: includes/general.php:1541
+msgid "Count video plays and time played"
+msgstr ""
+
+#: includes/player_manager.php:16
+msgid "Manage Players"
+msgstr ""
+
+#: includes/player_manager.php:18
+msgid ""
+"From this section you can create and edit players. You can change player "
+"name by clicking on title row."
+msgstr ""
+
+#: includes/player_manager.php:33
+msgid "Skin"
+msgstr ""
+
+#: includes/player_manager.php:51
+msgid "Duplicate player"
+msgstr ""
+
+#: includes/player_manager.php:54
+msgid "Export player"
+msgstr ""
+
+#: includes/player_manager.php:57
+msgid "Delete player"
+msgstr ""
+
+#: includes/player_manager.php:68
+msgid "Add New Player"
+msgstr ""
+
+#: includes/player_manager.php:72
+msgid "Upload player previously exported zip file."
+msgstr ""
+
+#: includes/player_manager.php:72
+msgid "Import Player"
+msgstr ""
+
+#: includes/player_manager.php:94 includes/player_manager.php:95
+msgid "Enter player title"
+msgstr ""
+
+#: includes/player_manager.php:99 includes/shortcode_manager.php:150
+msgid "Select skin"
+msgstr ""
+
+#: includes/player_manager.php:113
+msgid ""
+"Thumbnail grid, can be used with masonry or CSS grid. Special skin (playlist "
+"display without player). Its used in combination with another player. "
+"Playlist tracks can be played and enqueued in another player (normal or "
+"lightbox). You need 2 shortcodes for this, one for the grid and another for "
+"the player (check plugin help documentation / Custom player skins section)"
+msgstr ""
+
+#: includes/player_manager.php:115
+msgid ""
+"Horizontal list of thumbnails. Special skin (playlist display without "
+"player). Its used in combination with another player. Playlist tracks can be "
+"played and enqueued in another player (normal or lightbox). You need 2 "
+"shortcodes for this, one for the list and another for the player (check "
+"plugin help documentation / Custom player skins section)"
+msgstr ""
+
+#: includes/player_manager.php:117
+msgid ""
+"Vertical list of thumbnails. Special skin (playlist display without player). "
+"Its used in combination with another player. Playlist tracks can be played "
+"and enqueued in another player (normal or lightbox). You need 2 shortcodes "
+"for this, one for the list and another for the player (check plugin help "
+"documentation / Custom player skins section)"
+msgstr ""
+
+#: includes/player_manager.php:132
+msgid "Add player"
+msgstr ""
+
+#: includes/playlist_manager.php:12
+msgid "Manage Playlists"
+msgstr ""
+
+#: includes/playlist_manager.php:14
+msgid ""
+"From this section you can create and edit playlists. You can change playlist "
+"name by clicking on title row."
+msgstr ""
+
+#: includes/playlist_manager.php:50
+msgid "Duplicate playlist"
+msgstr ""
+
+#: includes/playlist_manager.php:53
+msgid "Export playlist"
+msgstr ""
+
+#: includes/playlist_manager.php:56
+msgid "Delete playlist"
+msgstr ""
+
+#: includes/playlist_manager.php:69
+msgid "Add New Playlist"
+msgstr ""
+
+#: includes/playlist_manager.php:74
+msgid "Import Playlist"
+msgstr ""
+
+#: includes/playlist_manager.php:96 includes/statistics_display.php:377
+msgid "Playlist title"
+msgstr ""
+
+#: includes/playlist_manager.php:101
+msgid "Is admin retrieved"
+msgstr ""
+
+#: includes/playlist_manager.php:102
+msgid ""
+"Select this if you will be using this playlist to retrieve Youtube playlist "
+"or a channel in the admin to save quota"
+msgstr ""
+
+#: includes/playlist_manager.php:113 includes/statistics_display.php:389
+msgid "Add playlist"
+msgstr ""
+
+#: includes/settings.php:31
+msgid "Global settings"
+msgstr ""
+
+#: includes/settings.php:37
+msgid ""
+"PHP zip extension not installed or enabled! Export player and playlist "
+"feature cannot be used."
+msgstr ""
+
+#: includes/settings.php:47
+msgid "Credentials"
+msgstr ""
+
+#: includes/settings.php:57
+msgid "Youtube application ID"
+msgstr ""
+
+#: includes/settings.php:60
+#, php-format
+msgid ""
+"Required if Youtube is used (not required if you just want to use Youtube "
+"single videos without API). Register <a href=\"%s\" target=\"_blank\">here</"
+"a> and create new project, enable YouTube Data API, go to Credentials, "
+"create API key. You can enter multiple keys separated by comma for quota "
+"backup."
+msgstr ""
+
+#: includes/settings.php:64
+msgid "Google Drive API key"
+msgstr ""
+
+#: includes/settings.php:67
+#, php-format
+msgid ""
+"Required for Google drive music. Register <a href=\"%s\" target=\"_blank"
+"\">here</a>, create new project, enable Google Drive API, create "
+"Credentials, API key."
+msgstr ""
+
+#: includes/settings.php:71
+msgid "Facebook application ID"
+msgstr ""
+
+#: includes/settings.php:74
+#, php-format
+msgid ""
+"Required for Facebook social sharing. Register <a href=\"%s\" target=\"_blank"
+"\">here</a> and enter App ID."
+msgstr ""
+
+#: includes/settings.php:78
+msgid "Vimeo Client Identifier"
+msgstr ""
+
+#: includes/settings.php:81
+#, php-format
+msgid ""
+"Required if Vimeo is used (not required if you just want to use Vimeo single "
+"videos without API). Register <a href=\"%s\" target=\"_blank\">here</a> and "
+"get: Client Identifier, Client Secrets and Access Token with public and "
+"private scope."
+msgstr ""
+
+#: includes/settings.php:85
+msgid "Vimeo Client Secrets"
+msgstr ""
+
+#: includes/settings.php:91
+msgid "Vimeo Access Token"
+msgstr ""
+
+#: includes/settings.php:98
+msgid "Amazon S3 user key"
+msgstr ""
+
+#: includes/settings.php:101
+msgid ""
+"Required for using videos from Amazon s3 private buckets. To get user "
+"credentials read plugin help / Working with media / Amazon S3 section."
+msgstr ""
+
+#: includes/settings.php:106
+msgid "Amazon S3 user secret"
+msgstr ""
+
+#: includes/settings.php:121
+msgid "Watched percentage"
+msgstr ""
+
+#: includes/settings.php:135
+msgid ""
+"Player can display watched video percentage in playlist thumbnails (red line "
+"representing maximum reached time). Use this to clear watched percentage for "
+"all playlists."
+msgstr ""
+
+#: includes/settings.php:148
+msgid "Miscellaneous"
+msgstr ""
+
+#: includes/settings.php:159
+msgid "Youtube No Cookie"
+msgstr ""
+
+#: includes/settings.php:165
+msgid "Serve Youtube videos from No Cookie domain"
+msgstr ""
+
+#: includes/settings.php:170
+msgid "Vimeo No Cookie"
+msgstr ""
+
+#: includes/settings.php:176
+msgid ""
+"Whether to prevent Vimeo player from tracking session data, including "
+"cookies. Keep in mind that setting this argument to true also blocks video "
+"stats."
+msgstr ""
+
+#: includes/settings.php:181
+msgid "Insert javascript into footer"
+msgstr ""
+
+#: includes/settings.php:187
+msgid ""
+"Putting the js to footer (instead of the head) can fix some javascript "
+"conflicts."
+msgstr ""
+
+#: includes/settings.php:192
+msgid "jQuery No Conflict mode"
+msgstr ""
+
+#: includes/settings.php:198
+msgid ""
+"Can fix some javascript conflicts on the page.</p>\n"
+"\t\t\t\t\t        </td>\n"
+"\t\t\t\t\t    </tr>\n"
+"\n"
+"\t\t\t\t\t    <tr valign=\"top\">\n"
+"\t\t\t                <th>Toggle playback between multiple instances"
+msgstr ""
+
+#: includes/settings.php:209
+msgid "Pause playback if other instance playback is started in the same page"
+msgstr ""
+
+#: includes/settings.php:214
+msgid "Display all playlists in page"
+msgstr ""
+
+#: includes/settings.php:220
+msgid ""
+"If true, display all playlists in page (from Playlist manager) when player "
+"runs. Useful if you want to use API method loadPlaylist (playlist-ID) on run-"
+"time. If false, display just active playlist from shortcode."
+msgstr ""
+
+#: includes/settings.php:225
+msgid "Cache playlist in browser"
+msgstr ""
+
+#: includes/settings.php:231
+msgid ""
+"Cache playlist in browser to limit api requests for Youtube, Vimeo and other "
+"services."
+msgstr ""
+
+#: includes/settings.php:236
+msgid "Cache time"
+msgstr ""
+
+#: includes/settings.php:239
+msgid ""
+"How long to cache playlist in browser. For example, if you load a Youtube "
+"playlist or a Vimeo channel, and set cacheTime:3600 (1 hour), everytime the "
+"page is reloaded within that hour, playlist will be loaded from cache."
+msgstr ""
+
+#: includes/settings.php:244
+msgid "Override wordpress default video"
+msgstr ""
+
+#: includes/settings.php:250
+msgid ""
+"Override wordpress videos in post with this player (html5, youtube, vimeo)."
+msgstr ""
+
+#: includes/settings.php:255
+msgid "Override wordpress default video skin"
+msgstr ""
+
+#: includes/settings.php:262
+msgid ""
+"Select skin when override wordpress videos is used. Note: Vimeo chromeless "
+"skin is only available for videos hosted by a Plus account or higher. Note: "
+"if you are using 360 Virtual reality video, you need to add this attribute "
+"in shortcode is360=\"1\""
+msgstr ""
+
+#: includes/shortcode_manager.php:16
+msgid "Shortcode manager"
+msgstr ""
+
+#: includes/shortcode_manager.php:23
+msgid "Main Shortcodes"
+msgstr ""
+
+#: includes/shortcode_manager.php:32
+msgid ""
+"Select player and playlist you have already created, and copy shortcode into "
+"a page or post."
+msgstr ""
+
+#: includes/shortcode_manager.php:38
+msgid "Select player"
+msgstr ""
+
+#: includes/shortcode_manager.php:49
+msgid "Select playlist"
+msgstr ""
+
+#: includes/shortcode_manager.php:60
+msgid "Select ads"
+msgstr ""
+
+#: includes/shortcode_manager.php:72
+msgid "Shortcode"
+msgstr ""
+
+#: includes/shortcode_manager.php:79
+msgid "Shortcode for PHP page"
+msgstr ""
+
+#: includes/shortcode_manager.php:86
+msgid "Shortcode with all attributes"
+msgstr ""
+
+#: includes/shortcode_manager.php:88
+msgid "Use this if you want to change individual parameters in shortcode."
+msgstr ""
+
+#: includes/shortcode_manager.php:104
+msgid "Quick shortcode generator"
+msgstr ""
+
+#: includes/shortcode_manager.php:112
+msgid ""
+"Generate video shortcode here for one or multiple videos and use it directly "
+"in your page."
+msgstr ""
+
+#: includes/shortcode_manager.php:132
+msgid "Add video to existing shortcode"
+msgstr ""
+
+#: includes/shortcode_manager.php:141
+msgid ""
+"Select player features (only basic features are available here. If you want "
+"to deeply configure the player, you need to create new player in Player "
+"manager section and combine player_id=\"PLAYER_ID\" with your video "
+"shortcode)"
+msgstr ""
+
+#: includes/shortcode_manager.php:161 includes/style.php:14
+msgid "Select layout"
+msgstr ""
+
+#: includes/shortcode_manager.php:175 includes/style.php:28
+msgid ""
+"Vertical playlist on the right, on narrow screens playlist goes below the "
+"player."
+msgstr ""
+
+#: includes/shortcode_manager.php:176 includes/style.php:29
+msgid "Vertical playlist below the player."
+msgstr ""
+
+#: includes/shortcode_manager.php:177 includes/style.php:30
+msgid "Horizontal playlist below the player."
+msgstr ""
+
+#: includes/shortcode_manager.php:178
+msgid "Playlist below player, endless scroll."
+msgstr ""
+
+#: includes/shortcode_manager.php:179
+msgid "Grid grid with player opening as lightbox."
+msgstr ""
+
+#: includes/shortcode_manager.php:180 includes/style.php:33
+msgid "No playlist (use just player)."
+msgstr ""
+
+#: includes/shortcode_manager.php:185 includes/style.php:50
+msgid "Choose grid type"
+msgstr ""
+
+#: includes/shortcode_manager.php:192 includes/style.php:57
+msgid ""
+"Javascript grid uses mathematical breakpoints for grid positioning. CSS grid "
+"use css for grid styling. Masonry grid is also available. If your images are "
+"different dimensions (different widths or heights) its advisable to try CSS "
+"column count or Masonry grid."
+msgstr ""
+
+#: includes/shortcode_manager.php:197 includes/style.php:95
+#: includes/style.php:115
+msgid "Select playlist items style"
+msgstr ""
+
+#: includes/shortcode_manager.php:211 includes/style.php:109
+msgid "Description right of thumbnail."
+msgstr ""
+
+#: includes/shortcode_manager.php:212 includes/shortcode_manager.php:231
+#: includes/style.php:110 includes/style.php:129
+msgid "Description over thumbnail."
+msgstr ""
+
+#: includes/shortcode_manager.php:217
+msgid "elect playlist items style"
+msgstr ""
+
+#: includes/shortcode_manager.php:232 includes/style.php:130
+msgid "Description below thumbnail."
+msgstr ""
+
+#: includes/shortcode_manager.php:237 includes/style.php:151
+msgid "Select playlist navigation type"
+msgstr ""
+
+#: includes/shortcode_manager.php:259 includes/style.php:199
+msgid "Player ratio"
+msgstr ""
+
+#: includes/shortcode_manager.php:262 includes/style.php:202
+msgid ""
+"Aspect ratio of video area. Set video area ratio to fit your videos, for "
+"example 1.333333 = 4/3. Default is 16/9 (1.777777)"
+msgstr ""
+
+#: includes/shortcode_manager.php:325 includes/style.php:293
+msgid "Choose which elements to display in the player"
+msgstr ""
+
+#: includes/shortcode_manager.php:340 includes/style.php:298
+msgid "Use big play button"
+msgstr ""
+
+#: includes/shortcode_manager.php:346 includes/style.php:304
+msgid "Show big play button in the center before media starts and when paused."
+msgstr ""
+
+#: includes/shortcode_manager.php:351 includes/style.php:323
+msgid "Use seekbar"
+msgstr ""
+
+#: includes/shortcode_manager.php:361 includes/style.php:333
+msgid "Use play button"
+msgstr ""
+
+#: includes/shortcode_manager.php:367 includes/style.php:339
+msgid "Use small play button."
+msgstr ""
+
+#: includes/shortcode_manager.php:372
+msgid "Use next button"
+msgstr ""
+
+#: includes/shortcode_manager.php:382
+msgid "Use previous button"
+msgstr ""
+
+#: includes/shortcode_manager.php:392
+msgid "Use rewind button"
+msgstr ""
+
+#: includes/shortcode_manager.php:402 includes/style.php:374
+msgid "Use skip backward button (x seconds)"
+msgstr ""
+
+#: includes/shortcode_manager.php:412 includes/style.php:384
+msgid "Use skip forward button (x seconds)"
+msgstr ""
+
+#: includes/shortcode_manager.php:422 includes/style.php:394
+msgid "Use current and total time"
+msgstr ""
+
+#: includes/shortcode_manager.php:432 includes/style.php:404
+msgid "Use volume button"
+msgstr ""
+
+#: includes/shortcode_manager.php:442 includes/style.php:414
+msgid "Use volume seekbar"
+msgstr ""
+
+#: includes/shortcode_manager.php:452 includes/style.php:424
+msgid "Use unmute button"
+msgstr ""
+
+#: includes/shortcode_manager.php:458 includes/style.php:430
+msgid ""
+"Use unmute button to unmute the video. Button will be shown above the player "
+"if Auto play is true and video starts muted."
+msgstr ""
+
+#: includes/shortcode_manager.php:463 includes/style.php:435
+msgid "Use download button"
+msgstr ""
+
+#: includes/shortcode_manager.php:473 includes/style.php:446
+msgid "Use info button (video description)"
+msgstr ""
+
+#: includes/shortcode_manager.php:483 includes/style.php:466
+msgid "Use fullscreen button"
+msgstr ""
+
+#: includes/shortcode_manager.php:493 includes/style.php:476
+msgid "Use picture in picture button"
+msgstr ""
+
+#: includes/shortcode_manager.php:503 includes/style.php:486
+msgid "Use theater mode button"
+msgstr ""
+
+#: includes/shortcode_manager.php:513 includes/style.php:506
+msgid "Use playback rate menu"
+msgstr ""
+
+#: includes/shortcode_manager.php:523
+msgid "Use quality menu"
+msgstr ""
+
+#: includes/shortcode_manager.php:533
+msgid "Use captions menu"
+msgstr ""
+
+#: includes/shortcode_manager.php:543 includes/style.php:537
+msgid "Use quick caption toggle button"
+msgstr ""
+
+#: includes/shortcode_manager.php:549 includes/style.php:543
+msgid ""
+"Show button to toggle caption state on/off (remember last used subtitle)."
+msgstr ""
+
+#: includes/shortcode_manager.php:554
+msgid "Use audio language menu (for live streaming)"
+msgstr ""
+
+#: includes/shortcode_manager.php:564 includes/style.php:558
+msgid "Use playlist toggle button"
+msgstr ""
+
+#: includes/shortcode_manager.php:570 includes/style.php:564
+msgid "Open / close playlist button."
+msgstr ""
+
+#: includes/shortcode_manager.php:585
+msgid "Get shortcode"
+msgstr ""
+
+#: includes/statistics_display.php:93
+msgid "Video statistics"
+msgstr ""
+
+#: includes/statistics_display.php:100
+msgid "Choose playlist to show statistics data:"
+msgstr ""
+
+#: includes/statistics_display.php:102
+msgid "All playlists"
+msgstr ""
+
+#: includes/statistics_display.php:110
+msgid "Clear Statistics"
+msgstr ""
+
+#: includes/statistics_display.php:117
+msgid "Total time played"
+msgstr ""
+
+#: includes/statistics_display.php:118
+msgid "Total plays"
+msgstr ""
+
+#: includes/statistics_display.php:119
+msgid "Total downloads"
+msgstr ""
+
+#: includes/statistics_display.php:120
+msgid "Total finished"
+msgstr ""
+
+#: includes/statistics_display.php:129
+msgid "TOP PLAYS OF THE DAY"
+msgstr ""
+
+#: includes/statistics_display.php:137 includes/statistics_display.php:159
+#: includes/statistics_display.php:181 includes/statistics_display.php:207
+#: includes/statistics_display.php:229 includes/statistics_display.php:251
+msgid "Data Not Available"
+msgstr ""
+
+#: includes/statistics_display.php:153
+msgid "TOP PLAYS THIS WEEK"
+msgstr ""
+
+#: includes/statistics_display.php:175
+msgid "TOP PLAYS THIS MONTH"
+msgstr ""
+
+#: includes/statistics_display.php:201
+msgid "TOP PLAYS ALL TIME"
+msgstr ""
+
+#: includes/statistics_display.php:223
+msgid "TOP DOWNLOADS ALL TIME"
+msgstr ""
+
+#: includes/statistics_display.php:245
+msgid "TOP FINISHED ALL TIME"
+msgstr ""
+
+#: includes/statistics_display.php:268
+msgid "Graph options"
+msgstr ""
+
+#: includes/statistics_display.php:273
+msgid "Graph type"
+msgstr ""
+
+#: includes/statistics_display.php:275
+msgid "bar"
+msgstr ""
+
+#: includes/statistics_display.php:278
+msgid "line"
+msgstr ""
+
+#: includes/statistics_display.php:283
+msgid "Data to display"
+msgstr ""
+
+#: includes/statistics_display.php:285
+msgid "plays"
+msgstr ""
+
+#: includes/statistics_display.php:288
+msgid "downloads"
+msgstr ""
+
+#: includes/statistics_display.php:291
+msgid "finishes"
+msgstr ""
+
+#: includes/statistics_display.php:296
+msgid "Number of days to display"
+msgstr ""
+
+#: includes/statistics_display.php:310
+msgid "Time played"
+msgstr ""
+
+#: includes/statistics_display.php:311
+msgid "Number of plays"
+msgstr ""
+
+#: includes/statistics_display.php:312
+msgid "Downloads"
+msgstr ""
+
+#: includes/statistics_display.php:313
+msgid "Finishes"
+msgstr ""
+
+#: includes/statistics_display.php:327
+msgid "Create graph"
+msgstr ""
+
+#: includes/statistics_display.php:327
+msgid "Remove graph"
+msgstr ""
+
+#: includes/statistics_display.php:336
+msgid "Search.."
+msgstr ""
+
+#: includes/statistics_display.php:342
+msgid "Items to display"
+msgstr ""
+
+#: includes/statistics_display.php:378
+msgid "Enter playlist title"
+msgstr ""
+
+#: includes/style.php:4
+msgid "Layout"
+msgstr ""
+
+#: includes/style.php:5
+msgid "Elements"
+msgstr ""
+
+#: includes/style.php:6
+msgid "Breakpoints"
+msgstr ""
+
+#: includes/style.php:31
+msgid "Playlist stacked below player, endless scroll."
+msgstr ""
+
+#: includes/style.php:32
+msgid "Thumbnail grid with player opening as lightbox above it."
+msgstr ""
+
+#: includes/style.php:38
+msgid "Select player type"
+msgstr ""
+
+#: includes/style.php:45
+msgid "Use normal inline player or open player as lightbox."
+msgstr ""
+
+#: includes/style.php:62
+msgid "Thumbnail grid breakpoints"
+msgstr ""
+
+#: includes/style.php:75
+msgid "Columns"
+msgstr ""
+
+#: includes/style.php:76
+msgid "Gutter"
+msgstr ""
+
+#: includes/style.php:135
+msgid "Select playlist item content"
+msgstr ""
+
+#: includes/style.php:146
+msgid "Select content to show in playlist items."
+msgstr ""
+
+#: includes/style.php:162
+msgid "Select navigation style"
+msgstr ""
+
+#: includes/style.php:173
+msgid "Choose scroll in playlist"
+msgstr ""
+
+#: includes/style.php:180
+msgid "Choose which playlist scroll to use."
+msgstr ""
+
+#: includes/style.php:186
+msgid "Select scroll theme"
+msgstr ""
+
+#: includes/style.php:193
+#, php-format
+msgid "View scroll examples <a href=\"%s\" target=\"_blank\">here</a>"
+msgstr ""
+
+#: includes/style.php:207
+msgid "Restrict player width (px or %)"
+msgstr ""
+
+#: includes/style.php:210
+msgid "Set player maximum width. Enter value like 900px or 70%."
+msgstr ""
+
+#: includes/style.php:215
+msgid "Vertical bottom separator [px]"
+msgstr ""
+
+#: includes/style.php:218
+msgid ""
+"The limit for when vertical playlist on the right drops below player on "
+"narrow screens."
+msgstr ""
+
+#: includes/style.php:223
+msgid "Playlist right width [px]"
+msgstr ""
+
+#: includes/style.php:226
+msgid "Width of the playlist on the right."
+msgstr ""
+
+#: includes/style.php:231
+msgid "Playlist bottom height [px]"
+msgstr ""
+
+#: includes/style.php:234
+msgid "Height of the vertical playlist when its below the player."
+msgstr ""
+
+#: includes/style.php:239
+msgid "Use search field in playlist"
+msgstr ""
+
+#: includes/style.php:245
+msgid "Show search field in the playlist to search for videos."
+msgstr ""
+
+#: includes/style.php:250
+msgid "Select player shadow"
+msgstr ""
+
+#: includes/style.php:257
+msgid "Select shadow effect below the player."
+msgstr ""
+
+#: includes/style.php:262
+msgid "Additional classes"
+msgstr ""
+
+#: includes/style.php:265
+msgid "Add additional classes for the player (separated by space)."
+msgstr ""
+
+#: includes/style.php:270
+msgid "DOM selector"
+msgstr ""
+
+#: includes/style.php:274
+msgid ""
+"Specify DOM selector (ID, or classname, for example: \"#my-div\") if you "
+"want to open player on click. This is only required if player type is a "
+"lightbox, but you can also initiate a standard player by clicking on some "
+"element in your page (in this case player will be hidden until this element "
+"is clicked)."
+msgstr ""
+
+#: includes/style.php:279
+msgid "Activate when parent visible selector"
+msgstr ""
+
+#: includes/style.php:283
+msgid ""
+"If player is placed in some element which is hidden on page load (with CSS "
+"display none like a tab for example) then player might have an issue to "
+"rezize itself correctly on start. You can use this option to specify DOM "
+"selector (ID, or class name for example: \"#my-div\") of the parent which "
+"holds the player. Then player will monitor when parent becomes visible so it "
+"can correctly resize itself."
+msgstr ""
+
+#: includes/style.php:309
+msgid "Big play image url"
+msgstr ""
+
+#: includes/style.php:315
+msgid "Upload your own big play image."
+msgstr ""
+
+#: includes/style.php:344
+msgid "Use next video button"
+msgstr ""
+
+#: includes/style.php:354
+msgid "Use previous video button"
+msgstr ""
+
+#: includes/style.php:364
+msgid "Use rewind to beginning button"
+msgstr ""
+
+#: includes/style.php:441
+msgid ""
+"Download button is automatically hidden is video does not have download url "
+"set."
+msgstr ""
+
+#: includes/style.php:456
+msgid "Show video title about the player"
+msgstr ""
+
+#: includes/style.php:496
+msgid "Use Chromecast button for casting"
+msgstr ""
+
+#: includes/style.php:516
+msgid "Use video quality menu"
+msgstr ""
+
+#: includes/style.php:522
+msgid ""
+"This is for self hosted media. Youtube and Vimeo automatically choose best "
+"suitable quality on their side."
+msgstr ""
+
+#: includes/style.php:527
+msgid "Use captions menu (subtitles)"
+msgstr ""
+
+#: includes/style.php:548
+msgid "Use AirPlay button"
+msgstr ""
+
+#: includes/style.php:574
+msgid "Choose which elements to display on narrow screens."
+msgstr ""
+
+#: includes/style.php:585
+msgid "Set breakpoint width [px]:"
+msgstr ""
+
+#: includes/style.php:589
+msgid "What elements to show when player is below that width:"
+msgstr ""
+
+#: includes/style.php:594
+msgid "next"
+msgstr ""
+
+#: includes/style.php:597
+msgid "previous"
+msgstr ""
+
+#: includes/style.php:600
+msgid "rewind"
+msgstr ""
+
+#: includes/style.php:603
+msgid "skip backward"
+msgstr ""
+
+#: includes/style.php:606
+msgid "skip forward"
+msgstr ""
+
+#: includes/style.php:609
+msgid "play"
+msgstr ""
+
+#: includes/style.php:612
+msgid "seekbar"
+msgstr ""
+
+#: includes/style.php:615
+msgid "time"
+msgstr ""
+
+#: includes/style.php:618
+msgid "volume"
+msgstr ""
+
+#: includes/style.php:621
+msgid "volume seekbar"
+msgstr ""
+
+#: includes/style.php:624
+msgid "download"
+msgstr ""
+
+#: includes/style.php:627
+msgid "share"
+msgstr ""
+
+#: includes/style.php:630
+msgid "description"
+msgstr ""
+
+#: includes/style.php:633
+msgid "captions"
+msgstr ""
+
+#: includes/style.php:636
+msgid "caption toggle"
+msgstr ""
+
+#: includes/style.php:639
+msgid "chapter menu toggle"
+msgstr ""
+
+#: includes/style.php:642
+msgid "playback rate (speed)"
+msgstr ""
+
+#: includes/style.php:645
+msgid "playback quality"
+msgstr ""
+
+#: includes/style.php:648
+msgid "audio language (for live streaming)"
+msgstr ""
+
+#: includes/style.php:651
+msgid "fullscreen"
+msgstr ""
+
+#: includes/style.php:654
+msgid "picture in picture"
+msgstr ""
+
+#: includes/style.php:657
+msgid "theater mode"
+msgstr ""
+
+#: includes/style.php:660
+msgid "playlist button"
+msgstr ""
+
+#: includes/style.php:663
+msgid "annotations"
+msgstr ""
+
+#: includes/style.php:666
+msgid "upnext"
+msgstr ""
+
+#: includes/style.php:671
+msgid "Remove breakpoint"
+msgstr ""
+
+#: includes/translation.php:5 includes/preset_config/colors.php:5
+msgid "Player controls"
+msgstr ""
+
+#: includes/translation.php:7 includes/preset_config/colors.php:6
+msgid "Right click menu"
+msgstr ""
+
+#: includes/translation.php:8 includes/preset_config/colors.php:9
+msgid "Password"
+msgstr ""
+
+#: includes/translation.php:10
+msgid "Login"
+msgstr ""
+
+#: includes/translation.php:11
+msgid "Resume screen"
+msgstr ""
+
+#: includes/translation.php:12
+msgid "Coming next"
+msgstr ""
+
+#: includes/translation.php:23
+msgid "Load More Button Text"
+msgstr ""
+
+#: includes/translation.php:29
+msgid "Search field text"
+msgstr ""
+
+#: includes/translation.php:35
+msgid "Search field nothing found message"
+msgstr ""
+
+#: includes/translation.php:41
+msgid "Up Next Thumbnail Text"
+msgstr ""
+
+#: includes/translation.php:47
+msgid "Up Previous Thumbnail Text"
+msgstr ""
+
+#: includes/translation.php:53
+msgid "Subtitle Off Text"
+msgstr ""
+
+#: includes/translation.php:59
+msgid "Ad skip ready text"
+msgstr ""
+
+#: includes/translation.php:65
+msgid "Unmute button text"
+msgstr ""
+
+#: includes/translation.php:71
+msgid "Tooltip close dialog (share, info..)"
+msgstr ""
+
+#: includes/translation.php:78
+msgid "Live stream text (LIVE)"
+msgstr ""
+
+#: includes/translation.php:93
+msgid "Tooltip Share On Tumblr"
+msgstr ""
+
+#: includes/translation.php:99
+msgid "Tooltip Share On Twitter"
+msgstr ""
+
+#: includes/translation.php:105
+msgid "Tooltip Share On Facebook"
+msgstr ""
+
+#: includes/translation.php:111
+msgid "Tooltip Share On WhatsApp"
+msgstr ""
+
+#: includes/translation.php:117
+msgid "WhatsApp warning"
+msgstr ""
+
+#: includes/translation.php:120
+msgid ""
+"Message which displays when user tries to share via WhatApp on desktop "
+"browser."
+msgstr ""
+
+#: includes/translation.php:124
+msgid "Tooltip Share On Reddit"
+msgstr ""
+
+#: includes/translation.php:130
+msgid "Tooltip Share On Digg"
+msgstr ""
+
+#: includes/translation.php:136
+msgid "Tooltip Share On LinkedIn"
+msgstr ""
+
+#: includes/translation.php:142
+msgid "Tooltip Share On Pinterest"
+msgstr ""
+
+#: includes/translation.php:148
+msgid "Tooltip Share"
+msgstr ""
+
+#: includes/translation.php:163
+msgid "Tooltip Description Toggle"
+msgstr ""
+
+#: includes/translation.php:169
+msgid "Tooltip Previous"
+msgstr ""
+
+#: includes/translation.php:175
+msgid "Tooltip Next"
+msgstr ""
+
+#: includes/translation.php:181
+msgid "Tooltip Rewind"
+msgstr ""
+
+#: includes/translation.php:187
+msgid "Tooltip Skip Backward"
+msgstr ""
+
+#: includes/translation.php:193
+msgid "Tooltip Skip Forward"
+msgstr ""
+
+#: includes/translation.php:199
+msgid "Tooltip Video Quality menu"
+msgstr ""
+
+#: includes/translation.php:205
+msgid "Tooltip Playback Rate menu"
+msgstr ""
+
+#: includes/translation.php:211
+msgid "Tooltip Audio Language menu"
+msgstr ""
+
+#: includes/translation.php:217
+msgid "Tooltip Volume"
+msgstr ""
+
+#: includes/translation.php:223
+msgid "Tooltip Captions menu"
+msgstr ""
+
+#: includes/translation.php:229
+msgid "Tooltip toggle captions"
+msgstr ""
+
+#: includes/translation.php:235
+msgid "Tooltip toggle virtual reality mode"
+msgstr ""
+
+#: includes/translation.php:241
+msgid "Tooltip Download"
+msgstr ""
+
+#: includes/translation.php:247
+msgid "Tooltip settings menu"
+msgstr ""
+
+#: includes/translation.php:253
+msgid "Tooltip AirPlay"
+msgstr ""
+
+#: includes/translation.php:265
+msgid "Tooltip Fullscreen Exit"
+msgstr ""
+
+#: includes/translation.php:271
+msgid "Tooltip Toggle Playlist"
+msgstr ""
+
+#: includes/translation.php:277
+msgid "Tooltip Theater mode"
+msgstr ""
+
+#: includes/translation.php:283
+msgid "Tooltip Picture in picture"
+msgstr ""
+
+#: includes/translation.php:298
+msgid "Tooltip Lightbox Previous"
+msgstr ""
+
+#: includes/translation.php:304
+msgid "Tooltip Lightbox Next"
+msgstr ""
+
+#: includes/translation.php:319
+msgid "Password protected content title"
+msgstr ""
+
+#: includes/translation.php:325
+msgid "Password protected confirm button text"
+msgstr ""
+
+#: includes/translation.php:331
+msgid "Password protected content info"
+msgstr ""
+
+#: includes/translation.php:337
+msgid "Password protected content wrong password error message"
+msgstr ""
+
+#: includes/translation.php:352
+msgid "Custom context menu copy video url text"
+msgstr ""
+
+#: includes/translation.php:367
+msgid "Login to download video message"
+msgstr ""
+
+#: includes/translation.php:374
+msgid "Login to watch video message"
+msgstr ""
+
+#: includes/translation.php:381
+msgid "Restrict content for specific user role message"
+msgstr ""
+
+#: includes/translation.php:393
+msgid ""
+"Resume playback position prompt - ask user to continue watching where left "
+"off or start from the beginning"
+msgstr ""
+
+#: includes/translation.php:398
+msgid "Resume screen header text"
+msgstr ""
+
+#: includes/translation.php:405
+msgid "Resume screen continue text"
+msgstr ""
+
+#: includes/translation.php:412
+msgid "Resume screen restart text"
+msgstr ""
+
+#: includes/translation.php:425
+msgid "Coming next screen shown before next video"
+msgstr ""
+
+#: includes/translation.php:430
+msgid "Coming next header"
+msgstr ""
+
+#: includes/translation.php:437
+msgid "Coming next cancel button text"
+msgstr ""
+
+#: includes/translation.php:449
+msgid "Casting with Chromecast"
+msgstr ""
+
+#: includes/translation.php:454
+msgid "Connecting to Chromecast message"
+msgstr ""
+
+#: includes/translation.php:461
+msgid "Tooltip Play On Tv"
+msgstr ""
+
+#: includes/translation.php:468
+msgid "Tooltip Stop Playing On Tv"
+msgstr ""
+
+#: includes/translation.php:481
+msgid "Chapters menu"
+msgstr ""
+
+#: includes/translation.php:486
+msgid "Header above chapters menu"
+msgstr ""
+
+#: includes/translation.php:493
+msgid "Tooltip toggle chapters menu button"
+msgstr ""
+
+#: includes/translation.php:500
+msgid "Tooltip previous chapter button"
+msgstr ""
+
+#: includes/translation.php:507
+msgid "Tooltip next chapter button"
+msgstr ""
+
+#: includes/translation.php:524
+msgid "Ad upcoming message text for midroll adverts"
+msgstr ""
+
+#: includes/widgets.php:12
+msgid "Modern Video Player"
+msgstr ""
+
+#: includes/widgets.php:13
+msgid "Add player with playlist in your website."
+msgstr ""
+
+#: includes/widgets.php:46
+msgid "Select player:"
+msgstr ""
+
+#: includes/widgets.php:58
+msgid "Please create a player."
+msgstr ""
+
+#: includes/widgets.php:59
+msgid "Create a player."
+msgstr ""
+
+#: includes/widgets.php:69
+msgid "Select playlist:"
+msgstr ""
+
+#: includes/widgets.php:81
+msgid "Please create a playlist."
+msgstr ""
+
+#: includes/widgets.php:82
+msgid "Create a playlist."
+msgstr ""
+
+#: includes/preset_config/colors.php:7
+msgid "Up next"
+msgstr ""
+
+#: includes/preset_config/colors.php:8
+msgid "Chapter"
+msgstr ""
+
+#: includes/preset_config/colors.php:10
+msgid "Ad"
+msgstr ""
+
+#: includes/preset_config/colors.php:11
+msgid "Subtitle"
+msgstr ""
+
+#: includes/preset_config/colors.php:14
+msgid "Search field"
+msgstr ""
+
+#: includes/preset_config/colors.php:15
+msgid "Load more"
+msgstr ""
+
+#: includes/preset_config/colors.php:16
+msgid "Unmute"
+msgstr ""
+
+#: includes/preset_config/colors.php:17
+msgid "Related videos"
+msgstr ""
+
+#: includes/preset_config/colors.php:25
+msgid "Theme background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:31
+msgid "Player background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:37
+msgid "Player dialog background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:40
+msgid "Background color of social sharing, description, login, resume screen."
+msgstr ""
+
+#: includes/preset_config/colors.php:44
+msgid "Player title text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:50
+msgid "Player description text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:56
+msgid "Share item hover color"
+msgstr ""
+
+#: includes/preset_config/colors.php:62
+msgid "Tooltip background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:68
+msgid "Tooltip text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:74
+msgid "Preloader color"
+msgstr ""
+
+#: includes/preset_config/colors.php:89
+msgid "Icon color"
+msgstr ""
+
+#: includes/preset_config/colors.php:95
+msgid "Icon hover color"
+msgstr ""
+
+#: includes/preset_config/colors.php:101
+msgid "Big play background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:107
+msgid "Big play icon color"
+msgstr ""
+
+#: includes/preset_config/colors.php:113
+msgid "Playback controls background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:120
+msgid "Seekbar background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:126
+msgid "Seekbar load color"
+msgstr ""
+
+#: includes/preset_config/colors.php:132
+msgid "Seekbar progress color"
+msgstr ""
+
+#: includes/preset_config/colors.php:138
+msgid "Seekbar progress pointer color"
+msgstr ""
+
+#: includes/preset_config/colors.php:144
+msgid "Top right controls background hover color"
+msgstr ""
+
+#: includes/preset_config/colors.php:150
+msgid "Volume background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:156
+msgid "Volume level color"
+msgstr ""
+
+#: includes/preset_config/colors.php:162
+msgid "Volume level pointer color"
+msgstr ""
+
+#: includes/preset_config/colors.php:168
+msgid "Current time text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:174
+msgid "Total time text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:180
+msgid "Settings menu header background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:186
+msgid "Settings menu header text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:192
+msgid "Settings menu item active background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:198
+msgid "Settings menu item active text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:204
+msgid "Settings menu item text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:210
+msgid "Settings menu item value text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:225
+msgid "Subtitle text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:231
+msgid "Subtitle text background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:246
+msgid "Custom context menu Border Top color"
+msgstr ""
+
+#: includes/preset_config/colors.php:252
+msgid "Custom context menu text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:258
+msgid "Custom context menu Link background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:264
+msgid "Custom context menu Link text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:279
+msgid "Up next text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:285
+msgid "Up next hover text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:300
+msgid "Chapter indicator color"
+msgstr ""
+
+#: includes/preset_config/colors.php:306
+msgid "Chapter highlight color"
+msgstr ""
+
+#: includes/preset_config/colors.php:321
+msgid "Ad seekbar background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:327
+msgid "Ad seekbar progress color"
+msgstr ""
+
+#: includes/preset_config/colors.php:333
+msgid "Ad info time remaining text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:339
+msgid "Ad info time remaining background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:345
+msgid "Ad indicator in seekbar color"
+msgstr ""
+
+#: includes/preset_config/colors.php:351
+msgid "Ad skip message text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:357
+msgid "Ad skip message text hover color"
+msgstr ""
+
+#: includes/preset_config/colors.php:372
+msgid "Lightbox border color"
+msgstr ""
+
+#: includes/preset_config/colors.php:378
+msgid "Lightbox background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:384
+msgid "Lightbox icon color"
+msgstr ""
+
+#: includes/preset_config/colors.php:399
+msgid "Playlist background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:405
+msgid "Playlist title text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:411
+msgid "Playlist date text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:417
+msgid "Playlist description text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:423
+msgid "Playlist description background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:429
+msgid "Playlist item grid description below thumbnail background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:435
+msgid ""
+"Playlist item grid description below thumbnail, description right of "
+"thumbnail selected background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:450
+msgid "Load more button background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:456
+msgid "Load more button text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:462
+msgid "Load more button hover background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:468
+msgid "Load more button hover text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:483
+msgid "Search filter text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:489
+msgid "Search filter background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:504
+msgid "Unmute button text color"
+msgstr ""
+
+#: includes/preset_config/colors.php:511
+msgid "Unmute button background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:526
+msgid "Related video screen background color"
+msgstr ""
+
+#: includes/preset_config/colors.php:533
+msgid "Related video screen icon color"
+msgstr ""
+
+#: includes/preset_config/colors.php:540
+msgid "Related video screen icon hover color"
+msgstr ""

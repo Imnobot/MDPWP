@@ -11,11 +11,6 @@ $players = $wpdb->get_results("SELECT id, title, preset FROM {$player_table} ORD
 
 <div class="wrap">
 
-	<?php include("playeri.php"); ?>
-
-	<div class="mvp-settings-wrap-panel aptenv-ready">
-	<div id="mvp-player-manager-section">
-
 	<?php include("notice.php"); ?>
 
 	<h2><?php esc_html_e('Manage Players', MVP_TEXTDOMAIN); ?></h2>
@@ -39,7 +34,7 @@ $players = $wpdb->get_results("SELECT id, title, preset FROM {$player_table} ORD
 				<th><?php esc_html_e('Actions', MVP_TEXTDOMAIN); ?></th>
 			</tr>
 		</thead>
-		<tbody id="mvp-player-item-list" data-admin-url="<?php echo admin_url("admin.php"); ?>">
+		<tbody id="player-item-list" data-admin-url="<?php echo admin_url("admin.php"); ?>">
 			<?php foreach($players as $player) : ?>
 
 				<tr class="mvp-player-row player-item" data-title="<?php echo(esc_html($player['title'])); ?>" data-player-id="<?php echo($player['id']); ?>">
@@ -88,8 +83,6 @@ $players = $wpdb->get_results("SELECT id, title, preset FROM {$player_table} ORD
     <div id="mvp-save-holder"></div>
 	
 </div>
-</div>
-</div>
 
 <div id="mvp-add-player-modal" class="mvp-modal">
     <div class="mvp-modal-bg">
@@ -122,7 +115,7 @@ $players = $wpdb->get_results("SELECT id, title, preset FROM {$player_table} ORD
 							<th></th>
 							<td>
 			
-					            <p class="info mvp-player-info player-info-grid1"><?php esc_html_e('Thumbnail grid, can be used with CSS grid. Special skin (playlist display without player). Its used in combination with another player. Playlist tracks can be played and enqueued in another player (normal or lightbox). You need 2 shortcodes for this, one for the grid and another for the player (check plugin help documentation / Custom player skins section)', MVP_TEXTDOMAIN); ?></p>
+					            <p class="info mvp-player-info player-info-grid1"><?php esc_html_e('Thumbnail grid, can be used with masonry or CSS grid. Special skin (playlist display without player). Its used in combination with another player. Playlist tracks can be played and enqueued in another player (normal or lightbox). You need 2 shortcodes for this, one for the grid and another for the player (check plugin help documentation / Custom player skins section)', MVP_TEXTDOMAIN); ?></p>
 
 					            <p class="info mvp-player-info player-info-list1"><?php esc_html_e('Horizontal list of thumbnails. Special skin (playlist display without player). Its used in combination with another player. Playlist tracks can be played and enqueued in another player (normal or lightbox). You need 2 shortcodes for this, one for the list and another for the player (check plugin help documentation / Custom player skins section)', MVP_TEXTDOMAIN); ?></p>
 

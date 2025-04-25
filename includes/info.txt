@@ -1,0 +1,3 @@
+shared if for all layout except grid,list
+
+general2, style2, translation2 is for grid,list layout

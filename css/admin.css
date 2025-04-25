@@ -201,9 +201,8 @@
 
 
 .multi_path_section,
-.subtitle_section,
-.cue_point_section{
-    background: #f1f1f1;
+.subtitle_section{
+	background: #f1f1f1;
     float: left;
     clear: both;
     padding: 10px;
@@ -211,18 +210,16 @@
     margin-bottom: 10px;
 }
 .multi_path_field_remove{
-    display: none;
-    margin-top: 10px;
+	display: none;
+	margin-top: 10px;
 }
-.subtitle_field_remove,
-.cue_point_remove{
-    margin-top: 15px;
+.subtitle_field_remove{
+	margin-top: 15px;
 }
 #multi_path_field_add,
-#subtitle_field_add,
-#cue_point_field_add{
-    float: left;
-    clear: both;
+#subtitle_field_add{
+	float: left;
+	clear: both;
 }
 
 
@@ -244,7 +241,6 @@
 
 /* pagination */
 
-.mvp-stat-pagination-wrap,
 .mvp-pagination-wrap {
     position: relative;
     display: flex;
@@ -345,7 +341,6 @@
 .mvp-pagination-per-page label{
     margin-right: 5px;
 }
-#mvp-stat-pag-per-page-num,
 #mvp-pag-per-page-num{
     margin: 0 5px;
     width: 70px;
@@ -484,18 +479,9 @@ body.mvp-modal-open {
 }
 
 .multi_path_section_orig,
-.subtitle_section_orig,
-.cue_point_section_orig{
+.subtitle_section_orig{
     display: none;
 }
-
-.mvp-admin .multi_path,
-.mvp-admin .subtitle_src,
-.mvp-admin .cue_start_time,
-.mvp-admin .cue_code_type{
-    margin-bottom: 4px;
-}
-
 
 .mvp-edit-media-modal-confirm{
     margin-right: 10px!important;
@@ -511,13 +497,11 @@ body.mvp-modal-open {
 
 
 /* tabs */
-.mvp-tab-header,
-.mvp-tab-header2{
+.mvp-tab-header{
     overflow: hidden;
     background-color: #f1f1f1;
 }
-.mvp-tab-header li,
-.mvp-tab-header2 div{
+.mvp-tab-header li{
 	background-color: #f1f1f1;
     float: left;
     border: none;
@@ -528,7 +512,6 @@ body.mvp-modal-open {
     margin: 0;
 }
 .mvp-tab-header li:hover,
-.mvp-tab-header2 div:hover,
 .mvp-tab-active{
     background-color: #ddd!important;
 }
@@ -556,7 +539,6 @@ body.mvp-modal-open {
     padding: 0;
 }
 .mvp-value-table-wrap input,
-.mvp-value-table-wrap select,
 .mvp-value-table-wrap th{
     width: auto!important;
 }
@@ -768,21 +750,18 @@ body.mvp-modal-open {
 
 
 .mvp-ad-source,
-.mvp-annotation-source,
-.mvp-popup-source{
+.mvp-annotation-source{
     background: #f1f1f1!important;
     /*max-width: 1000px;*/
     margin-bottom: 10px;
     position: relative;
 }
 .mvp-ad-source .option-toggle,
-.mvp-annotation-source .option-toggle,
-.mvp-popup-source .option-toggle{
+.mvp-annotation-source .option-toggle{
     background: #007cba;
 }
 .mvp-ad-source .option-toggle svg,
-.mvp-annotation-source .option-toggle svg,
-.mvp-popup-source .option-toggle svg{
+.mvp-annotation-source .option-toggle svg{
     position: absolute;
     height: 20px;
     color: #fff;
@@ -800,7 +779,7 @@ body.mvp-modal-open {
     height: auto;
 }
 
-#mvp-schedule-file-input,
+
 #mvp-playlist-file-input,
 #mvp-player-file-input,
 #mvp-ad-file-input {
@@ -836,7 +815,7 @@ body.mvp-modal-open {
 
 
 .item-content-list .container{
-    display: inline-block;
+    display: block;
     padding: 5px 5px 5px 0;
 }
 
@@ -911,20 +890,11 @@ body.mvp-modal-open {
 }
 
 
-.mvp-sort-field{
-    white-space: nowrap;
-}
-
-
 .mvp-sort-field:hover{
     text-decoration: underline;
 }
 
 /* statistics */
-
-.media-item-container-hidden{
-     display: none;
-}
 
 .mvp-stat-hidden{
     display: none;
@@ -936,31 +906,6 @@ body.mvp-modal-open {
     justify-content: space-between;
     margin: 20px;
     align-items: center;
-}
-.mvp-stats-heatmap-header{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 20px;
-    align-items: center;
-    background-color: #ddd;
-    margin-bottom: 5px;
-}
-.mvp-stats-user-selector{
-    display: flex;
-    flex-direction: column;
-    margin-top: 20px;
-}
-.mvp-stats-selector{
-    display: flex;
-    flex-direction: column;
-}
-
-
-
-.mvp-stat-export{
-    align-self: flex-end;
-    margin-right: 10px;
 }
 
 table.stat-table{
@@ -1075,7 +1020,6 @@ input.hsrc {
     background: #fff;
     padding: 10px;
     flex: 1;
-    margin: 5px;
     min-width: 350px;
 }
 .top-box-title{
@@ -1093,20 +1037,13 @@ input.hsrc {
     flex-direction: column;
     height: 100%;
 }
-.mvp-top-box-content-total{
+.top-box-content-total{
     display: none;
-}
-.mvp-top-box-content-total-wrap{
     font-size: 20px;
     font-weight: 600;
     color: #d63638;
-    margin-left: 10px;
-}
-.mvp-top-box-content-total-shown{
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row;
-    margin-top: 10px;
+    margin-left: 12px;
+    margin-top: auto;
 }
 
 .mvp-stat-info{
@@ -1121,13 +1058,6 @@ input.hsrc {
 .mvp-modal .inline-stat-table thead th{
     color: #fff!important;
 }
-.inline-stat-table{
-    border: none!important;
-    box-shadow: none!important;
-}
-.inline-stat-table-hidden{
-    display: none;
-}
 
 
 .annotation_path_remove{
@@ -1135,69 +1065,6 @@ input.hsrc {
 }
 
 
-
-
-/* stat canvas */
-.mvp-graph-canvas-wrap{
-    position: relative;
-}
-.mvp-graph-canvas{
-
-}
-.media-action-delete{
-    color: red;
-}
-
-
-
-.stat-details-media-wrap{
-    position: relative;
-    min-height: 700px;
-    width: 100%;
-    background-color: #111;
-}
-.stat-details-heatmap{
-    position: relative;
-    height: 50px;
-    width: 100%;
-    background-color: #fff;
-    border-bottom: 1px solid #b2b2b2;    
-}
-.stat-details-video{
-    position:absolute;
-    visibility: visible;
-    top:0;
-    left:0;
-    max-width:none!important;
-    width: 100%;
-    height: 100%; 
-}
-.stat-details-audio{
-    position:absolute;
-    visibility: visible;
-    bottom:0;
-    left:0;
-    max-width:none!important;
-    width: 100%;
-}
-.stat-details-iframe{
-    position:absolute!important;
-    top:0!important;
-    left:0!important;
-    width:100%!important;
-    height:100%!important;
-    max-width: none!important;
-    max-height: none!important;
-}
-.stat-details-heatmap-cursor{
-    position: absolute;
-    width: 1px;
-    height: 100%;
-    top:0;
-    left:0;
-    background-color: red;
-    pointer-events: none;
-}
 
 
 
@@ -1498,12 +1365,11 @@ input.hsrc {
 #mvp-pi-table-wrap td{
     vertical-align: top!important;
 }
-#mvp-media-tabs .mvp-tab-content{
+#mvp-media-tabs div{
     overflow-x: auto;
 }
 
 .mvp-pi-icon-preview{
-    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1517,14 +1383,6 @@ input.hsrc {
     font-size: 18px;
     font-weight: 900;
     color: #607d8b;
-}
-.mvp-pi-icon-preview svg{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    fill:currentColor;
-    height:100%;
 }
 .mvp-pi-icon-field{
     display: flex;
@@ -1544,125 +1402,4 @@ input.hsrc {
 .mvp-pi-target{
     width: 100px!important;
     vertical-align: bottom!important;
-}
-
-
-
-.vlpt-header{
-    font-size: 1.5em;
-}
-
-
-.mvp-icon-field{
-    vertical-align: top;
-}
-
-.mvp-icon-preview {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 5px;
-    width: 40px;
-    height: 30px;
-    color: #607d8b;
-}
-.mvp-icon-preview svg{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    fill:currentColor;
-    height:100%;
-}
-.mvp-icon-preview img{
-    height:100%;
-    display: block;
-}
-
-.aptenv-ready{
-    visibility: hidden!important;
-    left: -10000px!important;
-    pointer-events: none!important;
-    position: absolute!important;
-    opacity: 0!important;
-}
-.apt-btn{
-    border: 1px solid #333;
-    margin-left: 10px;
-    padding: 5px 10px;
-    background: #f6f7f7;
-    color: #50575e;
-    text-decoration: none;
-    white-space: nowrap;
-    cursor: pointer;
-    border-radius: 3px;
-}
-#mvp-apt-license{
-    padding: 20px;
-    background: #e8e8e8;
-    opacity: 0;
-}
-#mvp-apt-license-act{
-    display: flex;
-    flex-direction: row;
-}
-.apt-btn:hover{
-    background: #2271b1;
-    color: #fff;
-}
-#mvp-apt-license-panel{
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-}
-#mvp-apt-license-details{
-    display: inline-block;
-    padding: 10px 20px;
-    background: #b8d4eb;
-    margin-top: 20px;
-}
-#mvp-apt-license-msg{
-    padding: 10px 20px;
-    margin-top: 10px;
-    color: #fff;
-    display: none;
-}
-.apt-license-valid{
-    background: #4caf50;
-}
-.apt-license-error{
-    background: #f44336;
-}
-
-
-#mvp-pl-video-link{
-    width: 300px;
-}
-
-/* playlist edit */
-.mvp-edit-playlist-msg{
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-    padding: 5px 0;
-}
-.mvp-edit-playlist-msg svg{
-    display: block;
-    height: 14px!important;
-    fill:currentColor;
-    margin-right: 5px;
-}
-.mvp-edited-row{
-    background: #ffe2e0!important;
-    pointer-events: none!important;
-}
-.mvp-edited-row-admin{
-    background: #ffe2e0!important;
-}
-
-
-#mvp-upload-multiple-type-modal label{
-    display: inline-block;
-    padding: 10px;
 }

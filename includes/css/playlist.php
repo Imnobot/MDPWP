@@ -48,6 +48,12 @@
 			color:".$options['loadMoreBtnHoverTextColor'].";
 		}
 		}
+		/* search */
+		#".$wrapper_id." .mvp-search-field{
+		    color:".$options['searchFilterTextColor']." !important;
+		    background:".$options['searchFilterBgColor']." !important;
+		}
+
 		.mvp-visible {
 			opacity: 1!important;
 			transition: opacity 500ms ease-out;

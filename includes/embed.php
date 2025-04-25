@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
 
     <link rel="stylesheet" type="text/css" href="../source/css/mvp.css" />
@@ -19,6 +18,7 @@
         }
     </style>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../source/js/new.js"></script>
 
 </head>
@@ -36,8 +36,6 @@ if(strpos($str, 'origtype') !== false){//single embed
 }
 
 parse_str($str, $atts);
-
-$atts['ap_is_embed'] = '1';
 
 echo mvp_add_player($atts);
 

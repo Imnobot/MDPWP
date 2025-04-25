@@ -14,11 +14,9 @@
 	}
 
 	$dir = $_REQUEST['dir'];
-	$type = json_decode(stripslashes($_REQUEST['type']));
-	$content_url = isset($_REQUEST['content_url']) ? $_REQUEST['content_url'] : null;
+	$content_url = $_REQUEST['content_url'];
+	$type = $_REQUEST['type'];
 	$limit = $_REQUEST['limit'];
-	$requireSubtitlesFromFolder = isset($_REQUEST['requireSubtitlesFromFolder']) ? true : false;
-	$content_type = isset($_REQUEST['content_type']) ? $_REQUEST['content_type'] : null;
 	
 	if(file_exists($dir)==false){
 		echo 'Directory \'', $dir, '\' not found!';
@@ -27,161 +25,96 @@
 	}else{
 	
 		$media = array();
-		$subtitles = array();
 		$i = 0;
 
-		try {
-	        $di = new DirectoryIterator($dir);
-	    } catch (Exception $e) {
-	        echo json_encode('Error reading folder: ' . $e->getMessage());
-	        exit;
-	    }
-
+		$di = new DirectoryIterator($dir);
 		foreach ($di as $fileinfo) {
-
-			if($content_type){
-
-			    if ($fileinfo->isDir() && !$fileinfo->isDot() && $fileinfo->getFilename() != 'poster' && $fileinfo->getFilename() != 'thumb'){
-			        $media[] = getDirContentType($fileinfo->getRealpath(), $content_type);
-			    }
-
-			}else{
-
-				$path_info = pathinfo($fileinfo->getPathname());
-
-				if(isset($path_info['extension'])){
-					if(in_array(strtolower($path_info['extension']), $type)){
-						$fn = $fileinfo->getPathname();
-
-						if(isset($content_url)){
-							$fullpath = $content_url."/".$path_info['basename'];
-						}else{
-							$fullpath = SITE_URL.'/'.path2url(realpath($path_info['dirname'])).'/'.$path_info['basename'];
-						}
-
-						$media[] = array( 
-							"SITE_URL" => SITE_URL, 
-							"SITEPATH" => SITEPATH, 
-							"fullpath" => $fullpath,  
-							"basename" => $path_info['basename'], 
-							"extension" => $path_info['extension'],
-							"dirname" => realpath($path_info['dirname']),
-							"filename" => $path_info['filename'],
-							"filemtime" => filemtime($path_info['dirname'].'/'.$path_info['basename'])
-						); 
-						$i++;  
-						if($i==$limit) break;
-					}
+			$path_info = pathinfo($fileinfo->getPathname());
+			if(isset($path_info['extension'])){
+				if(in_array(strtolower($path_info['extension']), $type)){
+					$fn = $fileinfo->getPathname();
+					$media[] = array( 
+						"SITE_URL" => SITE_URL, 
+						"SITEPATH" => SITEPATH, 
+						"fullpath" => $content_url."/".$path_info['basename'],
+						//"fullpath" => SITE_URL.'/'.path2url_mvp(realpath($path_info['dirname'])).'/'.$path_info['basename'],  
+						//"fullpath" => getUrl($_REQUEST['dir'], $path_info),
+						"basename" => $path_info['basename'], 
+						"extension" => $path_info['extension'],
+						"dirname" => realpath($path_info['dirname']),
+						"filename" => $path_info['filename']
+					); 
+					$i++;  
+					if($i==$limit) break;
 				}
-
-			}
-			
-		}
-
-		//get subs
-		if($requireSubtitlesFromFolder){
-			$si = new DirectoryIterator($dir.'/subtitles');
-			foreach ($si as $fileinfo) {
-			    if ($fileinfo->isDir() && !$fileinfo->isDot()) {
-			        $subtitles[$fileinfo->getFilename()] = getDirContentSub($fileinfo->getRealpath());
-			    }
-			}
-		}
-
-		//merge with videos
-		if(count($subtitles) > 0){
-			foreach($media as &$file){
-			    if(isset($subtitles[$file['filename']])){
-			    	$file['subtitles'] = $subtitles[$file['filename']];
-			    }
 			}
 		}
 
 		echo json_encode($media);
 	}
 
-	function getDirContentSub($dir){
-
-		$type = array('srt','vtt');
-
-		$media = array();
-
-		try {
-	        $di = new DirectoryIterator($dir);
-	    } catch (Exception $e) {
-	        echo json_encode('Error reading folder: ' . $e->getMessage());
-	        exit;
-	    }
-
-		foreach ($di as $fileinfo) {
-			$path_info = pathinfo($fileinfo->getPathname());
-			if(isset($path_info['extension'])){
-				if(in_array(strtolower($path_info['extension']), $type)){
-
-					if(isset($content_url)){
-						$fullpath = $content_url."/".$path_info['basename'];
-					}else{
-						$fullpath = SITE_URL.'/'.path2url(realpath($path_info['dirname'])).'/'.$path_info['basename'];
-					}
-
-					$media[] = array( 
-						"src" => $fullpath,  
-						"extension" => $path_info['extension'],
-						"label" => $path_info['filename'],
-					); 
-
-				}
-			}
-			
-		}
-
-		return $media;
-	}
-
-	function getDirContentType($dir, $ext){
-
-		$type = array($ext);
-
-		try {
-	        $di = new DirectoryIterator($dir);
-	    } catch (Exception $e) {
-	        echo json_encode('Error reading folder: ' . $e->getMessage());
-	        exit;
-	    }
-
-		foreach ($di as $fileinfo) {
-			$path_info = pathinfo($fileinfo->getPathname());
-			if(isset($path_info['extension'])){
-				if(in_array(strtolower($path_info['extension']), $type)){
-
-					if(isset($content_url)){
-						$fullpath = $content_url."/".$path_info['basename'];
-					}else{
-						$fullpath = SITE_URL.'/'.path2url(realpath($path_info['dirname'])).'/'.$path_info['basename'];
-					}
-
-					$media = array( 
-						"SITE_URL" => SITE_URL, 
-						"SITEPATH" => SITEPATH, 
-						"fullpath" => $fullpath,  
-						"basename" => $path_info['basename'], 
-						"extension" => $path_info['extension'],
-						"dirname" => realpath($path_info['dirname']),
-						"filename" => $path_info['filename'],
-						"filemtime" => filemtime($path_info['dirname'].'/'.$path_info['basename'])
-					); 
-
-				}
-			}
-			
-		}
-
-		return $media;
-	}
-
-
-	function path2url($dirname) {
+	function path2url_mvp($dirname) {
 		return str_replace(SITEPATH, '', str_replace('\\', '/', $dirname));
+	}
+
+	//Gets the corrected directory name
+	function getRealDir($dir)
+	{
+		$realDir = getFullAbsolutePath(pathinfo($dir));
+		$realDir = DIRECTORY_SEPARATOR . $realDir; //Quite odd! The separator was stripped off
+
+		if(file_exists($realDir)==false)
+		{
+			echo 'Directory \'', $dir, '\' not found!';
+			return false;
+		}
+
+		if(!is_readable($realDir))
+		{
+			echo 'Directory \'', $dir, '\' is not readable! Check your permissions!';
+			return false;
+		}
+
+		return $realDir;
+	}
+
+
+	//Gets the url based on the given path info
+	function getUrl($dir, $path_info)
+	{
+		$scriptFolder = dirname($_SERVER['PHP_SELF']);
+		$audioFolder =  $dir;
+		$audioFile =  $path_info['basename'];
+		$url = $scriptFolder . '/'. $audioFolder . '/' . $audioFile;
+		$url = getRealPath($url, '/');
+		$url = SITE_URL . '/' . $url;
+	    return $url;
+	}
+
+	//Gets the real path, but without resolving symbolic links . A replacement for PHP standard function realpath().
+	function getRealPath($path, $dirSeperator = DIRECTORY_SEPARATOR)
+	{
+	    $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
+	    $parts = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'strlen');
+	    $absolutes = array();
+	    foreach ($parts as $part) {
+	        if ('.' == $part) continue;
+	        if ('..' == $part) {
+	            array_pop($absolutes);
+	        } else {
+	            $absolutes[] = $part;
+	        }
+	    }
+
+	    return implode($dirSeperator, $absolutes);
+	}
+
+	//Gets the full absolute path based on the given path info
+	//Note: Even if the path is correct, jsmediatags cannot read the file, probably because it (also) cannot handle a path containing a symbolic link
+	function getFullAbsolutePath($path_info)
+	{
+	    $fullAbsolutePath = getRealPath(SITEPATH . DIRECTORY_SEPARATOR . dirname($_SERVER['PHP_SELF']) . DIRECTORY_SEPARATOR . $path_info['dirname'] . DIRECTORY_SEPARATOR . $path_info['basename']);
+	    return $fullAbsolutePath;
 	}
 
 ?>

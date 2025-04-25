@@ -1,4 +1,4 @@
-<p class="info ad-info"><?php esc_html_e('Annotations can be image, iframe, AdSense or any HTML placed over video area during playback. Start and end time when annotations is displayed can be defined. Multiple annotations can be shown at a time.', MVP_TEXTDOMAIN); ?></p> 
+<p class="info ad-info"><?php esc_html_e('Annotations can be image, iframe, AdSense or any HTML placed over video area during playback. Start and end time when annotations is displayed can be defined.', MVP_TEXTDOMAIN); ?></p> 
 
 
 <div class="mvp-annotation-content"></div>
@@ -35,11 +35,8 @@
                         <option value="adsense-code"><?php esc_html_e('AdSense full code', MVP_TEXTDOMAIN); ?></option>
 		            </select>
 		            <p class="info annotation_adsense_detail_info"><?php esc_html_e('Enter AdSense details (client, slot, width and height)', MVP_TEXTDOMAIN); ?></p>
-
-		            <input type="hidden" class="display_type" name="display_type" value="annotation">
 	        	</td>
-			</tr>  
-
+			</tr>    
             <tr valign="top" class="annotation_path_field">
 				<th><?php esc_html_e('Content *', MVP_TEXTDOMAIN); ?></th>
 				<td>
@@ -52,20 +49,12 @@
 
 		            <p class="info annotation_iframe_info"><?php esc_html_e('Enter iframe src attribute ONLY!', MVP_TEXTDOMAIN); ?></p>
 
+		            <p class="info annotation_html_info"><?php printf(__( 'Enter HTML which will be placed inside annotation. <a href="%s" target="_blank">Validate your HTML</a> to make sure it doesnt break the player markup.', MVP_TEXTDOMAIN), esc_url( 'https://validator.w3.org/#validate_by_input' ));?></p>
+
 		            <p class="info annotation_shortcode_info"><?php esc_html_e('Add shortcode which will be executed in annotation. Nested shortcodes are not supported.', MVP_TEXTDOMAIN); ?></p>
 
 		            <p class="info annotation_adsense_code_info"><?php esc_html_e('Enter AdSense ins tag ONLY, do not enter script tag here. If you have AdSense CSS, enter it below in CSS styling field.', MVP_TEXTDOMAIN); ?></p>
 
-	            </td>
-			</tr>
-
-			<tr valign="top" class="annotation_html_content_field">
-				<th><?php esc_html_e('Content *', MVP_TEXTDOMAIN); ?></th>
-				<td>
-
-					<textarea class="annotation_html_content annotation_elem" name="" data-cname="html_content"></textarea>
-
-					<p class="info"><?php esc_html_e('Add HTML which will be placed inside annotation', MVP_TEXTDOMAIN); ?></p>
 	            </td>
 			</tr>
 
@@ -174,7 +163,7 @@
 				<th><?php esc_html_e('CSS styling', MVP_TEXTDOMAIN); ?></th>
 				<td>
 					<textarea class="annotation_css annotation_elem" name="" data-cname="css" rows="5"></textarea>
-		            <p class="info"><?php esc_html_e('Add custom CSS for annotation. This can be also set in player custom CSS section instead.', MVP_TEXTDOMAIN); ?></p>
+		            <p class="info"><?php esc_html_e('Add custom CSS for annotation.', MVP_TEXTDOMAIN); ?></p>
 	            </td>
 			</tr>  
 

@@ -11,7 +11,7 @@ if(isset($_GET['ad_id'])){
 	//ad options
 	$stmt = $wpdb->get_row($wpdb->prepare("SELECT title, options FROM {$global_ad_table} WHERE id = %d", $ad_id), ARRAY_A);
 	$ad_title = $stmt['title'];
-	$ad_options = isset($stmt['options']) ? unserialize($stmt['options']) : [];
+	$ad_options = unserialize($stmt['options']);
 
     //ads
 
@@ -32,7 +32,7 @@ if(isset($_GET['ad_id'])){
 
 if(isset($_GET['mvp_msg'])){
 	$msg = $_GET['mvp_msg'];
-	if($msg == 'ad_created')$msg = esc_html__('Ad section created!', MVP_TEXTDOMAIN); 
+	if($msg == 'ad_created')$msg = 'Ad section created!'; 
 }else{
 	$msg = null;
 }
@@ -47,11 +47,6 @@ if(isset($_GET['mvp_msg'])){
 
 
 <div class='wrap'>
-
-	<?php include("playeri.php"); ?>
-
-	<div class="mvp-settings-wrap-panel aptenv-ready">
-	<div id="mvp-ad-manager-section">
 
 	<?php include("notice.php"); ?>
 
@@ -73,7 +68,6 @@ if(isset($_GET['mvp_msg'])){
 				    <ul class="mvp-tab-header">
 				        <li id="mvp-tab-ad-adverts"><?php esc_html_e('Adverts', MVP_TEXTDOMAIN); ?></li>
 				        <li id="mvp-tab-ad-annotations"><?php esc_html_e('Annotations', MVP_TEXTDOMAIN); ?></li>
-				        <li id="mvp-tab-ad-popup"><?php esc_html_e('Popups', MVP_TEXTDOMAIN); ?></li>
 				        <li id="mvp-tab-ad-maintenance"><?php esc_html_e('Maintenance', MVP_TEXTDOMAIN); ?></li>
 				    </ul>
 
@@ -83,10 +77,6 @@ if(isset($_GET['mvp_msg'])){
 
 		    		<div id="mvp-tab-ad-annotations-content" class="mvp-tab-content">
 		    			<?php include('annotation_section.php'); ?>
-					</div>
-
-					<div id="mvp-tab-ad-popup-content" class="mvp-tab-content">
-		    			<?php include('popup_section.php'); ?>
 					</div>
 
 					<div id="mvp-tab-ad-maintenance-content" class="mvp-tab-content">
@@ -138,8 +128,6 @@ if(isset($_GET['mvp_msg'])){
 
     <div id="mvp-save-holder"></div>
 
-</div>
-</div>
 </div>
 
 <div id="mvp-loader">

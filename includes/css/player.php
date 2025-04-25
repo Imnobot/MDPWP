@@ -9,12 +9,16 @@
 				display: none;
 			}";
 		}
+				
+		$markup .= "#".$wrapper_id." .mvp-media-holder{
+			background: ".$options['playerBgColor'].";
+		}";
+
 		//include controls (thats only thing that is different per skin)
 		require(dirname(__FILE__)."/controls_".$preset.".php");
 
 		$markup .= "#".$wrapper_id." .mvp-info-holder,
 		#".$wrapper_id." .mvp-share-holder,
-		#".$wrapper_id." .mvp-embed-holder,
 		#".$wrapper_id." .mvp-resume-holder,
 		#".$wrapper_id." .mvp-redirect-login-holder{
 		    background: ".$options['dialogBgColor'].";
@@ -30,18 +34,18 @@
 			color: ".$options['playerDescTextColor'].";
 		}
 		#".$wrapper_id." .mvp-big-play{
-			background-color: ".$options['bigPlayBgColor']."!important;
+			background: ".$options['bigPlayBgColor'].";
 		}
 		#".$wrapper_id." .mvp-big-play svg{
 			color:".$options['bigPlayIconColor'].";
 		}
 		@media (hover: hover) {
-			#".$wrapper_id." .mvp-big-play:hover svg{
-				color:".$options['iconRolloverColor']."!important;
-			}
+		#".$wrapper_id." .mvp-big-play:hover svg{
+			color:".$options['iconRolloverColor']."!important;
+		}
 		}
 		#".$wrapper_id." .mvp-player-loader{
-			border-color: ".$options['preloaderColor'].";
+			background-color: ".$options['preloaderColor'].";
 		}
 		#".$wrapper_id." .mvp-context-menu li{
 			border-bottom: 1px solid ".$options['customContextMenuBorderTopColor'].";
@@ -95,6 +99,17 @@
 			color:".$options['lightboxIconColor'].";
 		}
 
+		/* up next */
+
+		#".$wrapper_id." .mvp-upnext-info{
+			color:".$options['upNextTextColor'].";
+		}
+		@media (hover: hover) {
+		#".$wrapper_id." .mvp-upnext-info:hover{
+			color:".$options['upNextHoverTextColor'].";
+		}
+		}
+
 		/* chapter */				
 
 		#".$wrapper_id." .mvp-chapter-indicator{
@@ -108,17 +123,13 @@
 		}
 
 		/* ad seekbar */
-
-		#".$wrapper_id." .mvp-ad-progress-level::-webkit-progress-bar{
-		    background-color:".$options['adSeekbarBgColor'].";
-		}
-		#".$wrapper_id." .mvp-ad-progress-level::-webkit-progress-value{
-		    background-color:".$options['adSeekbarProgressColor'].";
-		}
-		#".$wrapper_id." .mvp-ad-progress-level::-moz-progress-bar{
-		    background-color:".$options['adSeekbarProgressColor'].";
-		}
 		
+		#".$wrapper_id." .mvp-ad-progress-bg{
+			background:".$options['adSeekbarBgColor'].";
+		}
+		#".$wrapper_id." .mvp-ad-progress-level{
+			background:".$options['adSeekbarProgressColor'].";
+		}
 		#".$wrapper_id." .mvp-ad-info{
 		    color:".$options['adInfoTimeRemainingTextColor'].";
 		    background:".$options['adInfoTimeRemainingBgColor'].";
@@ -149,7 +160,7 @@
 		/* unmute */
 		$markup .= "#".$wrapper_id." .mvp-unmute-toggle{
 		    color: ".$options['unmuteBtnTextColor'].";
-		    background: ".$options['unmuteBtnBgColor']."!important;
+		    background: ".$options['unmuteBtnBgColor'].";
 		}
 
 		";

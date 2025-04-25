@@ -1,94 +1,90 @@
 <?php
 
-$user = wp_get_current_user();
-$is_admin = mvp_isAdmin($user);
-
-
 $folder_sort = array(
-    'filename-asc' => esc_html__('file name ascending', MVP_TEXTDOMAIN),  
-    'filename-desc' => esc_html__('file name descending', MVP_TEXTDOMAIN),  
-    'date-asc' => esc_html__('date ascending', MVP_TEXTDOMAIN),   
-    'date-desc' => esc_html__('date descending', MVP_TEXTDOMAIN),  
+    'filename-asc' => 'file name ascending', 
+    'filename-desc' => 'file name descending', 
+    'date-asc' => 'date ascending', 
+    'date-desc' => 'date descending',
 );
 
 $gdrive_sort = array(
-    'filename-asc' => esc_html__('file name ascending',  MVP_TEXTDOMAIN),  
-    'filename-desc' => esc_html__('file name descending', MVP_TEXTDOMAIN),   
+    'filename-asc' => 'file name ascending', 
+    'filename-desc' => 'file name descending', 
 );
 
 $onedrive_sort = array(
-    'filename-asc' => esc_html__('file name ascending', MVP_TEXTDOMAIN),   
-    'filename-desc' => esc_html__('file name descending', MVP_TEXTDOMAIN),   
-    'date-asc' => esc_html__('date ascending',  MVP_TEXTDOMAIN),  
-    'date-desc' => esc_html__('date descending', MVP_TEXTDOMAIN),  
-    'created-date-asc' => esc_html__('created date ascending', MVP_TEXTDOMAIN),   
-    'created-date-desc' => esc_html__('created date descending', MVP_TEXTDOMAIN),  
+    'filename-asc' => 'file name ascending', 
+    'filename-desc' => 'file name descending', 
+    'date-asc' => 'date ascending', 
+    'date-desc' => 'date descending',
+    'created-date-asc' => 'created date ascending', 
+    'created-date-desc' => 'created date descending',
 );
 
 $yt_sort_arr = array(
-    'relevance' => esc_html__('relevance', MVP_TEXTDOMAIN),  
-    'date' => esc_html__('date',  MVP_TEXTDOMAIN),  
-    'rating' => esc_html__('rating', MVP_TEXTDOMAIN),   
-    'title' => esc_html__('title',  MVP_TEXTDOMAIN),  
-    'videoCount' => esc_html__('videoCount', MVP_TEXTDOMAIN),  
-    'viewCount' => esc_html__('viewCount',  MVP_TEXTDOMAIN),  
+    'relevance' => 'relevance',
+    'date' => 'date', 
+    'rating' => 'rating', 
+    'title' => 'title', 
+    'videoCount' => 'videoCount',
+    'viewCount' => 'viewCount', 
 );
 
 $vimeo_channel_sort_arr = array(
-    'added' => esc_html__('added',  MVP_TEXTDOMAIN),  
-    'alphabetical' => esc_html__('alphabetical', MVP_TEXTDOMAIN),   
-    'comments' => esc_html__('comments',  MVP_TEXTDOMAIN),  
-    'date' => esc_html__('date',  MVP_TEXTDOMAIN),  
-    'default' => esc_html__('default', MVP_TEXTDOMAIN),   
-    'duration' => esc_html__('duration', MVP_TEXTDOMAIN),  
-    'likes' => esc_html__('likes', MVP_TEXTDOMAIN),   
-    'manual' => esc_html__('manual',MVP_TEXTDOMAIN),   
-    'modified_time' => esc_html__('modified_time', MVP_TEXTDOMAIN),   
-    'plays' => esc_html__('plays', MVP_TEXTDOMAIN),  
+    'added' => 'added', 
+    'alphabetical' => 'alphabetical', 
+    'comments' => 'comments', 
+    'date' => 'date', 
+    'default' => 'default', 
+    'duration' => 'duration',
+    'likes' => 'likes', 
+    'manual' => 'manual',
+    'modified_time' => 'modified_time', 
+    'plays' => 'plays'
 );
 
 $vimeo_album_sort_arr = array(
-    'alphabetical' => esc_html__('alphabetical',  MVP_TEXTDOMAIN),  
-    'comments' => esc_html__('comments',  MVP_TEXTDOMAIN),  
-    'date' => esc_html__('date', MVP_TEXTDOMAIN),   
-    'default' => esc_html__('default', MVP_TEXTDOMAIN),   
-    'duration' => esc_html__('duration', MVP_TEXTDOMAIN),  
-    'likes' => esc_html__('likes',  MVP_TEXTDOMAIN),  
-    'manual' => esc_html__('manual', MVP_TEXTDOMAIN),  
-    'modified_time' => esc_html__('modified_time',  MVP_TEXTDOMAIN),  
-    'plays' => esc_html__('plays', MVP_TEXTDOMAIN),  
+    'alphabetical' => 'alphabetical', 
+    'comments' => 'comments', 
+    'date' => 'date', 
+    'default' => 'default', 
+    'duration' => 'duration',
+    'likes' => 'likes', 
+    'manual' => 'manual',
+    'modified_time' => 'modified_time', 
+    'plays' => 'plays'
 );
 
 $vimeo_group_sort_arr = array(
-    'alphabetical' => esc_html__('alphabetical', MVP_TEXTDOMAIN),   
-    'comments' => esc_html__('comments', MVP_TEXTDOMAIN),   
-    'date' => esc_html__('date',  MVP_TEXTDOMAIN),  
-    'duration' => esc_html__('duration', MVP_TEXTDOMAIN),  
-    'likes' => esc_html__('likes',  MVP_TEXTDOMAIN),  
-    'plays' => esc_html__('plays', MVP_TEXTDOMAIN),  
+    'alphabetical' => 'alphabetical', 
+    'comments' => 'comments', 
+    'date' => 'date', 
+    'duration' => 'duration',
+    'likes' => 'likes', 
+    'plays' => 'plays'
 );
 
 $vimeo_ondemand_sort_arr = array(
-    'date' => esc_html__('date',  MVP_TEXTDOMAIN),  
-    'default' => esc_html__('default', MVP_TEXTDOMAIN),  
-    'episode' => esc_html__('episode', MVP_TEXTDOMAIN),   
-    'manual' => esc_html__('manual', MVP_TEXTDOMAIN),  
-    'name' => esc_html__('name',  MVP_TEXTDOMAIN),  
-    'purchase_time' => esc_html__('purchase time',  MVP_TEXTDOMAIN),  
-    'release_date' => esc_html__('release date',  MVP_TEXTDOMAIN),  
+    'date' => 'date', 
+    'default' => 'default',
+    'episode' => 'episode', 
+    'manual' => 'manual',
+    'name' => 'name', 
+    'purchase_time' => 'purchase time', 
+    'release_date' => 'release date', 
 );
 
 $vimeo_folder_sort_arr = array(
-    'alphabetical' => esc_html__('alphabetical', MVP_TEXTDOMAIN),   
-    'date' => esc_html__('date',  MVP_TEXTDOMAIN),  
-    'default' => esc_html__('default',  MVP_TEXTDOMAIN),  
-    'duration' => esc_html__('duration', MVP_TEXTDOMAIN),  
-    'last_user_action_event_date' => esc_html__('last user action', MVP_TEXTDOMAIN),  
+    'alphabetical' => 'alphabetical', 
+    'date' => 'date', 
+    'default' => 'default', 
+    'duration' => 'duration',
+    'last_user_action_event_date' => 'last user action'
 );
 
 $vimeo_sort_dir_arr = array(    
-    'asc' => esc_html__('ascending', MVP_TEXTDOMAIN),  
-    'desc' => esc_html__('descending', MVP_TEXTDOMAIN),  
+    'asc' => 'ascending',
+    'desc' => 'descending'
 );
 
 $target_arr = array(    
@@ -116,8 +112,6 @@ $target_arr = array(
                 <optgroup label="Live streaming">
                     <option value="hls"><?php esc_html_e('HLS Live Streaming', MVP_TEXTDOMAIN); ?></option>
                     <option value="dash"><?php esc_html_e('MPEG DASH Live Streaming', MVP_TEXTDOMAIN); ?></option>
-                    <option value="folder_hls"><?php esc_html_e('Folder with m3u8 HLS files', MVP_TEXTDOMAIN); ?></option>
-                    <option value="folder_dash"><?php esc_html_e('Folder with mpeg DASH files', MVP_TEXTDOMAIN); ?></option>
                 </optgroup>
                 <optgroup label="audio">
                     <option value="audio"><?php esc_html_e('Audio', MVP_TEXTDOMAIN); ?></option>
@@ -127,14 +121,10 @@ $target_arr = array(
                     <option value="image"><?php esc_html_e('image', MVP_TEXTDOMAIN); ?></option>
                     <option value="folder_image"><?php esc_html_e('Folder with image files', MVP_TEXTDOMAIN); ?></option>
                 </optgroup>
-                <?php if(defined('MVP_AWS')) : ?>
-                <optgroup label="Amazon S3">
+                <optgroup label="Amazon">
                     <option value="s3_bucket_video"><?php esc_html_e('Read bucket of video files', MVP_TEXTDOMAIN); ?></option>
-                    <option value="s3_video"><?php esc_html_e('Add single videos from the bucket', MVP_TEXTDOMAIN); ?></option>
-                    <option value="s3_bucket_audio"><?php esc_html_e('Read bucket of audio files', MVP_TEXTDOMAIN); ?></option>
-                    <option value="s3_audio"><?php esc_html_e('Add single audios from the bucket', MVP_TEXTDOMAIN); ?></option>
+                    <option value="s3_video"><?php esc_html_e('Add single video from the bucket', MVP_TEXTDOMAIN); ?></option>
                 </optgroup>
-                <?php endif; ?>
                 <optgroup label="Google drive">
                     <option value="gdrive_folder"><?php esc_html_e('Google Drive folder', MVP_TEXTDOMAIN); ?></option>
                 </optgroup>
@@ -145,7 +135,9 @@ $target_arr = array(
                     <option value="youtube_single"><?php esc_html_e('Youtube single video', MVP_TEXTDOMAIN); ?></option>
                     <option value="youtube_single_list"><?php esc_html_e('multiple Youtube single videos', MVP_TEXTDOMAIN); ?></option>
                     <option value="youtube_playlist"><?php esc_html_e('Youtube playlist', MVP_TEXTDOMAIN); ?></option>
+                    <option value="youtube_playlist_backend"><?php esc_html_e('Youtube playlist in backend', MVP_TEXTDOMAIN); ?></option>
                     <option value="youtube_channel"><?php esc_html_e('Youtube channel', MVP_TEXTDOMAIN); ?></option>
+                    <option value="youtube_channel_backend"><?php esc_html_e('Youtube channel in backend', MVP_TEXTDOMAIN); ?></option>
                 </optgroup>
                 <optgroup label="vimeo">
                     <option value="vimeo_single"><?php esc_html_e('Vimeo single video', MVP_TEXTDOMAIN); ?></option>
@@ -188,7 +180,7 @@ $target_arr = array(
 
             <p id="folder_info" class="info"><?php esc_html_e('Place your folder with files in \'wp-content/uploads/mvp-file-dir\' directory and enter folder name here. Or provide custom folder url on your server.', MVP_TEXTDOMAIN); ?></p>
 
-            <p id="gdrive_info" class="info"><?php esc_html_e('Enter just folder ID PART (not whole url), for example:', MVP_TEXTDOMAIN); ?> https://drive.google.com/drive/folders/ID_PART</p>
+            <p id="gdrive_info" class="info"><?php esc_html_e('Enter folder ID which needs to be public, for example:', MVP_TEXTDOMAIN); ?> 0ByzcNpNrQNpWUFNGcXNCS2lyX1E</p>
 
             <p id="onedrive_info" class="info"><?php esc_html_e('Enter folder share url which needs to be public, for example:', MVP_TEXTDOMAIN); ?> https://1drv.ms/u/s!Av88sx97IzeiaR3CCQxJcw7WvqI</p>
 
@@ -201,6 +193,8 @@ $target_arr = array(
             <p id="yt_video_multiple_info" class="info"><?php esc_html_e('Enter one or more video IDs separated by comma. Example:', MVP_TEXTDOMAIN); ?> <span class="info-highlight2">5zYArkwq2PQ,M4z90wlwYs8</span></p>
 
             <p id="yt_playlist_info" class="info"><?php esc_html_e('Enter playlist ID, only bold part, example:', MVP_TEXTDOMAIN); ?> <span class="info-light">https://www.youtube.com/playlist?list=</span><span class="info-highlight2">PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI</span></p>
+
+            <p id="yt_backend_info" class="info"><?php esc_html_e('Videos will be retrieved now, and all the videos you see here will be visible in the player on the front page. This means if you add new videos to your Youtube account later on, new videos will not be visible in the player unless you add the videos here again using the "Update playlist" button. Use this if you have a lot of traffic on your website and Youtube quota is not enough for you.', MVP_TEXTDOMAIN); ?></p>
 
             <p id="yt_channel_info" class="info"><?php esc_html_e('Enter channel ID, only bold part, example:', MVP_TEXTDOMAIN); ?> <span class="info-light">https://www.youtube.com/channel/</span><span class="info-highlight2">UCqhnX4jA0A5paNd1v-zEysw</span></p>
 
@@ -233,22 +227,6 @@ $target_arr = array(
         </td>
 	</tr>
 
-    <tr valign="top" id="hl_field">
-        <th><?php esc_html_e('Language code', MVP_TEXTDOMAIN); ?></th>
-        <td>
-            <input type="text" id="hl" name="hl">
-            <p class="info"><?php esc_html_e('If your videos have localized title and description, you can show them in your chosen language (en, de..)', MVP_TEXTDOMAIN); ?>&nbsp;<a href="https://en.wikipedia.org/wiki/IETF_language_tag" target="_blank"><?php esc_html_e('Language codes', MVP_TEXTDOMAIN); ?></a></p>
-        </td>
-    </tr>
-
-    <tr valign="top" id="cc_lang_pref_field">
-        <th><?php esc_html_e('Default subtitle language', MVP_TEXTDOMAIN); ?></th>
-        <td>
-            <input type="text" id="cc_lang_pref" name="cc_lang_pref">
-            <p class="info"><?php esc_html_e('If your videos have multiple subtitles languages, you can force to show chosen language on start (en, de..)', MVP_TEXTDOMAIN); ?>&nbsp;<a href="https://www.loc.gov/standards/iso639-2/php/code_list.php" target="_blank"><?php esc_html_e('Language codes', MVP_TEXTDOMAIN); ?></a></p>
-        </td>
-    </tr>
-
     <tr valign="top" id="exclude_field">
         <th><?php esc_html_e('Exclude videos', MVP_TEXTDOMAIN); ?></th>
         <td>
@@ -269,7 +247,7 @@ $target_arr = array(
         <th><?php esc_html_e('MP4 url', MVP_TEXTDOMAIN); ?></th>
         <td>
             <input type="text" id="mp4" name="mp4">
-            <p class="info"><?php esc_html_e('Optional mp4 video as a backup for browsers that do not support live streaming', MVP_TEXTDOMAIN); ?></p>
+            <p class="info"><?php esc_html_e('Add url to mp4 video as a backup for browsers that do not support live streaming (IOS does not support HLS currently)', MVP_TEXTDOMAIN); ?></p>
         </td>
     </tr>
 
@@ -341,11 +319,7 @@ $target_arr = array(
             <div class="multi_path_section_orig">
                 <input type="text" class="multi_path" name="multi_path[]" pattern=".*\S+.*">
                 <button class="multi_path_upload" name="multi_path_upload[]"><?php esc_html_e('Upload', MVP_TEXTDOMAIN); ?></button><br>
-                <input type="text" class="quality_title mvp-label-field" name="quality_title[]" placeholder="<?php esc_attr_e('Menu title quality for example HD, SD etc', MVP_TEXTDOMAIN); ?>" title="Title which appears in menu quality selector" pattern=".*\S+.*">
-
-                <div class="mvp-help-tip"><p><img src="<?php echo plugins_url().'/apmvp/images/menu_quality.jpg' ?>"/></p></div>
-
-                <br>
+                <input type="text" class="quality_title mvp-label-field" name="quality_title[]" placeholder="<?php esc_attr_e('Menu title quality', MVP_TEXTDOMAIN); ?>" title="Title which appears in menu quality selector" pattern=".*\S+.*"><br>
                 <div class="mvp_quality_radio">
                     <label><input type="radio" class="quality_default" name="quality_default[]"><?php esc_html_e('Make this quality default on start', MVP_TEXTDOMAIN); ?></label>
                 </div>
@@ -439,6 +413,24 @@ $target_arr = array(
         </td>
     </tr>
 
+    <tr valign="top" id="limit_field">
+        <th><?php esc_html_e('Results limit', MVP_TEXTDOMAIN); ?></th>
+        <td>
+            <input type="number" id="limit" name="limit" min="1" step="1" value="20">
+            <p class="info"><?php esc_html_e('How many videos to show on start.', MVP_TEXTDOMAIN); ?></p>
+        </td>
+    </tr>
+
+    <tr valign="top" id="load_more_field">
+		<th><?php esc_html_e('Enable Load more option', MVP_TEXTDOMAIN); ?></th>
+		<td>
+			<select id="load_more" name="load_more">
+                <option value="1"><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                <option value="0"><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+            </select>
+            <p class="info"><?php esc_html_e('Load more videos when user scrolls to the bottom.', MVP_TEXTDOMAIN); ?></p>
+		</td>
+	</tr>
     <tr valign="top" id="is360_field">
         <th><?php esc_html_e('Is 360', MVP_TEXTDOMAIN); ?></th>
         <td>
@@ -469,7 +461,6 @@ $target_arr = array(
             <p class="info"><?php esc_html_e('Select yes if you want to play Youtube or Vimeo single videos by providing video thumbnail, title and description yourself so it doesnt use quota to retrieve them.', MVP_TEXTDOMAIN); ?></p>
         </td>
     </tr>
-    
     <tr valign="top" id="islive_field">
         <th><?php esc_html_e('Is live stream', MVP_TEXTDOMAIN); ?></th>
         <td>
@@ -477,10 +468,9 @@ $target_arr = array(
                 <option value="0"><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
                 <option value="1"><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
             </select>
-            <p class="info"><?php esc_html_e('Select yes if video is a live stream. This will show "LIVE" indicator in controls. When LIVE is active, video time is hidden. This is automatically detected for Youtube if API is used!', MVP_TEXTDOMAIN); ?></p>
+            <p class="info"><?php esc_html_e('Select yes if video is a live stream. This will show "LIVE" indicator in controls. When LIVE is active, seekbar and video time are hidden.', MVP_TEXTDOMAIN); ?></p>
         </td>
     </tr>
-
     <tr valign="top" id="lock_time_field">
         <th><?php esc_html_e('Lock video time', MVP_TEXTDOMAIN); ?></th>
         <td>
@@ -551,24 +541,15 @@ $target_arr = array(
 	<tr valign="top" id="title_field">
 		<th><?php esc_html_e('Title', MVP_TEXTDOMAIN); ?></th>
 		<td>
-			<input type="text" id="title" name="title">
+			<textarea class="mvp-media-path-ta" id="title" name="title" rows="3"></textarea>
 		</td>
 	</tr>
 	<tr valign="top" id="description_field">
 		<th><?php esc_html_e('Description', MVP_TEXTDOMAIN); ?></th>
 		<td>
-			<textarea id="description" name="description"></textarea>
+			<textarea class="mvp-media-path-ta" id="description" name="description" rows="3"></textarea>
 		</td>
 	</tr>
-
-    <tr valign="top">
-        <th><?php esc_html_e('Description custom', MVP_TEXTDOMAIN); ?></th>
-        <td>
-            <textarea id="description_custom" name="description_custom" rows="3"></textarea>
-            <p class="info"><?php esc_html_e('Use this if you want to write custom HTML description for video. If this is set, it will be used instead of above title and description fields (HTML allowed).', MVP_TEXTDOMAIN); ?></p>
-        </td>
-    </tr>
-
 	<tr valign="top" id="download_field">
 		<th><?php esc_html_e('Download path', MVP_TEXTDOMAIN); ?></th>
 		<td>
@@ -604,7 +585,7 @@ $target_arr = array(
 
             <div id="mvp-pi-table-wrap" class="mvp-value-table-wrap"></div>
 
-            <p class="info"><?php esc_html_e('Create additional icons in playlist and attach url to them. We suggest using SVG code, but you can also use Font Awesome icons or plain images.', MVP_TEXTDOMAIN); ?></p>
+            <p class="info"><?php esc_html_e('Create additional icons in playlist and attach url to them.', MVP_TEXTDOMAIN); ?></p>
 
             <button type="button" id="pi_add"><?php esc_html_e('Add icon', MVP_TEXTDOMAIN); ?></button><br><br>
 
@@ -624,9 +605,9 @@ $target_arr = array(
               <tbody>
                 <tr class="mvp-icon-table">
 
-                  <td><input type="text" class="mvp-pi-title" placeholder="<?php esc_attr_e('Title', MVP_TEXTDOMAIN); ?>"></td>
+                  <td><input type="text" class="mvp-pi-title" placeholder="<?php esc_attr_e('Title shown on hover', MVP_TEXTDOMAIN); ?>"></td>
 
-                  <td><input type="text" class="mvp-pi-url" placeholder="<?php esc_attr_e('Url link', MVP_TEXTDOMAIN); ?>"></td>
+                  <td><input type="text" class="mvp-pi-url"></td>
 
                   <td><select class="mvp-pi-target">
                     <?php foreach ($target_arr as $key => $value) : ?>
@@ -638,7 +619,7 @@ $target_arr = array(
                   <td><input type="text" class="mvp-pi-rel" placeholder="<?php esc_attr_e('rel attribute', MVP_TEXTDOMAIN); ?>"></td>
 
                   <td>
-                    <input type="text" class="mvp-pi-icon" placeholder="<?php esc_attr_e('Icon or text', MVP_TEXTDOMAIN); ?>"><br>
+                    <input type="text" class="mvp-pi-icon"><br>
 
                     <p class="mvp-pi-icon-field">
                         <span class="mvp-pi-icon-preview"></span>
@@ -722,16 +703,6 @@ $target_arr = array(
         </td>
     </tr>
 
-    <tr valign="top">
-        <th><?php esc_html_e('Loop vast (only for vast with pre adverts)', MVP_TEXTDOMAIN); ?></th>
-        <td>
-            <select id="vast_loop" name="vast_loop">
-                <option value="0"><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                <option value="1"><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-            </select>
-        </td>
-    </tr>
-
     <tr valign="top" id="duration_field">
         <th><?php esc_html_e('Duration', MVP_TEXTDOMAIN); ?></th>
         <td>
@@ -741,18 +712,11 @@ $target_arr = array(
         </td>
     </tr>
 
-     <tr valign="top">
-        <th><?php esc_html_e('Date', MVP_TEXTDOMAIN); ?></th>
-        <td>
-            <input type="date" id="date" name="date">
-        </td>
-    </tr>
-
     <tr valign="top">
         <th><?php esc_html_e('Url link', MVP_TEXTDOMAIN); ?></th>
         <td>
             <input type="text" id="link" name="link">
-            <p class="info"><?php esc_html_e('Url link to open when you click on video area (Not valid for 360 videos and images).', MVP_TEXTDOMAIN); ?></p>
+            <p class="info"><?php esc_html_e('Url link to open when you click on video area (Not valid for 360 videos and images). Can be used for clicktag ads.', MVP_TEXTDOMAIN); ?></p>
         </td>
     </tr>
     <tr valign="top"> 
@@ -769,7 +733,7 @@ $target_arr = array(
 		<th><?php esc_html_e('End Url link', MVP_TEXTDOMAIN); ?></th>
 		<td>
 			<input type="text" id="end_link" name="end_link">
-			<p class="info"><?php esc_html_e('Url link to open when media is finished playing.', MVP_TEXTDOMAIN); ?></p>
+			<p class="info"><?php esc_html_e('Url link to open when media is finished.', MVP_TEXTDOMAIN); ?></p>
 		</td>
 	</tr>
 	<tr valign="top" id="end_target_field">	
@@ -791,30 +755,6 @@ $target_arr = array(
         </td>
     </tr>
 
-    <tr valign="top" id="cue_point_field">
-        <th><?php esc_html_e('Cue points', MVP_TEXTDOMAIN); ?></th>
-        <td id="cue_point_content">
-
-            <div class="cue_point_section_orig">
-               
-                <input type="number" min="0" class="cue_start_time" name="cue_start_time[]" placeholder="<?php esc_attr_e('Cue start time in seconds', MVP_TEXTDOMAIN); ?>"><br>
-
-                <select class="cue_code_type" name="cue_code_type[]">
-                    <option value="callback"><?php esc_html_e('callback (call javascript function in page)', MVP_TEXTDOMAIN); ?></option>
-                    <option value="eval"><?php esc_html_e('eval (execute script from string)', MVP_TEXTDOMAIN); ?></option>
-                </select><br>
-
-                <textarea class="cue_code" name="cue_code[]" rows="2" placeholder="<?php esc_attr_e('Cue code', MVP_TEXTDOMAIN); ?>"></textarea><br>
-
-                <button type="button" class="cue_point_field_remove"><?php esc_html_e('Remove cue point', MVP_TEXTDOMAIN); ?></button>
-            </div>
-
-            <button type="button" id="cue_point_field_add"><?php esc_html_e('Add cue point', MVP_TEXTDOMAIN); ?></button><br>
-            <div style="clear:both"></div>
-            <p class="info"><?php esc_html_e('Add cue point which will trigger at specific time.', MVP_TEXTDOMAIN); ?></p>
-        </td>
-    </tr>
-
     <tr valign="top" id="age-verify_field">
         <th><?php esc_html_e('Video requires age verification', MVP_TEXTDOMAIN); ?></th>
         <td>
@@ -825,7 +765,17 @@ $target_arr = array(
         </td>
     </tr>
 
-    <?php if ($is_admin) : ?>
+    <tr valign="top" id="mvp_size_field">
+        <th><?php esc_html_e('Video width and height [px]', MVP_TEXTDOMAIN); ?></th>
+        <td>
+            <p class="mvp-form-inline">
+            <input type="number" min="0" step="1" id="width" name="width" placeholder="<?php esc_attr_e('width', MVP_TEXTDOMAIN); ?>">
+            <input type="number" min="0" step="1" id="height" name="height" placeholder="<?php esc_attr_e('height', MVP_TEXTDOMAIN); ?>">
+            </p>
+            <p class="info"><?php esc_html_e('Only required if you want to apply Aspect ratio to Youtube and Vimeo videos, then you need to set video width and height values here.', MVP_TEXTDOMAIN); ?></p>
+        </td>
+    </tr>
+
     <tr valign="top" id="additional_playlist_field">
         <th><strong><?php esc_html_e('Add video to additional playlists', MVP_TEXTDOMAIN); ?></strong></th>
         <td>
@@ -846,7 +796,6 @@ $target_arr = array(
             <p class="info"><?php esc_html_e('By default, media is added to current working playlist. You can select additional playlists to add this media to.', MVP_TEXTDOMAIN); ?></p>
         </td>
     </tr>
-    <?php endif; ?>
 
 </table>
 

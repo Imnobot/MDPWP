@@ -1,15 +1,13 @@
 <?php
 
 /*
-Plugin Name: Modern Video Player  
-Description: Ultimate Video Player for WordPress
-Version: 11.61
+Plugin Name: Ultimate Media Gallery for WordPress 
+Plugin URI: https://codecanyon.net/user/Tean/portfolio
+Description: Ultimate Media Gallery for WordPress
+Version: 7.5
 Author: Tean
 Author URI: https://codecanyon.net/user/Tean/
-Plugin URI: https://interactivepixel.net
-Update URI: https://interactivepixel.net_mvp
 */
-
 
 
 
@@ -21,18 +19,13 @@ Update URI: https://interactivepixel.net_mvp
 	define('MVP_CAPABILITY', 'manage_options');
 	define('MVP_BSF_MATCH', 'ebsfm:');//encrypt media 
 	define('MVP_PLUGINS_URL', plugins_url('/apmvp/source/'));
-	define('MVP_TEXTDOMAIN', 'modern-video-player');
-
-	define('MVP_PLUGIN_SLUG', plugin_basename( __DIR__ ));
-	define('MVP_PLUGIN_VERSION', '11.61');
-
-	define('MVP_ID', '21571689');
+	define('MVP_TEXTDOMAIN', 'ultimate-media-gallery');
 
 	include(dirname(__FILE__) . '/includes/utils.php');
 	include(dirname(__FILE__) . '/includes/widgets.php');
-	include(dirname(__FILE__) . '/includes/locale.php');
+	include(dirname(__FILE__) . '/includes/statistics.php');
 	include(dirname(__FILE__) . '/includes/player_options.php');
-	
+	include(dirname(__FILE__) . '/source/includes/ipaddress.php');
 
 
 	if(is_admin()){
@@ -53,21 +46,15 @@ Update URI: https://interactivepixel.net_mvp
 		add_action('wp_ajax_mvp_edit_player_title', 'mvp_edit_player_title');
 		add_action('wp_ajax_mvp_delete_player', 'mvp_delete_player');
 		add_action('wp_ajax_mvp_save_player_options', 'mvp_save_player_options');
-		add_action('wp_ajax_mvp_get_player_lang', 'mvp_get_player_lang');
 
 		//playlist
+		add_action('wp_ajax_mvp_create_playlist', 'mvp_create_playlist');
 		add_action('wp_ajax_mvp_edit_playlist_title', 'mvp_edit_playlist_title');
 		add_action('wp_ajax_mvp_delete_playlist', 'mvp_delete_playlist');
 		add_action('wp_ajax_mvp_duplicate_playlist', 'mvp_duplicate_playlist');
 		add_action('wp_ajax_mvp_save_playlist_options', 'mvp_save_playlist_options');
-		add_action('wp_ajax_mvp_create_playlist', 'mvp_create_playlist');
 
 		add_action('wp_ajax_mvp_domain_rename', 'mvp_domain_rename');
-
-		//favorites
-		add_action('wp_ajax_mvp_get_favorites', 'mvp_get_favorites');
-		add_action('wp_ajax_mvp_add_to_favorites', 'mvp_add_to_favorites');
-		add_action('wp_ajax_mvp_remove_from_favorites', 'mvp_remove_from_favorites');
 
 		//ad
 		add_action('wp_ajax_mvp_edit_ad_title', 'mvp_edit_ad_title');
@@ -75,6 +62,7 @@ Update URI: https://interactivepixel.net_mvp
 		add_action('wp_ajax_mvp_duplicate_ad', 'mvp_duplicate_ad');
 		add_action('wp_ajax_mvp_save_ad_options', 'mvp_save_ad_options');
 		add_action('wp_ajax_mvp_create_ad', 'mvp_create_ad');
+
 		add_action('wp_ajax_mvp_ad_domain_rename', 'mvp_ad_domain_rename');
 
 		//media
@@ -85,6 +73,9 @@ Update URI: https://interactivepixel.net_mvp
 		add_action('wp_ajax_mvp_edit_media', 'mvp_edit_media');
 		add_action('wp_ajax_mvp_add_media', 'mvp_add_media');
 		add_action('wp_ajax_mvp_add_media_multiple', 'mvp_add_media_multiple');
+
+		add_action('wp_ajax_mvp_add_more', 'mvp_add_more');
+		add_action('wp_ajax_nopriv_mvp_add_more', 'mvp_add_more');
 
 		//add_action('wp_ajax_mvp_set_disabled', 'mvp_set_disabled');
 		add_action('wp_ajax_mvp_set_disabled_all', 'mvp_set_disabled_all');
@@ -105,21 +96,30 @@ Update URI: https://interactivepixel.net_mvp
 
 		add_filter('upload_mimes', 'mvp_enable_custom_mime');
 
+		//stat
+		add_action('wp_ajax_mvp_stat_clear', 'mvp_stat_clear');
+		add_action('wp_ajax_mvp_stat_create_graph', 'mvp_stat_create_graph');
+		add_action('wp_ajax_mvp_get_stat_data', 'mvp_get_stat_data');
+		add_action('wp_ajax_mvp_get_stat_user_data', 'mvp_get_stat_user_data');
+
+		add_action('wp_ajax_mvp_play_count', 'mvp_play_count');
+		add_action('wp_ajax_nopriv_mvp_play_count', 'mvp_play_count');
+		add_action('wp_ajax_mvp_download_count', 'mvp_download_count');
+		add_action('wp_ajax_nopriv_mvp_download_count', 'mvp_download_count');
+		add_action('wp_ajax_mvp_finish_count', 'mvp_finish_count');
+		add_action('wp_ajax_nopriv_mvp_finish_count', 'mvp_finish_count');
+
 		//watched percentage
 		add_action('wp_ajax_mvp_set_watched_percentage', 'mvp_set_watched_percentage');
-		//add_action('wp_ajax_nopriv_mvp_set_watched_percentage', 'mvp_set_watched_percentage');
+		add_action('wp_ajax_nopriv_mvp_set_watched_percentage', 'mvp_set_watched_percentage');
 		add_action('wp_ajax_mvp_get_watched_percentage', 'mvp_get_watched_percentage');
-		//add_action('wp_ajax_nopriv_mvp_get_watched_percentage', 'mvp_get_watched_percentage');
+		add_action('wp_ajax_nopriv_mvp_get_watched_percentage', 'mvp_get_watched_percentage');
 		add_action('wp_ajax_mvp_clear_watched_percentage', 'mvp_clear_watched_percentage');
 		add_action('wp_ajax_mvp_clear_watched_percentage_all', 'mvp_clear_watched_percentage_all');
-
 
 		//annotation shortcode
 		add_action('wp_ajax_mvp_annotation_shortcode', 'mvp_annotation_shortcode');
 		add_action('wp_ajax_nopriv_mvp_annotation_shortcode', 'mvp_annotation_shortcode');
-
-		add_action('wp_ajax_mvp_popup_shortcode', 'mvp_popup_shortcode');
-		add_action('wp_ajax_nopriv_mvp_popup_shortcode', 'mvp_popup_shortcode');
 		
 		add_action('init', 'mvp_init_setup');
 		add_action('enqueue_block_editor_assets', 'mvp_enqueue_block_assets');
@@ -128,16 +128,6 @@ Update URI: https://interactivepixel.net_mvp
 
 		//add_action('add_meta_boxes', 'mvp_add_metabox_shortcode');
 
-		add_action('wp_ajax_mvp_set_playlist_edit', 'mvp_set_playlist_edit');
-		add_action('wp_ajax_mvp_check_playlist_edit', 'mvp_check_playlist_edit');
-
-		include(dirname(__FILE__) . '/includes/updates.php');
-
-		add_action('wp_ajax_mvp_check_r', 'mvp_check_r');
-		add_action('wp_ajax_mvp_check_l', 'mvp_check_l');
-		add_action('wp_ajax_mvp_dea_l', 'mvp_dea_l');
-		add_action('wp_ajax_mvp_reg_man', 'mvp_reg_man');
-
 	}else{
 
 		include(dirname(__FILE__) . '/includes/shortcode.php');
@@ -145,6 +135,7 @@ Update URI: https://interactivepixel.net_mvp
 		add_shortcode('apmvp', 'mvp_add_player');
 		add_shortcode('apmvp_video', 'mvp_video');
 		add_shortcode('apmvp_ad', 'mvp_ad');
+		add_shortcode('apmvp_get_stats', 'mvp_get_stats');
 		add_shortcode('apmvp_playlist_display', 'mvp_playlist_display');
 
 		add_action('wp_enqueue_scripts', 'mvp_enqueue_scripts');
@@ -153,80 +144,6 @@ Update URI: https://interactivepixel.net_mvp
 	}
 
 	add_action('widgets_init', 'mvp_register_widgets');
-
-
-
-	############################################//
-	/* playlist edit */
-	//############################################//
-
-	function mvp_set_playlist_edit(){
-
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
-		}
-
-		if(isset($_POST['playlist_id'])){
-
-			$playlist_id = $_POST['playlist_id'];
-			$is_edit = $_POST['is_edit'];
-
-			if($is_edit == '1'){
-				$current_user = wp_get_current_user();
-				$edit_user_id = $current_user->ID;
-			}else{
-				$edit_user_id = null;
-			} 
-
-		   	global $wpdb;
-			$wpdb->show_errors(); 
-		    $playlist_table = $wpdb->prefix . "mvp_playlists";
-
-		    $stmt = $wpdb->update(
-		    	$playlist_table,
-				array('is_edit' => $is_edit, 'edit_user_id' => $edit_user_id),
-				array('id' => $playlist_id),
-				array('%s', '%s'),
-				array('%d')
-		    );
-
-	    	if($stmt !== false){
-	    		echo json_encode($stmt);
-	    	}
-
-	    	wp_die();
-	    	
-		}else{
-			wp_die();
-		}
-	}
-
-	function mvp_check_playlist_edit(){
-
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
-		}
-	
-	   	global $wpdb;
-		$wpdb->show_errors(); 
-	    $playlist_table = $wpdb->prefix . "mvp_playlists";
-
-	    $stmt = $wpdb->get_results("SELECT id, is_edit, edit_user_id FROM {$playlist_table}", ARRAY_A);
-
-	    $arr = array();
-	    foreach ($stmt as $key => $value) {
-	    	$arr[$key] = $value;
-	    	//$arr['role'] = 
-	    }
-
-    	echo json_encode($arr);
-
-    	wp_die();
-    	
-	}
-
 
 
     ############################################//
@@ -278,14 +195,16 @@ Update URI: https://interactivepixel.net_mvp
 
 	function mvp_add_metabox_shortcode() {
 
-		wp_enqueue_script("mvp-metabox", plugins_url('/js/admin_global.js'."?rand=" . rand(), __FILE__), array('jquery'));
+		wp_enqueue_script("mvp-metabox", plugins_url('/js/admin_global.js', __FILE__), array('jquery'));
+
+		wp_enqueue_script("mvp-metabox-shortcode", plugins_url('/js/admin_shortcode.js', __FILE__), array('jquery'));
 
 		wp_localize_script('mvp-metabox-shortcode', 'mvp_data', array('plugins_url' => plugins_url('', __FILE__), 
 														         'ajax_url' => admin_url( 'admin-ajax.php'),
 														         'security'  => wp_create_nonce( 'mvp-security-nonce' )));
 
 		$id = 'mvp-metabox-shortcode';
-		$title = 'Modern Video Player Shortcode Generator';
+		$title = 'Ultimate media gallery Shortcode Generator';
 		$posts = array('post', 'page');
 
 		$args = array(
@@ -322,7 +241,408 @@ Update URI: https://interactivepixel.net_mvp
 	    return $classes;
 	}
 
+	//############################################//
+	/* statistics */
+	//############################################//
+
+	function mvp_get_stat_data(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['type'])){
+
+			$type = $_POST["type"];
+
+			if($type == 'player'){
+
+				$player_id = $_POST["type_id"];
+
+			}else if($type == 'playlist'){
+
+				$playlist_id = $_POST["type_id"];
+
+				$data = array(
+					'results' => mvp_getAll($playlist_id, null, 'title'),
+				    'total' => mvp_getTotal($playlist_id),
+					'top_day' => mvp_getTopPlayToday($playlist_id),
+					'top_day_grand_total' => mvp_getTopPlayLastXDaysTotal(null, $playlist_id, 30),
+					'top_week' => mvp_getTopPlayThisWeek($playlist_id),
+					'top_month' => mvp_getTopPlayThisMonth($playlist_id),
+					'top_plays' => mvp_getTopPlayAllTime($playlist_id),
+					'top_downloads' => mvp_getTopDownloadAllTime($playlist_id),
+					'top_finish' => mvp_getTopFinishAllTime($playlist_id),
+					'top_plays_country' => mvp_getTopPlaysPerCountryAllTime($playlist_id),
+					'top_plays_user' => mvp_getTopPlaysPerUserAllTime($playlist_id),
+				);
+
+			}
+
+		    echo json_encode($data);
+	    	
+			wp_die('');
+		
+		}else {
+			wp_die('');
+		}
+
+	}
+
+	function mvp_stat_create_graph(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['media_id'])){
+
+			$media_id = $_POST["media_id"];
+			$title = stripslashes($_POST['title']);
+			$return_days = $_POST["return_days"];
+			$data_display = json_decode(stripcslashes($_POST['data_display']), true); 
+
+			global $wpdb;
+			$wpdb->show_errors(); 
+		    $statistics_table = $wpdb->prefix . "mvp_statistics";
+
+		    $results = mvp_getTotalLastXDays($media_id, $title, $return_days, $data_display);
+
+		    echo json_encode($results);
+	    	
+			wp_die('');
+		
+		}else {
+			wp_die('');
+		}
+
+	}
+
+	function mvp_play_count(){
+	 	
+		if(isset($_POST['media_id']) && isset($_POST['playlist_id'])){
+
+			$media_id = (int)$_POST["media_id"];
+			$playlist_id = (int)$_POST["playlist_id"];
+			$date = date("Y-m-d");
+			$title = stripslashes($_POST['title']);
+			$thumb = stripslashes($_POST['thumb']);
+			$currentTime = (int)$_POST['currentTime'];
+			$duration = (int)$_POST['duration'];
+			$percentToCountAsPlay = $_POST['percentToCountAsPlay'];
+			$countryData = isset($_POST['countryData']) ? json_decode(stripcslashes($_POST['countryData']), true) : null; 
+			$video_url = stripslashes($_POST['video_url']);
+
+			$percent = $duration / (100 / $percentToCountAsPlay);
+			if($currentTime > $percent){
+			    $play_add = 1;
+			} else {
+			    $play_add = 0;
+			}
+
+			global $wpdb;
+		    $statistics_table = $wpdb->prefix . "mvp_statistics";
+		    $statistics_country_table = $wpdb->prefix . "mvp_statistics_country";
+		    $statistics_country_play_table = $wpdb->prefix . "mvp_statistics_country_play";
+		    $statistics_user_table = $wpdb->prefix . "mvp_statistics_user";
+		    $statistics_user_play_table = $wpdb->prefix . "mvp_statistics_user_play";
+
+		    //check if exist
+		    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_table WHERE media_id=%d AND title=%s AND c_date=%s", $media_id, $title, $date));
+
+		    if($wpdb->num_rows == 0){//create entry
+
+				$stmt = $wpdb->query("INSERT INTO $statistics_table (title, c_play, c_time, c_download, c_finish, c_date, media_id, playlist_id) VALUES ('$title', 1, '$currentTime', 0, 0, '$date', '$media_id', '$playlist_id')");
+
+		    }else{//update 
+
+		    	$stmt = $wpdb->query($wpdb->prepare("UPDATE $statistics_table SET c_play=c_play+$play_add, c_time=c_time+%d WHERE media_id=%d AND title=%s AND c_date=%s LIMIT 1", $currentTime, $media_id, $title, $date));
+		   
+		    }
+
+
+		    //country
+		    if(isset($countryData) && !empty($countryData)){
+
+			    $stmt = $wpdb->get_var($wpdb->prepare("SELECT id FROM $statistics_country_table WHERE country_code=%s", $countryData['country_code']));
+
+			  	if($wpdb->num_rows == 0){
+
+			  		$country = $countryData['country'];
+			  		$country_code = $countryData['country_code'];
+			  		$continent = $countryData['continent'];
+
+					$wpdb->query("INSERT INTO $statistics_country_table (country, country_code, continent) VALUES ('$country', '$country_code', '$continent')");
+					$country_id = $wpdb->insert_id;
+			    }else{
+			    	$country_id = $stmt;
+			    }
+
+			    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_country_play_table WHERE media_id=%d AND title=%s AND c_date=%s AND country_id=%d", $media_id, $title, $date, $country_id));
+
+			    if($wpdb->num_rows == 0){
+
+					$wpdb->query("INSERT INTO $statistics_country_play_table (title, thumb, video_url, c_play, c_time, c_date, media_id, playlist_id, country_id) VALUES ('$title', '$thumb', '$video_url', 1, '$currentTime', '$date', '$media_id', '$playlist_id', '$country_id')");
+
+			    }else{//update 
+
+			    	$wpdb->query($wpdb->prepare("UPDATE $statistics_country_play_table SET c_play=c_play+$play_add, c_time=c_time+%d WHERE media_id=%d AND title=%s AND c_date=%s AND country_id=%d LIMIT 1", $currentTime, $media_id, $title, $date, $country_id));
+			   
+			    }
+
+
+		    }
+
+
+		    //user
+
+			if(is_user_logged_in()){ 
+			    $current_user = wp_get_current_user();
+
+			    $stmt = $wpdb->get_var($wpdb->prepare("SELECT id FROM $statistics_user_table WHERE user_id=%s", $current_user->ID));
+
+			  	if($wpdb->num_rows == 0){
+
+			  		$uid = $current_user->ID;
+			  		$user_display_name = $current_user->display_name;
+			  		$user_role = implode(",", $current_user->roles);
+
+					$wpdb->query("INSERT INTO $statistics_user_table (user_id, user_display_name, user_role) VALUES ('$uid', '$user_display_name', '$user_role')");
+					$user_id = $wpdb->insert_id;
+			    }else{
+			    	$user_id = $stmt;
+			    }
+
+			    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_user_play_table WHERE media_id=%d AND title=%s AND c_date=%s AND user_id=%d", $media_id, $title, $date, $user_id));
+
+			    if($wpdb->num_rows == 0){
+
+					$wpdb->query("INSERT INTO $statistics_user_play_table (title, thumb, video_url, c_play, c_time, c_date, media_id, playlist_id, user_id) VALUES ('$title',  '$thumb', '$video_url', 1, '$currentTime', '$date', '$media_id', '$playlist_id', '$user_id')");
+
+			    }else{//update 
+
+			    	$wpdb->query($wpdb->prepare("UPDATE $statistics_user_play_table SET c_play=c_play+$play_add, c_time=c_time+%d WHERE media_id=%d AND title=%s AND c_date=%s AND user_id=%d LIMIT 1", $currentTime, $media_id, $title, $date, $user_id));
+			   
+			    }
+
+			}
+
+
+		    if($stmt !== false){
+	    		echo json_encode($stmt);
+	    	}
+		   
+			wp_die();
+
+		}else {
+			wp_die();
+		}
+	}
+
+	function mvp_download_count(){
+
+		if(isset($_POST['media_id']) && isset($_POST['playlist_id'])){
+
+			$media_id = (int)$_POST["media_id"];
+			$playlist_id = (int)$_POST["playlist_id"];
+			$date = date("Y-m-d");
+			$title = stripslashes($_POST['title']);
+
+			global $wpdb;
+			$wpdb->show_errors(); 
+		    $statistics_table = $wpdb->prefix . "mvp_statistics";
+
+		    //check if exist
+		    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_table WHERE media_id=%d AND title=%s AND c_date=%s", $media_id, $title, $date));
+
+		    if($wpdb->num_rows == 0){//create entry
+
+				$stmt = $wpdb->query("INSERT INTO $statistics_table (title, c_play, c_time, c_download, c_finish, c_date, media_id, playlist_id) VALUES ('$title', 0, 0, 1, 0, '$date', '$media_id', '$playlist_id')");
+
+		    }else{//update 
+
+		    	$stmt = $wpdb->query($wpdb->prepare("UPDATE $statistics_table SET c_download=c_download+1 WHERE media_id=%d AND title=%s AND c_date=%s LIMIT 1", $media_id, $title, $date));
+		    	
+		    }
+
+		    if($stmt !== false){
+	    		echo json_encode($stmt);
+	    	}
+	    	
+			wp_die();
+		
+		}else {
+			wp_die();
+		}
+
+	}
+
+	function mvp_finish_count(){
+
+		if(isset($_POST['media_id']) && isset($_POST['playlist_id'])){
+
+			$media_id = (int)$_POST["media_id"];
+			$playlist_id = (int)$_POST["playlist_id"];
+			$date = date("Y-m-d");
+			$title = stripslashes($_POST['title']);
+
+			global $wpdb;
+			$wpdb->show_errors(); 
+
+		    $statistics_table = $wpdb->prefix . "mvp_statistics";
+
+		    //check if exist
+		    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_table WHERE media_id=%d AND title=%s AND c_date=%s", $media_id, $title, $date));
+
+		    if($wpdb->num_rows == 0){//create entry
+
+				$stmt = $wpdb->query("INSERT INTO $statistics_table (title, c_play, c_time, c_download, c_finish, c_date, media_id, playlist_id) VALUES ('$title', 0, 0, 0, 1, '$date', '$media_id', '$playlist_id')");
+
+		    }else{//update 
+
+		    	$stmt = $wpdb->query($wpdb->prepare("UPDATE $statistics_table SET c_finish=c_finish+1 WHERE media_id=%d AND title=%s AND c_date=%s LIMIT 1", $media_id, $title, $date));
+		    	
+		    }
+
+		    if($stmt !== false){
+	    		echo json_encode($stmt);
+	    	}
+		    	
+			wp_die();
+		
+		}else {
+			wp_die();
+		}
+
+	}
+
+	function mvp_get_stats($atts){
+
+		if(!isset($atts['action']))return "Action parameter missing!";
+
+		$action = $atts['action'];
+		$playlist_id = isset($atts['playlist_id']) ? $atts["playlist_id"] : -1;
+        $days = isset($atts['days']) ? $atts['days'] : 7;
+        $limit = isset($atts['limit']) ? $atts['limit'] : 10;
+        $dir = isset($atts['dir']) ? strtoupper($atts['dir']) : 'DESC';
+        $title = isset($atts['title']) ? $atts['title'] : '';
+        $hiperlink_video = isset($atts['hiperlink_video']) ? $atts['hiperlink_video'] : '0';
+
+        if($action == 'top_play_today')$results = mvp_getTopPlayToday($playlist_id, $limit, $dir);
+        else if($action == 'top_play_last_x_days')$results = mvp_getTopPlayLastXDays($playlist_id, $days, $limit, $dir);
+        else if($action == 'top_play_this_week')$results = mvp_getTopPlayThisWeek($playlist_id, $limit, $dir);
+        else if($action == 'top_play_this_month')$results = mvp_getTopPlayThisMonth($playlist_id, $limit, $dir);
+        else if($action == 'top_play_all_time')$results = mvp_getTopPlayAllTime($playlist_id, $limit, $dir);
+        else if($action == 'top_download_all_time')$results = mvp_getTopDownloadAllTime($playlist_id, $limit, $dir);
+        else if($action == 'top_finish_all_time')$results = mvp_getTopFinishAllTime($playlist_id, $limit, $dir);
+		else return "Action parameter incorrect!";
+
+		if(count($results) > 0){
+
+			$id = 'mvp-stat-wrap'.mt_rand();//to limit selector for click
+
+		  	$markup = '<div class="mvp-stat-wrap" id="'.$id.'">
+					<div class="mvp-stat-wrap-header">
+						<span>'.esc_html($title).'</span>
+					</div>
+					<ol>';
+					foreach($results as $key) : 
+						
+						if($hiperlink_video == '1'){
+
+							$markup .= '<li class="mvp-stat-item" data-media-id="'.esc_attr($key['media_id']).'" title="'.esc_attr(trim($key['title'])).'">';//we need title and artist and special song selection if songs come from grouped source (and media-id is the same)
+							$markup .= '<a href="#">'.esc_html($key['title']).'</a>';
+
+						}else{
+
+							$markup .= '<li class="mvp-stat-item">';
+
+							$markup .= esc_html(trim($key['title']));
+						}
+
+						$markup .= '<span class="mvp-stat-info">('.$key['total_count'].')</span></li>';
+					endforeach;
+					$markup .= '</ol>
+			</div>';
+
+			if(isset($atts['player_id']) && $hiperlink_video == '1'){
+        		$player_id = $atts['player_id'];
+        		//click to play in player (note: we must use the same playlist_id that is loaded in the player)
+        		$markup .= '<script type="text/javascript">
+					var elem = document.getElementById("'.$id.'"),
+					items = elem.querySelectorAll(".mvp-stat-item"), i, len = items.length;
+					for (i = 0; i < len; i++) {
+					    items[i].addEventListener("click", function(e) { 
+					    	e.preventDefault();
+					    	mvp_player'.$player_id.'.loadMedia("id-title", this.getAttribute("data-media-id"), this.getAttribute("title")); return false;  
+						}, false);
+					}
+				</script>';   
+			}
+
+			return $markup;
+
+		}else{
+			return '';
+		}
+		
+	}
+
+	function mvp_stat_clear(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['playlist_id'])){
+
+			$playlist_id = $_POST["playlist_id"];
+
+			global $wpdb;
+		    $statistics_table = $wpdb->prefix . "mvp_statistics";
+
+	    	if($playlist_id != -1){
+	    		$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$statistics_table} WHERE playlist_id=%d", $playlist_id));
+	    	}else{
+	    		$stmt = $wpdb->query("DELETE FROM {$statistics_table}");
+	    	}
+
+	    	if($stmt !== false){
+	    		echo json_encode("SUCCESS");
+	    	}
 	
+		    wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_get_stat_user_data(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['user_id'])){
+
+			$user_id = $_POST["user_id"];
+
+			$results = mvp_getTopPlaysPerUserVideosAllTime($user_id);
+
+		    echo json_encode($results);
+	    	
+			wp_die('');
+		
+		}else {
+			wp_die('');
+		}
+
+	}
 
 	//############################################//
 	/* watched */
@@ -339,21 +659,12 @@ Update URI: https://interactivepixel.net_mvp
 			$url = !mvp_nullOrEmpty($_POST["url"]) ? $_POST["url"] : NULL;
 
 			$arr = array( 
-				'title' => $url, //we use title to distinguish because of grouped media (yt playlist etc)
+				'title' => $url, 
 				'watched' => $watched, 
 				'duration' => $duration, 
 				'media_id' => $media_id,
 				'playlist_id' => $playlist_id
 			);
-
-			if(is_user_logged_in()){ 
-			    $current_user = wp_get_current_user();
-			    $arr['user_id'] = $current_user->ID;
-			    $user_id = $current_user->ID;
-			}else{
-				$arr['user_id'] = null;
-				$user_id = null;
-			}
 
 			global $wpdb;
 		    $watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
@@ -361,7 +672,7 @@ Update URI: https://interactivepixel.net_mvp
 		    if($media_id && $url){
 
 		    	//check if exist
-			    $stmt = $wpdb->get_row($wpdb->prepare("SELECT id FROM $watched_percentage_table WHERE media_id=%d AND title=%s AND user_id=%d", $media_id, $url, $user_id));
+			    $stmt = $wpdb->get_row($wpdb->prepare("SELECT id FROM $watched_percentage_table WHERE media_id=%d AND title=%s", $media_id, $url));
 
 			    if($wpdb->num_rows == 0){//create entry
 
@@ -369,7 +680,7 @@ Update URI: https://interactivepixel.net_mvp
 				    	$watched_percentage_table,
 						$arr,
 						array( 
-							'%s','%d','%d','%d','%d','%d'
+							'%s','%d','%d','%d','%d'
 						) 
 				    );
 
@@ -377,9 +688,9 @@ Update URI: https://interactivepixel.net_mvp
 
 					$query = "UPDATE $watched_percentage_table
 					SET watched = GREATEST($watched, watched)
-					WHERE media_id = %d AND title = %s AND user_id=%d";
+					WHERE media_id = %d AND title = %s";
 
-					$values = array($media_id, $url, $user_id);
+					$values = array($media_id, $url);
 
 					$stmt = $wpdb->query( $wpdb->prepare( "$query ", $values ) );
 
@@ -394,7 +705,7 @@ Update URI: https://interactivepixel.net_mvp
 		    }else if($url){//use title for url so we dont change column
 
 		    	//check if exist
-			    $stmt = $wpdb->get_row($wpdb->prepare("SELECT id FROM $watched_percentage_table WHERE title=%s AND user_id=%d", $url, $user_id));
+			    $stmt = $wpdb->get_row($wpdb->prepare("SELECT id FROM $watched_percentage_table WHERE title=%s", $url));
 
 			    if($wpdb->num_rows == 0){//create entry
 
@@ -402,13 +713,13 @@ Update URI: https://interactivepixel.net_mvp
 				    	$watched_percentage_table,
 						$arr,
 						array( 
-							'%s','%d','%d','%d','%d','%d'
+							'%s','%d','%d','%d','%d'
 						) 
 				    );
 
 			    }else{//update only if larger
 
-					$stmt = $wpdb->query( $wpdb->prepare("UPDATE $watched_percentage_table SET watched = GREATEST($watched, watched) WHERE title = %s AND user_id=%d", $url, $user_id ) );
+					$stmt = $wpdb->query( $wpdb->prepare("UPDATE $watched_percentage_table SET watched = GREATEST($watched, watched) WHERE title = %s", $url ) );
 
 			    }
 
@@ -431,37 +742,32 @@ Update URI: https://interactivepixel.net_mvp
 	 	
 		if(isset($_POST['data'])){
 
-			if(is_user_logged_in()){ 
-			    $current_user = wp_get_current_user();
+			global $wpdb;
+		    $watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
 
-				global $wpdb;
-			    $watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
+			//https://stackoverflow.com/questions/44706196/mysql-multiple-columns-in-in-clause
 
-				//https://stackoverflow.com/questions/44706196/mysql-multiple-columns-in-in-clause
-
-				$data = json_decode(stripcslashes($_POST['data']), true); 
-				$len = count($data);
-				$i = 0;
-				$str = '(';
-					foreach ($data as $d) {
-						$title = $d['url'];
-						if($d['media_id'] == null){
-							$str .= '( media_id IS NULL AND title = \''.$title.'\' AND user_id = \''.$current_user->ID.'\' )';
-						}else{
-							$str .= '( media_id = \''.$d['media_id'].'\' AND title = \''.$title.'\' AND user_id = \''.$current_user->ID.'\')';
-						}
-						if($i < $len-1)$str .= ' OR ';
-						$i++;
+			$data = json_decode(stripcslashes($_POST['data']), true); 
+			$len = count($data);
+			$i = 0;
+			$str = '(';
+				foreach ($data as $d) {
+					$title = $d['url'];
+					if($d['media_id'] == null){
+						$str .= '( media_id IS NULL AND title = \''.$title.'\' )';
+					}else{
+						$str .= '( media_id = \''.$d['media_id'].'\' AND title = \''.$title.'\' )';
 					}
-				$str .= ')';
+					if($i < $len-1)$str .= ' OR ';
+					$i++;
+				}
+			$str .= ')';
 
-				$stmt = $wpdb->get_results("SELECT media_id, title, user_id, watched, duration FROM $watched_percentage_table WHERE {$str}", ARRAY_A);
+			$stmt = $wpdb->get_results("SELECT media_id, title, watched, duration FROM $watched_percentage_table WHERE {$str}", ARRAY_A);
 
-				if($stmt !== false){
-		    		echo json_encode($stmt);
-		    	}
-
-		    }
+			if($stmt !== false){
+	    		echo json_encode($stmt);
+	    	}
 
 			wp_die();
 
@@ -481,12 +787,10 @@ Update URI: https://interactivepixel.net_mvp
 
 			$playlist_id = (int)$_POST["playlist_id"];
 
-			$current_user = wp_get_current_user();
-
 			global $wpdb;
 		    $watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
 
-			$stmt = $wpdb->query($wpdb->prepare("UPDATE $watched_percentage_table SET watched='0' WHERE playlist_id=%d AND user_id=%d", $playlist_id, $current_user->ID));
+			$stmt = $wpdb->query($wpdb->prepare("UPDATE $watched_percentage_table SET watched='0' WHERE playlist_id=%d", $playlist_id));
 
 			if($stmt !== false){
 	    		echo json_encode($stmt);
@@ -541,24 +845,6 @@ Update URI: https://interactivepixel.net_mvp
 		}
 	}
 
-	function mvp_popup_shortcode(){
-
-		if(isset($_POST['shortcode'])){
-
-			$shortcode = json_decode(stripcslashes($_POST['shortcode']), true);
-			$annotation_id = $_POST['annotation_id'];
-
-			$output = do_shortcode($shortcode);
-
-			echo json_encode(array("annotation_id"=>$annotation_id, "output"=> $output));
-
-			wp_die();
-
-		}else {
-			wp_die();
-		}
-	}
-
 	//############################################//
 	/* mime */
 	//############################################//
@@ -576,15 +862,12 @@ Update URI: https://interactivepixel.net_mvp
 	function mvp_init_setup() {
 
 		if (function_exists('register_block_type')) {
-            register_block_type('modern-video-player/block', array(
+            register_block_type('ultimate-media-gallery/block', array(
                 'attributes' => array(
                     'player_id' => array(
                         'type' => 'string'
                     ),
                     'playlist_id' => array(
-                        'type' => 'string'
-                    ),
-                    'media_id' => array(
                         'type' => 'string'
                     ),
                     'ad_id' => array(
@@ -597,7 +880,7 @@ Update URI: https://interactivepixel.net_mvp
 	}
 
 	function mvp_register_widgets(){
-		register_widget('ModernVideoPlayerWidget');
+		register_widget('UltimateMediaGalleryWidget');
 	}
 
 	function mvp_init_frontend() {
@@ -624,59 +907,25 @@ Update URI: https://interactivepixel.net_mvp
 
 	function mvp_enqueue_block_assets() {
         if (function_exists('register_block_type')) {
-			wp_enqueue_script('apmvp-block', plugins_url('js/block.js'."?rand=" . rand(), __FILE__), array( 'wp-blocks', 'wp-i18n', 'wp-element' ));
+			wp_enqueue_script('apmvp-block', plugins_url('js/block.js', __FILE__), array( 'wp-blocks', 'wp-i18n', 'wp-element' ));
 
-			wp_enqueue_style('mvp-block-editor-css', plugins_url('/css/block.css'."?rand=" . rand(), __FILE__), array('wp-edit-blocks'));
+			wp_enqueue_style('mvp-block-editor-css', plugins_url('/css/block.css', __FILE__), array('wp-edit-blocks'));
 
 			global $wpdb;
             $player_table = $wpdb->prefix . "mvp_players";
             $playlist_table = $wpdb->prefix . "mvp_playlists";
-            $media_table = $wpdb->prefix . "mvp_media";
             $global_ad_table = $wpdb->prefix . "mvp_global_ad";
 
             //load players
             $players = $wpdb->get_results("SELECT id, title FROM {$player_table} ORDER BY title ASC", ARRAY_A);
             //load playlists
             $playlists = $wpdb->get_results("SELECT id, title FROM {$playlist_table} ORDER BY title ASC", ARRAY_A);
-
-            //media
-            $media_arr = array();
-            $playlists_to_display = $wpdb->get_results("SELECT id FROM {$playlist_table}", ARRAY_A);
-            foreach($playlists_to_display as $playlist_id) {
-
-			    $stmt = $wpdb->prepare("SELECT id, title, options FROM $media_table WHERE playlist_id = %d AND disabled = 0 ORDER BY order_id ASC", $playlist_id);
-				
-				if($stmt !== false){
-					$medias = $wpdb->get_results($stmt, ARRAY_A);
-
-					$arr = array();
-
-					foreach($medias as $media){
-						$media_options = unserialize($media['options']);
-						if(isset($media['title']))$media_options['title'] = $media['title'];
-						$arr[] = array(
-							"id" => $media['id'],
-							"options" => $media_options
-			    		);
-					}
-
-					$media_arr[] = array(
-						'playlist_id' => $playlist_id['id'],
-						'media' => $arr
-					);
-
-		    	}
-
-            }
-
             //load ads
             $ads = $wpdb->get_results("SELECT id, title FROM {$global_ad_table} ORDER BY title ASC", ARRAY_A);
 
-			wp_localize_script( 'apmvp-block', 'mvp_block_data', array(
-			   'players' => json_encode($players, JSON_HEX_TAG),
-		       'playlists' => json_encode($playlists, JSON_HEX_TAG),
-		       'media' => json_encode($media_arr, JSON_HEX_TAG),
-		       'ads' => json_encode($ads, JSON_HEX_TAG)));
+			wp_localize_script( 'apmvp-block', 'mvp_block_data', array('players' => json_encode($players, JSON_HEX_TAG),
+																       'playlists' => json_encode($playlists, JSON_HEX_TAG),
+																       'ads' => json_encode($ads, JSON_HEX_TAG)));
 
         }
 
@@ -694,7 +943,7 @@ Update URI: https://interactivepixel.net_mvp
 
 			if (preg_match('%^https?:\/\/(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)(?:$|\/|\?)(?:[?]?.*)$%im', $url, $matches)) {
 
-				$attr['path'] = trim($matches[3]);
+				$attr['path'] = $matches[3];
 				if(isset($attr['width']))$attr['wrapper_max_width'] = $attr['width'];
 				$attr['type'] = 'vimeo_single';
 				$attr['playlist_position'] = 'no-playlist';
@@ -714,7 +963,7 @@ Update URI: https://interactivepixel.net_mvp
 
 			if ( preg_match("#(?<=v=)[a-zA-Z0-9-]+(?=&)|(?<=v\/)[^&\n]+(?=\?)|(?<=v=)[^&\n]+|(?<=youtu.be/)[^&\n]+#", $url, $matches)) {
 
-				$attr['path'] = trim($matches[0]);
+				$attr['path'] = $matches[0];
 				if(isset($attr['width']))$attr['wrapper_max_width'] = $attr['width'];
 				$attr['type'] = 'youtube_single';
 				$attr['playlist_position'] = 'no-playlist';
@@ -743,13 +992,10 @@ Update URI: https://interactivepixel.net_mvp
 
 	}
 
-	function mvp_video_shortcode_override( $html, $attr ) {
+	function mvp_video_shortcode_override( $html, $attr, $content ) {
 
-		if(isset($attr['mp4']) || isset($attr['src'])){
-
-			if(isset($attr['mp4']))$attr['path'] = $attr['mp4'];
-			else if(isset($attr['src']))$attr['path'] = $attr['src'];
-
+		if(isset($attr['mp4'])){
+			$attr['path'] = $attr['mp4'];
 			if(isset($attr['width']))$attr['wrapper_max_width'] = $attr['width'];
 			$attr['type'] = 'video';
 			$attr['playlist_position'] = 'no-playlist';
@@ -764,35 +1010,15 @@ Update URI: https://interactivepixel.net_mvp
 
 	function mvp_admin_menu(){
 
-		global $wpdb;
-	    $settings_table = $wpdb->prefix . "mvp_settings";
-		$stmt = $wpdb->get_row("SELECT options FROM {$settings_table} WHERE id = '0'", ARRAY_A);
-		
-		$default_settings = mvp_get_settings();
+		add_menu_page("Ultimate Media Gallery Player manager", "Ultimate Media Gallery", MVP_CAPABILITY, "mvp_settings", "mvp_settings_page", 'dashicons-playlist-video');
 
-		if($stmt){
-			$result = unserialize($stmt['options']);
-			$settings = $result + $default_settings;
-		}else{
-			$settings = $default_settings;
-		}
-
-		$capability = !empty($settings['playlistCapability']) ? $settings['playlistCapability'] : MVP_CAPABILITY;
-
-
-		add_menu_page("Modern Video Player Player manager", __('Modern Video Player', MVP_TEXTDOMAIN), MVP_CAPABILITY, "mvp_settings", "mvp_settings_page", 'dashicons-playlist-video');
-
-		add_submenu_page("mvp_settings", __('Modern Video Player', MVP_TEXTDOMAIN), __('Global Settings', MVP_TEXTDOMAIN), MVP_CAPABILITY, 'mvp_settings');
-
-		add_submenu_page("mvp_settings", __('Modern Video Player', MVP_TEXTDOMAIN), __('Player manager', MVP_TEXTDOMAIN), MVP_CAPABILITY, 'mvp_player_manager', "mvp_player_manager_page");	
-
-		add_submenu_page("mvp_settings", __('Modern Video Player', MVP_TEXTDOMAIN), __('Playlist manager', MVP_TEXTDOMAIN), $capability, 'mvp_playlist_manager', 'mvp_playlist_manager_page');
-
-		add_submenu_page("mvp_settings", __('Modern Video Player', MVP_TEXTDOMAIN), __('Ad manager', MVP_TEXTDOMAIN), MVP_CAPABILITY, 'mvp_ad_manager', 'mvp_ad_manager_page');
-
-		add_submenu_page("mvp_settings", __('Modern Video Player', MVP_TEXTDOMAIN), __('Shortcodes', MVP_TEXTDOMAIN), MVP_CAPABILITY, 'mvp_shortcodes', 'mvp_shortcodes_page');
-
-		add_submenu_page("mvp_settings", __('Modern Video Player', MVP_TEXTDOMAIN), __('Add-ons', MVP_TEXTDOMAIN), MVP_CAPABILITY, 'mvp_addon', 'mvp_addon_page');
+		add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Global Settings", MVP_CAPABILITY, 'mvp_settings');
+		add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Player manager", MVP_CAPABILITY, 'mvp_player_manager', "mvp_player_manager_page");	
+		add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Playlist manager", MVP_CAPABILITY, 'mvp_playlist_manager', 'mvp_playlist_manager_page');
+		add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Ad manager", MVP_CAPABILITY, 'mvp_ad_manager', 'mvp_ad_manager_page');
+		add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Shortcodes", MVP_CAPABILITY, 'mvp_shortcodes', 'mvp_shortcodes_page');
+		add_submenu_page('mvp_settings', "Ultimate Media Gallery", 'Statistics', MVP_CAPABILITY, 'mvp_statistics', 'mvp_statistics_page');
+		add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Demo", MVP_CAPABILITY, 'mvp_demo', 'mvp_demo_page');
 
 	}
 
@@ -823,6 +1049,8 @@ Update URI: https://interactivepixel.net_mvp
 				include("includes/edit_player.php");
 				break;
 
+			case 'save_options':
+			case 'delete_player':
 			default:
 				include("includes/player_manager.php");
 				break;
@@ -835,7 +1063,6 @@ Update URI: https://interactivepixel.net_mvp
 		
 		global $wpdb;
 		$wpdb->show_errors(); 
-		$player_table = $wpdb->prefix . "mvp_players";
 		$playlist_table = $wpdb->prefix . "mvp_playlists";
 		$media_table = $wpdb->prefix . "mvp_media";
 		$ad_table = $wpdb->prefix . "mvp_ad";
@@ -843,8 +1070,7 @@ Update URI: https://interactivepixel.net_mvp
 		$path_table = $wpdb->prefix . "mvp_path";
 		$subtitle_table = $wpdb->prefix . "mvp_subtitle";
 		$watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
-		$favorites_table = $wpdb->prefix . "mvp_favorites";
-
+		$statistics_table = $wpdb->prefix . "mvp_statistics";
 
 
 		$action = "";
@@ -855,7 +1081,12 @@ Update URI: https://interactivepixel.net_mvp
 		switch($action) {
 			
 			case 'edit_playlist':
+			case 'add_media_form':
 				include("includes/edit_playlist.php");
+				break;
+
+			case 'delete_playlist':
+				include("includes/playlist_manager.php");
 				break;
 
 			default:
@@ -885,6 +1116,8 @@ Update URI: https://interactivepixel.net_mvp
 				include("includes/edit_ad.php");
 				break;
 
+			case 'save_options':
+			case 'delete_ad':
 			default:
 				include("includes/ad_manager.php");
 				break;
@@ -904,126 +1137,136 @@ Update URI: https://interactivepixel.net_mvp
 		include("includes/shortcode_manager.php");
 	}
 
-	function mvp_addon_page(){
+	function mvp_statistics_page(){
+
+		global $wpdb;
+		$wpdb->show_errors(); 
+		$statistics_table = $wpdb->prefix . "mvp_statistics";
+		$playlist_table = $wpdb->prefix . "mvp_playlists";
+
+		include("includes/statistics_display.php");
+
+	}
+
+	function mvp_demo_page(){
 
 		global $wpdb;
 		$wpdb->show_errors(); 
 
-		include("includes/addon.php");
+		include("includes/demo.php");
 	}
 
 	
 
 	function mvp_admin_enqueue_scripts( $hook_suffix ) {
 
-		if(in_array($hook_suffix, array('modern-video-player_page_mvp_player_manager', 'modern-video-player_page_mvp_playlist_manager', 'modern-video-player_page_mvp_ad_manager', 'modern-video-player_page_mvp_shortcodes', 'modern-video-player_page_mvp_demo', 'modern-video-player_page_mvp_shelf', 'toplevel_page_mvp_settings'))){	
 
-			global $wpdb;
-		    $settings_table = $wpdb->prefix . "mvp_settings";
-			$stmt = $wpdb->get_row("SELECT options FROM {$settings_table} WHERE id = '0'", ARRAY_A);
-			
-			$default_settings = mvp_get_settings();
+		global $wpdb;
+	    $settings_table = $wpdb->prefix . "mvp_settings";
+		$stmt = $wpdb->get_row("SELECT options FROM {$settings_table} WHERE id = '0'", ARRAY_A);
+		
+		$default_settings = mvp_get_settings();
 
-			if($stmt){
-				$result = unserialize($stmt['options']);
-				$settings = $result + $default_settings;
-			}else{
-				$settings = $default_settings;
-			}
-
-			$cache = '';
-	    	if($settings["preventCaching"])$cache = "?rand=" . rand();
-
-			wp_enqueue_script('jquery');
-			wp_enqueue_script('jquery-ui-sortable');
-			wp_enqueue_media();
-
-			wp_enqueue_style("spectrum", plugins_url('/css/spectrum.css', __FILE__));
-			wp_enqueue_script("spectrum", plugins_url('/js/spectrum.js', __FILE__), array('jquery'));	
-
-			wp_enqueue_style('mvp-admin-css', plugins_url('/css/admin.css'.$cache, __FILE__));
-
-			wp_enqueue_script("mvpglob", plugins_url('/js/glob.js', __FILE__), array('jquery'));
-
-			wp_enqueue_script("mvp-general", plugins_url('/js/admin_general.js'."?rand=" . rand(), __FILE__), array('jquery', 'jquery-ui-sortable'));	
-
-			switch ( $hook_suffix ) {
-
-				case get_plugin_page_hookname( 'mvp_settings', 'mvp_settings' ):
-
-					wp_enqueue_style("codemirror", plugins_url('/css/codemirror.min.css', __FILE__));
-			        wp_enqueue_script("codemirror", plugins_url('/js/codemirror.min.js', __FILE__));
-
-			        wp_enqueue_script("mvp-admin", plugins_url('/js/admin_global.js'."?rand=" . rand(), __FILE__), array('jquery', 'jquery-ui-sortable'));	
-
-
-		        case get_plugin_page_hookname( 'mvp_player_manager', 'mvp_settings' ):
-
-		        	wp_enqueue_style("fa", $settings['fontAwesomeCssUrl']);//player icons
-
-		        	//multi select
-					wp_enqueue_style("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css");	
-					wp_enqueue_script("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js", array('jquery'));
-
-			        wp_enqueue_style("codemirror", plugins_url('/css/codemirror.min.css', __FILE__));
-			        wp_enqueue_script("codemirror", plugins_url('/js/codemirror.min.js', __FILE__));
-
-			        wp_enqueue_script("mvp-admin", plugins_url('/js/admin_player_manager.js'."?rand=" . rand(), __FILE__), array('jquery', 'jquery-ui-sortable'));	
-
-
-		        break;
-
-		        case get_plugin_page_hookname( 'mvp_playlist_manager', 'mvp_settings' ):
-
-		        	wp_enqueue_style("fa", $settings['fontAwesomeCssUrl']);//playlist icons
-
-					//multi select
-					wp_enqueue_style("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css");	
-					wp_enqueue_script("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js", array('jquery'));
-
-					wp_enqueue_script("mvp-ads", plugins_url('/js/admin_adcontent.js'."?rand=" . rand(), __FILE__), array('jquery', 'jquery-ui-sortable'));	
-
-					wp_enqueue_script("mvp-admin", plugins_url('/js/admin_playlist_manager.js'."?rand=" . rand(), __FILE__), array('jquery', 'jquery-ui-sortable'));	
-
-		        break;
-
-		        case get_plugin_page_hookname( 'mvp_ad_manager', 'mvp_settings' ):
-
-		        	wp_enqueue_script("mvp-ads", plugins_url('/js/admin_adcontent.js'."?rand=" . rand(), __FILE__), array('jquery', 'jquery-ui-sortable'));	
-
-		        	wp_enqueue_script("mvp-admin", plugins_url('/js/admin_admanager.js'."?rand=" . rand(), __FILE__), array('jquery', 'jquery-ui-sortable'));	
-
-		        break;
-
-		        case get_plugin_page_hookname( 'mvp_shortcodes', 'mvp_settings' ):
-
-		        	//we need ads and playlist manager because of quick shortcode generator
-		        	wp_enqueue_script("mvp-ads", plugins_url('/js/admin_adcontent.js'."?rand=" . rand(), __FILE__), array('jquery', 'jquery-ui-sortable'));	
-
-		        	wp_enqueue_script("mvp-admin", plugins_url('/js/admin_playlist_manager.js'."?rand=" . rand(), __FILE__), array('jquery', 'jquery-ui-sortable'));	
-
-		        	wp_enqueue_script("mvp-shortcode", plugins_url('/js/admin_shortcode.js'."?rand=" . rand(), __FILE__), array('jquery', 'jquery-ui-sortable'));	
-
-		        break;
-
-		        case get_plugin_page_hookname( 'mvp_demo', 'mvp_settings' ):
-
-		        	wp_enqueue_script("mvp-admin", plugins_url('/js/admin_demo.js'."?rand=" . rand(), __FILE__), array('jquery', 'jquery-ui-sortable'));
-
-		        break;
-		    }
-
-		    $l_data = array('plugins_url' => plugins_url('', __FILE__), 
-							'fontAwesomeUrl' => $settings['fontAwesomeCssUrl'],	
-				         	'ajax_url' => admin_url( 'admin-ajax.php'),
-				         	'options' => $settings,
-				         	'security'  => wp_create_nonce( 'mvp-security-nonce' ));
-
-		    if(defined('MVP_SCHEDULE'))$l_data['mvp_schedule'] = '1';
-
-			wp_localize_script('mvp-admin', 'mvp_data', $l_data); 
-
+		if($stmt){
+			$result = unserialize($stmt['options']);
+			$settings = $result + $default_settings;
+		}else{
+			$settings = $default_settings;
 		}
+
+
+
+		wp_enqueue_script('jquery');
+		wp_enqueue_script('jquery-ui-sortable');
+		wp_enqueue_media();
+
+		wp_enqueue_style('mvp-admin-css', plugins_url('/css/admin.css', __FILE__));	
+
+
+		wp_enqueue_style("spectrum", plugins_url('/css/spectrum.css', __FILE__));
+		wp_enqueue_script("spectrum", plugins_url('/js/spectrum.js', __FILE__), array('jquery'));	
+
+		wp_enqueue_script("mvp-general", plugins_url('/js/admin_global.js', __FILE__), array('jquery'));
+
+		switch ( $hook_suffix ) {
+
+			case get_plugin_page_hookname( 'mvp_settings', 'mvp_settings' ):
+
+				wp_enqueue_style("fa", $settings['fontAwesomeCssUrl']);//pi icons
+
+				//wp_enqueue_script("mvp-admin", plugins_url('/js/admin_global.js', __FILE__), array('jquery'));	
+
+	        case get_plugin_page_hookname( 'mvp_player_manager', 'mvp_settings' ):
+
+	        	//multi select
+				wp_enqueue_style("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css");	
+				wp_enqueue_script("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js", array('jquery'));
+
+		        wp_enqueue_style("codemirror", plugins_url('/css/codemirror.min.css', __FILE__));
+		        wp_enqueue_script("codemirror", plugins_url('/js/codemirror.min.js', __FILE__));	
+
+				//wp_enqueue_script("mvp-admin", plugins_url('/js/admin_player_manager.js', __FILE__), array('jquery'));	
+
+	        break;
+
+	        case get_plugin_page_hookname( 'mvp_playlist_manager', 'mvp_settings' ):
+
+				//wp_enqueue_script("mvp-admin", plugins_url('/js/admin_playlist_manager.js', __FILE__), array('jquery'));	
+				//wp_enqueue_script("mvp-ads", plugins_url('/js/admin_adcontent.js', __FILE__), array('jquery'));	
+
+				//multi select
+				wp_enqueue_style("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css");	
+				wp_enqueue_script("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js", array('jquery'));
+
+	        break;
+
+	        case get_plugin_page_hookname( 'mvp_ad_manager', 'mvp_settings' ):
+
+				//wp_enqueue_script("mvp-admin", plugins_url('/js/admin_admanager.js', __FILE__), array('jquery'));	
+				//wp_enqueue_script("mvp-ads", plugins_url('/js/admin_adcontent.js', __FILE__), array('jquery'));	
+
+	        break;
+
+	        case get_plugin_page_hookname( 'mvp_statistics', 'mvp_settings' ):
+
+	        	wp_enqueue_script("selectize", "//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js");
+
+	        	wp_enqueue_style("selectize", "//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css");
+
+	        	wp_enqueue_script("momentjs", "//cdn.jsdelivr.net/momentjs/latest/moment.min.js");
+
+	        	wp_enqueue_script("chart", "//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js");
+
+	        	wp_enqueue_script("mvp-admin", plugins_url('/js/admin_stat.js', __FILE__), array('jquery'));
+
+	        break;
+
+	        case get_plugin_page_hookname( 'mvp_shortcodes', 'mvp_settings' ):
+
+	        	wp_enqueue_style("fa", $settings['fontAwesomeCssUrl']);//pi icons
+
+	        	//wp_enqueue_script("mvp-admin", plugins_url('/js/admin_playlist_manager.js', __FILE__), array('jquery'));
+
+	        	//wp_enqueue_script("mvp-ads", plugins_url('/js/admin_adcontent.js', __FILE__), array('jquery'));	
+
+	        	wp_enqueue_script("mvp-admin-shortcode", plugins_url('/js/admin_shortcode.js', __FILE__), array('jquery'));
+
+	        break;
+
+	        case get_plugin_page_hookname( 'mvp_demo', 'mvp_settings' ):
+
+	        	wp_enqueue_script("mvp-admin", plugins_url('/js/admin_demo.js', __FILE__), array('jquery'));
+
+	        break;
+	    }
+
+	    
+
+		wp_localize_script('mvp-general', 'mvp_data', array('plugins_url' => plugins_url('', __FILE__), 
+																 'fontAwesomeUrl' => $settings['fontAwesomeCssUrl'],	
+														         'ajax_url' => admin_url( 'admin-ajax.php'),
+														         'options' => $settings,
+														         'security'  => wp_create_nonce( 'mvp-security-nonce' ))); 
 	}
 
 	function mvp_enqueue_scripts() {
@@ -1042,18 +1285,16 @@ Update URI: https://interactivepixel.net_mvp
 	    	$js_to_footer = false;
 	    }
 
-	    $cache = '';
-	    if($settings["preventCaching"])$cache = "?rand=" . rand();
+	    wp_enqueue_script('jquery');
 
 	    //playlist icons
     	if($settings['add_font_awesome_css'] == '1')wp_enqueue_style('fontawesome', $settings['fontAwesomeCssUrl']);
 
-		wp_enqueue_style('mvp', plugins_url('/source/css/mvp.css'.$cache, __FILE__));//main css
+		wp_enqueue_style('mvp', plugins_url('/source/css/mvp.css', __FILE__));//main css
 
-		wp_enqueue_script('mvp', plugins_url('/source/js/new.js'.$cache, __FILE__), array(), false, $js_to_footer);//main js
+		wp_enqueue_script('mvp', plugins_url('/source/js/new.js', __FILE__), array('jquery'), false, $js_to_footer);//main js
 
-		wp_localize_script('mvp', 'mvp_data', array('ajax_url' => admin_url( 'admin-ajax.php'),
-												   'security'  => wp_create_nonce( 'mvp-security-nonce' ))); 
+		wp_localize_script('mvp', 'mvp_data', array('ajax_url' => admin_url( 'admin-ajax.php'))); 
 
 	}
 
@@ -1305,50 +1546,6 @@ Update URI: https://interactivepixel.net_mvp
 				array('%d')
 		    );
 
-		    if(isset($_POST['schedule'])){
-
-				$schedule_table = $wpdb->prefix . "mvp_schedule";
-
-				$schedule = json_decode(stripcslashes($_POST['schedule']), true);
-
-				//check if exist
-			    $wpdb->get_row($wpdb->prepare("SELECT id FROM $schedule_table WHERE player_id=%d", $player_id));
-
-			    if($wpdb->num_rows == 0){//create entry
-
-					$stmt = $wpdb->insert(
-				    	$schedule_table,
-						array( 
-							'player_id' => $player_id,
-							'options' => serialize($schedule)
-						), 
-						array( 
-							'%d','%s'				
-						) 
-			    	);
-
-			    }else{//update 
-
-			    	$stmt = $wpdb->update(
-				    	$schedule_table,
-						array( 
-							'options' => serialize($schedule)
-						), 
-						array( 
-							'player_id' => $player_id
-						), 
-						array( 
-							'%s'
-						),
-						array( 
-							'%d'				
-						) 
-			    	);
-			   
-			    }
-
-			}	
-
 			if($stmt !== false){
 	    		echo json_encode($stmt);
 	    	}
@@ -1359,29 +1556,6 @@ Update URI: https://interactivepixel.net_mvp
 			wp_die();
 		}
 	}
-
-	function mvp_get_player_lang(){
-
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
-		}
-
-		if(isset($_POST['lang'])){
-
-	        $lang = stripslashes($_POST['lang']);
-
-	        $locale = mvp_locale_data($lang);
-	   
-	        echo json_encode($locale);
-
-	        wp_die();
-
-	    }else{
-	        wp_die();
-	    }
-	}
-
 
 	//############################################//
 	/* playlist */
@@ -1401,16 +1575,13 @@ Update URI: https://interactivepixel.net_mvp
 			global $wpdb;
 			$playlist_table = $wpdb->prefix . "mvp_playlists";
 
-			$current_user = wp_get_current_user();
-
 		    $stmt = $wpdb->insert(
 		    	$playlist_table,
 				array( 
 					'title' => $title,
-					'user_id' => $current_user->ID
 				), 
 				array( 
-					'%s','%d'				
+					'%s','%s'				
 				) 
 		    );
 
@@ -1530,7 +1701,7 @@ Update URI: https://interactivepixel.net_mvp
 			$wpdb->show_errors(); 
 		    $playlist_table = $wpdb->prefix . "mvp_playlists";
 		    $media_table = $wpdb->prefix . "mvp_media";
-		    $statistics_table = $wpdb->prefix . "mvp_video_statistics";
+		    $statistics_table = $wpdb->prefix . "mvp_statistics";
 		    $ad_table = $wpdb->prefix . "mvp_ad";
 			$annotation_table = $wpdb->prefix . "mvp_annotation";
 			$path_table = $wpdb->prefix . "mvp_path";
@@ -1556,9 +1727,7 @@ Update URI: https://interactivepixel.net_mvp
 	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$watched_percentage_table} WHERE playlist_id IN ($in)", $ids));
 
 	    	//stat	
-	    	if($wpdb->get_var( "show tables like '$statistics_table'" ) == $statistics_table){
-		    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$statistics_table} WHERE playlist_id IN ($in)", $ids));
-		    }
+	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$statistics_table} WHERE playlist_id IN ($in)", $ids));
 
 	    	//playlist
 	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$playlist_table} WHERE id IN ($in)", $ids));
@@ -1589,7 +1758,6 @@ Update URI: https://interactivepixel.net_mvp
 			global $wpdb;
 			$playlist_table = $wpdb->prefix . "mvp_playlists";
 
-			//duplicate make new user id (only admin can duplicate)
 			$options = $wpdb->get_var($wpdb->prepare("SELECT options FROM {$playlist_table} WHERE id = %d", $playlist_id));
 
 		    $stmt = $wpdb->insert(
@@ -1602,24 +1770,6 @@ Update URI: https://interactivepixel.net_mvp
 					'%s','%s'
 				) 
 		    );
-
-
-			/*
-			//duplicate preserve user id
-
-			$results = $wpdb->get_row($wpdb->prepare("SELECT user_id, options FROM {$playlist_table} WHERE id = %d", $playlist_id), ARRAY_A);
-
-		    $stmt = $wpdb->insert(
-		    	$playlist_table,
-				array( 
-					'title' => $title,
-					'options' => $results['options'],
-					'user_id' => $results['user_id']
-				), 
-				array( 
-					'%s','%s','%d'	
-				) 
-		    );*/
 
 		    if($stmt !== false){//copy tracks
 
@@ -1731,138 +1881,6 @@ Update URI: https://interactivepixel.net_mvp
 		}
 	}
 
-	//############################################//
-	/* favorites */
-	//############################################//
-
-	function mvp_get_favorites2(){
-	 	
-		if(isset($_POST['data'])){
-
-			if(is_user_logged_in()){ 
-			    $current_user = wp_get_current_user();
-
-				global $wpdb;
-			    $favorites_table = $wpdb->prefix . "mvp_favorites";
-
-				//$data = json_decode(stripcslashes($_POST['data']), true); 
-			
-				/*$str = '(';
-					foreach ($data as $d) {
-						$str .= '( media_id = \''.$d['media_id'].'\' AND user_id = \''.$current_user->ID.'\')';
-					}
-				$str .= ')';*/
-
-				$stmt = $wpdb->get_results($wpdb->prepare("SELECT media_id FROM $favorites_table WHERE user_id=%d", $current_user->ID), ARRAY_A);
-
-				if($stmt !== false){
-		    		echo json_encode($stmt);
-		    	}
-
-		    }
-
-			wp_die();
-
-		}else {
-			wp_die();
-		}
-	}
-
-	function mvp_get_favorites(){
-
-		if(isset($_POST['playlist_id'])){
-
-			$playlist_id = $_POST["playlist_id"];
-
-			$current_user = wp_get_current_user();
-			
-			global $wpdb;
-			$wpdb->show_errors(); 
-			$favorites_table = $wpdb->prefix . "mvp_favorites";
-
-			$stmt = $wpdb->get_results($wpdb->prepare("SELECT media_id FROM {$favorites_table} WHERE playlist_id = %d AND user_id=%d", $playlist_id, $current_user->ID), ARRAY_N);
-
-			if($stmt !== false){
-
-				$arr = array();
-				foreach ($stmt as $s) {
-					$arr[] = $s[0];
-				}
-
-			    echo json_encode($arr);
-			}
-
-		    wp_die();
-
-		}else{
-			wp_die();
-		}
-
-	}
-
-	function mvp_add_to_favorites(){
-
-		if(isset($_POST['media_id']) && isset($_POST['playlist_id'])){
-
-			$media_id = $_POST["media_id"];
-			$playlist_id = $_POST["playlist_id"];
-
-			$current_user = wp_get_current_user();
-			
-			global $wpdb;
-			$wpdb->show_errors(); 
-			$favorites_table = $wpdb->prefix . "mvp_favorites";
-
-			$stmt = $wpdb->insert(
-				$favorites_table,
-				array( 
-					'playlist_id' => $playlist_id,
-					'media_id' => $media_id,
-					'user_id' => $current_user->ID
-				), 
-				array( 
-					'%d','%d','%d'
-				) 
-		    );	
-
-			if($stmt !== false){
-			    echo json_encode(1);
-			}
-
-		    wp_die();
-
-		}else{
-			wp_die();
-		}
-
-	}
-
-	function mvp_remove_from_favorites(){
-
-		if(isset($_POST['media_id']) && isset($_POST['playlist_id'])){
-
-			$media_id = intval($_POST["media_id"]);
-			$playlist_id = intval($_POST["playlist_id"]);
-
-			$current_user = wp_get_current_user();
-
-			global $wpdb;
-			$wpdb->show_errors(); 
-			$favorites_table = $wpdb->prefix . "mvp_favorites";
-
-			$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$favorites_table} WHERE media_id=%d AND user_id=%d AND playlist_id=%d", $media_id, $current_user->ID, $playlist_id));
-
-			if($stmt !== false){
-			    echo json_encode(1);
-			}
-
-		    wp_die();
-
-		}else{
-			wp_die();
-		}
-
-	}
 
 	//############################################//
 	/* media */
@@ -1929,7 +1947,6 @@ Update URI: https://interactivepixel.net_mvp
 			global $wpdb;
 			$wpdb->show_errors(); 
 		    $media_table = $wpdb->prefix . "mvp_media";
-		    $statistics_table = $wpdb->prefix . "mvp_video_statistics";
 
 			$ids = explode(',',$media_id);
 			$in = implode(',', array_fill(0, count($ids), '%d'));
@@ -1938,9 +1955,8 @@ Update URI: https://interactivepixel.net_mvp
 
 			if($stmt !== false){
 
-				if($wpdb->get_var( "show tables like '$statistics_table'" ) == $statistics_table){
-					$wpdb->query($wpdb->prepare("DELETE FROM {$statistics_table} WHERE media_id IN ($in)", $ids));
-	    		}
+				$statistics_table = $wpdb->prefix . "mvp_statistics";
+				$wpdb->query($wpdb->prepare("DELETE FROM {$statistics_table} WHERE media_id IN ($in)", $ids));
 
 	    		echo json_encode($stmt);
 	    	}
@@ -2283,9 +2299,6 @@ Update URI: https://interactivepixel.net_mvp
 
 		    $first_insert_happend = null;
 
-
-		    $current_user = wp_get_current_user();
-
 		    if($save_type == 'add_media'){
 
 		    	if(!empty($_POST['additional_playlist'])){
@@ -2309,11 +2322,10 @@ Update URI: https://interactivepixel.net_mvp
 							'title' => $media_title, 
 							'options' => serialize($options), 
 							'playlist_id' => $playlist_id,
-							'order_id' => $order_id,
-							'user_id' => $current_user->ID
+							'order_id' => $order_id
 						), 
 						array( 
-							'%s','%s','%d','%d','%d'
+							'%s','%s','%d','%d'
 						) 
 				    );
 
@@ -2710,49 +2722,39 @@ Update URI: https://interactivepixel.net_mvp
 			$wpdb->show_errors(); 
 		    $media_table = $wpdb->prefix . "mvp_media";
 		    $path_table = $wpdb->prefix . "mvp_path";
+		    $ad_table = $wpdb->prefix . "mvp_ad";
+		    $annotation_table = $wpdb->prefix . "mvp_annotation";
 
-		    $current_user = wp_get_current_user();
-
-		    $data = array();
-
-		    $stmt = $wpdb->get_row($wpdb->prepare("SELECT IFNULL(MAX(order_id)+1,0) AS order_id FROM {$media_table} WHERE playlist_id = %d", $playlist_id), ARRAY_A);
-			$order_id = intval($stmt['order_id']);
-
-		    $len = count($media);
+			$data = array();
+	
+			$len = count($media);
 			for($i=0; $i < $len; $i++){ 
 
 			    $options = $media[$i];
 
-			    $media_title = isset($options['title']) ? $options['title'] : '';
+			    $media_title = $options['title'];
+			    $order_id = $i;
 
-				$stmt = $wpdb->insert(
+			    $stmt = $wpdb->insert(
 			    	$media_table,
 					array( 
 						'title' => $media_title, 
 						'options' => serialize($options), 
 						'playlist_id' => $playlist_id,
-						'order_id' => $order_id,
-						'user_id' => $current_user->ID
+						'order_id' => $order_id
 					), 
 					array( 
-						'%s','%s','%d','%d','%d'
+						'%s','%s','%d','%d'
 					) 
 			    );
 
-				if($stmt !== false){
+			    if($stmt !== false){
 
-					$insert_id = $wpdb->insert_id;
+			    	$insert_id = $wpdb->insert_id;
 
-					$order_id++;
+			    	//path
 
-					$data[] = array('insert_id' => $insert_id,
-					 			'order_id' => $order_id,
-					 			'options' => $options);
-
-
-					//multi path
-
-		    		$media_path = array("path" => $options['path'], "quality_title" => "hd");
+			    	$media_path = array('path' => $options['path']);
 
 		    		$stmt = $wpdb->insert(
 				    	$path_table,
@@ -2765,18 +2767,180 @@ Update URI: https://interactivepixel.net_mvp
 							'%s','%d','%d'
 						) 
 				    );	
-		   
 
-				}
+			    	//ads
+
+			    	if(!empty($_POST['ad_pre'])){
+			    		
+			    		$ad_pre = json_decode(stripcslashes($_POST['ad_pre']), true);//same ads for all media
+
+			    		for($i = 0; $i < count($ad_pre); $i++){  
+
+			    			$stmt = $wpdb->insert(
+						    	$ad_table,
+								array( 
+									'options' => serialize($ad_pre[$i]), 
+									'media_id' => $insert_id,
+									'playlist_id' => $playlist_id
+								), 
+								array( 
+									'%s','%d','%d'
+								) 
+						    );
+
+						}
+				    	
+			    	}
+
+			    	if(!empty($_POST['ad_mid'])){
+			    		
+			    		$ad_mid = json_decode(stripcslashes($_POST['ad_mid']), true);
+
+			    		for($i = 0; $i < count($ad_mid); $i++){  
+
+			    			$stmt = $wpdb->insert(
+						    	$ad_table,
+								array( 
+									'options' => serialize($ad_mid[$i]), 
+									'media_id' => $insert_id,
+									'playlist_id' => $playlist_id
+								), 
+								array( 
+									'%s','%d','%d'
+								) 
+						    );
+
+				    	}
+				    	
+			    	}
+
+			    	if(!empty($_POST['ad_end'])){
+
+			    		$ad_end = json_decode(stripcslashes($_POST['ad_end']), true);
+
+			    		for($i = 0; $i < count($ad_end); $i++){  
+
+			    			$stmt = $wpdb->insert(
+						    	$ad_table,
+								array( 
+									'options' => serialize($ad_end[$i]), 
+									'media_id' => $insert_id,
+									'playlist_id' => $playlist_id
+								), 
+								array( 
+									'%s','%d','%d'
+								) 
+						    );
+
+				    	}
+			    	
+			    	}
+
+
+			    	//annotations
+
+					if(!empty($_POST['annotation'])){
+			    		
+			    		$annotation = json_decode(stripcslashes($_POST['annotation']), true);
+
+			    		for($i = 0; $i < count($annotation); $i++){  
+
+						    $stmt = $wpdb->insert(
+						    	$annotation_table,
+								array( 
+									'options' => serialize($annotation[$i]), 
+									'media_id' => $insert_id,
+									'playlist_id' => $playlist_id
+								), 
+								array( 
+									'%s','%d','%d'
+								) 
+						    );	
+
+				    	}
+			    	}
+
+					$data[] = array('insert_id' => $insert_id,
+					 			'order_id' => $order_id,
+					 			'options' => $options);
+			    		
+			    }
 
 			}
 
-			if($stmt !== false){
-				echo json_encode($data);
+
+
+			//save original youtube url for update
+			if(isset($_POST['youtube_url']) && !mvp_nullOrEmpty($_POST['youtube_url']) && isset($_POST['youtube_url_type']) && !mvp_nullOrEmpty($_POST['youtube_url_type'])){
+
+			    $playlist_table = $wpdb->prefix . "mvp_playlists";
+
+			    //playlist data
+				$playlist_data = $wpdb->get_row($wpdb->prepare("SELECT  options FROM {$playlist_table} WHERE id = %d", $playlist_id), ARRAY_A);
+				$pl_options = unserialize($playlist_data['options']);
+
+			    $pl_options['youtubeUrl'] = $_POST['youtube_url'];
+			    $pl_options['youtubeUrlType'] = $_POST['youtube_url_type'];
+
+			    $stmt = $wpdb->update(
+			    	$playlist_table,
+					array('options' => serialize($pl_options)), 
+					array('id' => $playlist_id),
+					array('%s'),
+					array('%d')
+			    );
+
 			}
+
+
+
+			echo json_encode($data);
+
+		    wp_die();
+
+		}else{
+
+			wp_die();
+		}
+
+	}
+
+
+
+	function mvp_add_more(){
+
+		if(isset($_POST['playlist_id'])){
+
+			$playlist_id = (int)$_POST['playlist_id'];
+			$offset = (int)$_POST['addMoreOffset'];
+			$limit = (int)$_POST['addMoreLimit'];
+			$sortOrder = $_POST['addMoreSortOrder'];
+			$sortDirection = $_POST['addMoreSortDirection'];
+			$encryptMediaPaths = $_POST['encryptMediaPaths'];
 			
-	    	wp_die();
-	    	
+        	global $wpdb;
+		    $wpdb->show_errors(); 
+			$media_table = $wpdb->prefix . "mvp_media";
+
+			$stmt = $wpdb->prepare("SELECT id, title, options FROM {$media_table} WHERE disabled = 0 AND playlist_id = %d ORDER BY $sortOrder $sortDirection LIMIT $offset, $limit", $playlist_id);
+			$medias = $wpdb->get_results($stmt, ARRAY_A);
+
+			/*
+			note: faster pagination could work for order_id sort (use order_id in both directions) but not for title sort. We would need another column id for that. 
+			https://developer.wordpress.com/2014/02/14/an-efficient-alternative-to-paging-with-sql-offsets/
+			*/
+
+	    	$markup = array();
+
+	    	foreach($medias as $media) {
+                $markup[] = mvp_shortcode_media($media, $encryptMediaPaths = true);
+            }
+
+			echo json_encode($markup);
+
+
+			wp_die();
+
 		}else{
 			wp_die();
 		}
@@ -2846,9 +3010,7 @@ Update URI: https://interactivepixel.net_mvp
 
 	
 
-	function mvp_shortcode_media($m, $options, $include_all = true){
-
-		$encryptMediaPaths = $options['encryptMediaPaths'];
+	function mvp_shortcode_media($m, $encryptMediaPaths = false){
 
 	    global $wpdb;
 	    $path_table = $wpdb->prefix . "mvp_path";
@@ -2912,7 +3074,7 @@ Update URI: https://interactivepixel.net_mvp
 	        }else{
 
 	            $prefix='';
-	            if($type == "folder_video" || $type == "folder_audio" || $type == "folder_image" || $type == "folder_hls" || $type == "folder_dash"){
+	            if($type == "folder_video" || $type == "folder_audio" || $type == "folder_image"){
 
 				    if(!isset($media["folder_custom_url"]) || $media["folder_custom_url"] == '0'){
 				    	$prefix = MVP_FILE_DIR;
@@ -2936,16 +3098,14 @@ Update URI: https://interactivepixel.net_mvp
 
 	                }
 
-					if($type == "s3_bucket_video" || $type == "s3_video" || $type == "s3_bucket_audio" || $type == "s3_audio"){	    
+	                if($type == "s3_bucket_video" || $type == "s3_video"){	    
 			        	$path = 'data-bucket="'.$p.'" ';
 					}else{
 						$path = 'data-path="'.$p.'" ';
 					}
 
-					if($type == "folder_video" || $type == "folder_audio" || $type == "folder_image" || $type == "folder_hls" || $type == "folder_dash"){
-						if(!isset($media["folder_custom_url"]) || $media["folder_custom_url"] == '0'){
-	                		$path .= 'data-content-url="'.MVP_FILE_DIR_URL.$row['path'].'" ';
-	                	}
+					if($type == "folder_video" || $type == "folder_audio" || $type == "folder_image"){
+	                	$path .= 'data-content-url="'.MVP_FILE_DIR_URL.$row['path'].'" ';
 	                }
 
 	                if(!empty($row["quality_title"])){//yt?
@@ -3005,21 +3165,12 @@ Update URI: https://interactivepixel.net_mvp
 	    if(!empty($media["alt_text"])){
 	        $track .= 'data-alt="'.$media["alt_text"].'" ';
 	    }
-	    if(!empty($m["title"])){//$m["title"] because title is sepearated from options!
+	    if(!empty($m["title"])){
 	        $track .= 'data-title="'.trim($m["title"]).'" ';
-	    }
-	    if(!empty($media["date"])){
-	        $track .= 'data-date="'.$media["date"].'" ';
 	    }
 	    if(!empty($media["description"])){
 	        $track .= 'data-description="'.trim($media["description"]).'" ';
 	    }
-
-	    //stat
-	    if(!empty($m["c_play"])){
-	        $track .= 'data-play-count="'.trim($m["c_play"]).'" ';
-	    }
-
 	    if(!empty($media["slideshow_images"])){
 	        $track .= 'data-slideshow-images="'.$media["slideshow_images"].'" ';
 	    }
@@ -3041,11 +3192,8 @@ Update URI: https://interactivepixel.net_mvp
 	    if(!empty($media["share"])){
 	        $track .= 'data-share="'.$media["share"].'" ';
 	    }
-	    if(!empty($media["hl"])){
-	        $track .= 'data-hl="'.$media["hl"].'" ';
-	    }
-	    if(!empty($media["cc_lang_pref"])){
-	        $track .= 'data-cc-lang-pref="'.$media["cc_lang_pref"].'" ';
+	    if(!empty($media["limit"])){
+	        $track .= 'data-limit="'.$media["limit"].'" ';
 	    }
 	    if(!empty($media["start"])){
 	        $track .= 'data-start="'.$media["start"].'" ';
@@ -3062,6 +3210,9 @@ Update URI: https://interactivepixel.net_mvp
 	    if(!empty($media["user_id"])){
 	        $track .= 'data-user-id="'.$media["user_id"].'" ';
 	    }
+	    if(!empty($media["load_more"]) && $media["load_more"] == '1'){
+	        $track .= 'data-load-more="1" ';
+	    }
 	    if(!empty($media["chapters"])){
 	        $track .= 'data-chapters="'.$media["chapters"].'" ';
 
@@ -3071,10 +3222,6 @@ Update URI: https://interactivepixel.net_mvp
 	    }
 	    if(!empty($media["vast"])){
 	        $track .= 'data-vast="'.$media["vast"].'" ';
-
-	        if(isset($media["vast_loop"])){
-                $track .= ' data-vast-loop="1" ';
-            }
 	    }
 	    if(!empty($media["link"])){
 	        $track .= 'data-link="'.$media["link"].'" ';
@@ -3096,14 +3243,13 @@ Update URI: https://interactivepixel.net_mvp
 
 	        foreach ($media["pi_icons"] as $icon) {
 
-	        	$pi_icons .= '{';
+	        	$pi_icons .= '{"icon": "'.$icon['icon'].'"';
 
-	        	if(isset($icon['icon']))$pi_icons .= '"icon": "'.$icon['icon'].'"';
-	        	if(isset($icon['rel']))$pi_icons .= ',"rel": "'.esc_attr($icon['rel']).'"';
-	        	if(isset($icon['title']))$pi_icons .= ',"title": "'.esc_attr($icon['title']).'"';
-	        	if(isset($icon['url']))$pi_icons .= ',"url": "'.esc_url($icon['url']).'"';
+	        	if(isset($icon['rel']))$pi_icons .= ',"rel": "'.$icon['rel'].'"';
+	        	if(isset($icon['title']))$pi_icons .= ',"title": "'.$icon['title'].'"';
+	        	if(isset($icon['url']))$pi_icons .= ',"url": "'.$icon['url'].'"';
 	        	if(isset($icon['target']))$pi_icons .= ',"target": "'.$icon['target'].'"';	
-	        	if(isset($icon['class']))$pi_icons .= ',"class": "'.esc_attr($icon['class']).'"';	
+	        	if(isset($icon['class']))$pi_icons .= ',"class": "'.$icon['class'].'"';	
 
 	        	$pi_icons .= '},';			
 
@@ -3135,12 +3281,8 @@ Update URI: https://interactivepixel.net_mvp
 		}
 	    if(!empty($media["sort_type"])){
 	        $track .= 'data-sort="'.$media["sort_type"].'" ';
-	        if(!empty($media["sort_direction"])){
-	            $track .= 'data-sort-direction="'.$media["sort_direction"].'" ';
-	        }else if(!empty($media["sort_dir"])){
+	        if(!empty($media["sort_dir"])){
 	            $track .= 'data-sort-direction="'.$media["sort_dir"].'" ';
-	        }else if(!empty($media["vimeo_sort_dir"])){
-	            $track .= 'data-sort-direction="'.$media["vimeo_sort_dir"].'" ';
 	        }
 	    }
 	    if(!empty($media["pwd"])){
@@ -3167,90 +3309,67 @@ Update URI: https://interactivepixel.net_mvp
 	    	$track .= '<div class="mvp-custom-html" id="'.$custom_html_id.'">'.$custom_html.'</div>';
 	    }
 
-	    if($include_all){//reel dont use the rest
+	    //subtitles
+	    $subtitles = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$subtitle_table} WHERE media_id = %d", $m["id"]), ARRAY_A);
 
-	    	//cue
-		    if(!empty($media["cue_point"])){
+	    if($wpdb->num_rows > 0){
+	        
+	        $subtitle = '<div class="mvp-subtitles">';
+	        foreach($subtitles as $r){
 
-		        $track .= '<div class="mvp-cuepoints">'; 
-		        
-		        foreach($media["cue_point"] as $cue){
-		            if(!empty($cue['cue_start_time']) && !empty($cue['cue_code_type']) && !empty($cue['cue_code'])){
-		                $track .= '<div data-start="'.esc_attr($cue['cue_start_time']).'" data-'.$cue['cue_code_type'].'="'.esc_attr($cue["cue_code"]).'"></div>';
-		            }
-		        }
-		        $track .= '</div>';
-		    }
+	            $row = unserialize($r['options']);
 
-		    //subtitles
-		    $subtitles = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$subtitle_table} WHERE media_id = %d", $m["id"]), ARRAY_A);
+	            if($encryptMediaPaths)$p = MVP_BSF_MATCH.base64_encode($row['src']);
+	            else $p = $row['src'];
 
-		    if($wpdb->num_rows > 0){
-		        
-		        $subtitle = '<div class="mvp-subtitles">';
-		        foreach($subtitles as $r){
+	            $subtitle .= '<div data-label="'.$row["label"].'" data-src="'.$p.'"';
 
-		            $row = unserialize($r['options']);
-
-		            if($encryptMediaPaths)$p = MVP_BSF_MATCH.base64_encode($row['src']);
-		            else $p = $row['src'];
-
-		            $subtitle .= '<div data-label="'.$row["label"].'" data-src="'.$p.'"';
-
-		            if(!empty($row["def"]) && $row["def"] == $row["label"]){
-		                $subtitle .= ' data-default';
-		            }
-
-		            if(!empty($row["cors"])){
-		                $subtitle .= ' data-cors="'.$row["cors"].'"';
-		            }
-
-		            $subtitle .= '></div>';
-		           
-		        }
-		        $subtitle .= '</div>';//end mvp-subtitles
-		        
-		        $track .= $subtitle;
-		    }
-
-		    //ads
-	        $stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$ad_table} WHERE media_id = %d", $m["id"]), ARRAY_A);
-	        if($wpdb->num_rows > 0){
-	            $ad_data = array();
-	            foreach($stmt as $item){
-	                $ad_data[] = unserialize($item['options']);
+	            if(!empty($row["def"]) && $row["def"] == $row["label"]){
+	                $subtitle .= ' data-default';
 	            }
 
-	            //randomize ad comes from media
-	            $ad_options = array();
-				$ad_options["randomizeAdPre"] = isset($media["randomizeAdPre"]) ? $media["randomizeAdPre"] : '0';
-				$ad_options["randomizeAdEnd"] = isset($media["randomizeAdEnd"]) ? $media["randomizeAdEnd"] : '0';
-		
-	            include('includes/shortcode_ad_data.php');
-	        }
-
-		    //annotations
-	        $stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$annotation_table} WHERE media_id = %d", $m["id"]), ARRAY_A);
-	        if($wpdb->num_rows > 0){
-	            $annotation_data = array();
-	            foreach($stmt as $item){
-	                $annotation_data[] = unserialize($item['options']);
+	            if(!empty($row["cors"])){
+	                $subtitle .= ' data-cors="'.$row["cors"].'"';
 	            }
-	            include('includes/shortcode_annotation_data.php');
+
+	            $subtitle .= '></div>';
+	           
 	        }
+	        $subtitle .= '</div>';//end mvp-subtitles
+	        
+	        $track .= $subtitle;
+	    }
 
-		    /*if(!empty($media["custom_content"])){
-		        $track .= $media["custom_content"];
-		    }*/
+	    //ads
+        $stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$ad_table} WHERE media_id = %d", $m["id"]), ARRAY_A);
+        if($wpdb->num_rows > 0){
+            $ad_data = array();
+            foreach($stmt as $item){
+                $ad_data[] = unserialize($item['options']);
+            }
 
-		    if(!empty($media["description_custom"])){
-		        $track .= '<div class="mvp-custom-playlist-item-description">'.$media["description_custom"].'</div>';
-		    }
+            //randomize ad comes from media
+            $ad_options = array();
+			$ad_options["randomizeAdPre"] = isset($media["randomizeAdPre"]) ? $media["randomizeAdPre"] : '0';
+			$ad_options["randomizeAdEnd"] = isset($media["randomizeAdEnd"]) ? $media["randomizeAdEnd"] : '0';
+	
+            include('includes/shortcode_ad_data.php');
+        }
 
-		}
+	    //annotations
+        $stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$annotation_table} WHERE media_id = %d", $m["id"]), ARRAY_A);
+        if($wpdb->num_rows > 0){
+            $annotation_data = array();
+            foreach($stmt as $item){
+                $annotation_data[] = unserialize($item['options']);
+            }
+            include('includes/shortcode_annotation_data.php');
+        }
 
-
-
+	    if(!empty($media["custom_content"])){
+	        $track .= $media["custom_content"];
+	    }
+	   
 	    $track .= '</div>';//end div
 
 	    return $track.PHP_EOL;
@@ -3743,12 +3862,12 @@ Update URI: https://interactivepixel.net_mvp
 
 
 			//playlist
-			$stmt = $wpdb->prepare("SELECT id, user_id, title, options FROM {$playlist_table} WHERE id = %d", $playlist_id);//we need to select in specific order for bulk import!
+			$stmt = $wpdb->prepare("SELECT id, title, options FROM {$playlist_table} WHERE id = %d", $playlist_id);//we need to select in specific order for bulk import!
 			$result = $wpdb->get_results($stmt, ARRAY_N);
 			mvp_getOutput("mvp_playlists", $result, $zip);
 
 			//media 
-			$stmt = $wpdb->prepare("SELECT id, user_id, title, options, order_id, playlist_id FROM {$media_table} WHERE playlist_id = %d", $playlist_id);
+			$stmt = $wpdb->prepare("SELECT id, options, order_id, playlist_id FROM {$media_table} WHERE playlist_id = %d", $playlist_id);
 			$result = $wpdb->get_results($stmt, ARRAY_A);
 
 			if($wpdb->num_rows > 0){
@@ -3985,12 +4104,11 @@ Update URI: https://interactivepixel.net_mvp
 			$stmt = $wpdb->insert(
 		    	$playlist_table,
 				array( 
-					'user_id' => null, 
-					'title' => $playlist[2], 
-					'options' => $playlist[3]
+					'title' => $playlist[1], 
+					'options' => $playlist[2]
 				), 
 				array( 
-					'%d','%s','%s'
+					'%s','%s'
 				) 
 		    );
 		   
@@ -4148,14 +4266,12 @@ Update URI: https://interactivepixel.net_mvp
 					$stmt = $wpdb->insert(
 				    	$media_table,
 						array( 
-							'user_id' => $media[$i][1],
-							'title' => $media[$i][2],
-							'options' => $media[$i][3], 
-							'order_id' => $media[$i][4], 
+							'options' => $media[$i][1], 
+							'order_id' => $media[$i][2], 
 							'playlist_id' => $last_playlist_id
 						), 
 						array( 
-							'%d','%s','%s','%d','%d'
+							'%s','%d','%d'
 						) 
 				    );
 
@@ -4296,14 +4412,11 @@ Update URI: https://interactivepixel.net_mvp
 			global $wpdb;
 			$wpdb->show_errors(); 
 		    $global_ad_table = $wpdb->prefix . "mvp_global_ad";
-		    $ad_table = $wpdb->prefix . "mvp_ad";
 
 			$ids = explode(',',$ad_id);
 			$in = implode(',', array_fill(0, count($ids), '%d'));
 
 		    $stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$global_ad_table} WHERE id IN ($in)", $ids));
-
-			$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$ad_table} WHERE ad_id IN ($in)", $ids));
 
 			if($stmt !== false){
 	    		echo json_encode($stmt);
@@ -4820,141 +4933,6 @@ Update URI: https://interactivepixel.net_mvp
 		
 	}
 
-	//############################################//
-	/*  */
-	//############################################//
-
-	function mvp_get_url() {
-		return get_bloginfo('url');
-	}
-
-	function mvp_post_url($token, $plugin) {
-
-		$url = 'https://interactivepixel.net/vcode/?time='.time();
-
-		$response = wp_remote_post($url, array(
-			'method' => 'POST',
-			'timeout'     => 60,
-			'redirection' => 5,
-			'blocking'    => true,
-			'httpversion' => '1.0',
-			'sslverify'   => true,
-			'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
-			'body' => array(
-			    'token' => $token,
-			    'plugin' => $plugin,
-			    'website' => mvp_get_url()
-			)
-		));
-
-		if(is_wp_error($response)){
-		    $response = '{"error": '.$response->get_error_message().'}';
-		}else{
-			$response = wp_remote_retrieve_body($response);
-		}
-
-		return $response;
-	}
-
-	function mvp_reg_man() {
-
-		if(isset($_POST['token'])){
-
-			$data = trim($_POST['token']);
-
-			$arr = explode(';', $data);
-			$r = [];
-			for($i=0; $i < count($arr); $i++){
-			    $key_value = explode('-', $arr[$i]);
-			    $r[$key_value[0]] = $key_value[1];
-			}
-			$r['time'] = time(); 
-			$r['wsidchk'] = '1'; 
-			update_option( 'apenv_key_' . MVP_ID, $r, false );
-
-			echo json_encode($r);
-			wp_die();
-
-		}else{
-
-			echo json_encode(false);
-			wp_die();
-		}
-	}
-
-	function mvp_check_r() {
-
-		if(isset($_POST['token'])){
-
-			$token = trim($_POST['token']);
-
-			$response = mvp_post_url($token, MVP_ID );
-
-			$r = json_decode($response, true);
-
-			if(isset($r['msgs'])) {
-				$r['time'] = time(); 
-				update_option( 'apenv_key_' . MVP_ID, $r, false );
-			}else{
-				delete_option( 'apenv_key_' . MVP_ID );
-			}
-
-			echo json_encode($response);
-			wp_die();
-
-		}else{
-
-			echo json_encode(false);
-			wp_die();
-		}
-	}
-
-	function mvp_check_l() {
-
-		if(get_option( 'apenv_key_' . MVP_ID)){
-
-			$opt = get_option( 'apenv_key_' . MVP_ID);
-			echo json_encode($opt);
-			wp_die();
-
-		}else{
-			echo json_encode(false);
-			wp_die();
-		}
-
-	}
-
-	function mvp_dea_l() {
-
-		if(isset($_POST['token'])){
-
-			$token = trim($_POST['token']);
-
-			$url = 'https://interactivepixel.net/vcode/index2.php';
-
-			$response = wp_remote_post($url, array(
-				'method' => 'POST',
-				'timeout'     => 60,
-				'redirection' => 5,
-				'blocking'    => true,
-				'httpversion' => '1.0',
-				'sslverify'   => true,
-				'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
-				'body' => array(
-				    'token' => $token,
-				    'plugin' => MVP_ID,
-				    'website' => mvp_get_url()
-				)
-			));	
-
-			delete_option( 'apenv_key_' . MVP_ID );
-			echo json_encode(false);
-			wp_die();
-
-		}
-
-	}
-
 
 	//############################################//
 	/* install */
@@ -5035,12 +5013,12 @@ Update URI: https://interactivepixel.net_mvp
 	    $sql = "DROP TABLE IF EXISTS $playlist_table;";
 	    $wpdb->query($sql);
 
-	    $favorites_table = $wpdb->prefix . "mvp_favorites";
-	    $sql = "DROP TABLE IF EXISTS $favorites_table;";
-	    $wpdb->query($sql);
-
 	    $global_ad_table = $wpdb->prefix . "mvp_global_ad";
 	    $sql = "DROP TABLE IF EXISTS $global_ad_table;";
+	    $wpdb->query($sql);
+
+	    $statistics_table = $wpdb->prefix . "mvp_statistics";
+	    $sql = "DROP TABLE IF EXISTS $statistics_table;";
 	    $wpdb->query($sql);
 
 	    $wpdb->query('SET foreign_key_checks=1');
@@ -5073,6 +5051,10 @@ Update URI: https://interactivepixel.net_mvp
 
 	function mvp_install(){
 
+		
+
+
+
 		//database
 		global $wpdb;
 		$wpdb->show_errors(); 
@@ -5086,7 +5068,7 @@ Update URI: https://interactivepixel.net_mvp
 
 			$sql = "CREATE TABLE $settings_table ( 
 				`id` tinyint NOT NULL,
-				`options` text,
+				`options` text NOT NULL,
 			    PRIMARY KEY (`id`)
 			) $charset_collate;";
 			dbDelta( $sql );
@@ -5132,7 +5114,6 @@ Update URI: https://interactivepixel.net_mvp
 			    `options` longtext DEFAULT NULL,
 			    `order_id` int(11) unsigned DEFAULT NULL,
 			    `playlist_id` int(11) unsigned NOT NULL,
-			    `disabled` tinyint DEFAULT 0,
 			    PRIMARY KEY (`id`),
 			    INDEX `playlist_id` (`playlist_id`)
 			) $charset_collate;";
@@ -5215,6 +5196,44 @@ Update URI: https://interactivepixel.net_mvp
 
 		}
 
+		$statistics_table = $wpdb->prefix . "mvp_statistics";
+		if($wpdb->get_var( "show tables like '$statistics_table'" ) != $statistics_table){
+
+			$sql = "CREATE TABLE $statistics_table ( 
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`origtype` varchar(20) DEFAULT NULL,
+				`title` varchar(300) DEFAULT NULL,
+			    `c_play` int(11) unsigned DEFAULT '0',
+			    `c_time` int(11) unsigned DEFAULT '0',
+			    `c_download` int(11) DEFAULT '0',
+			    `c_finish` int(11) unsigned DEFAULT '0',
+			    `c_date` date DEFAULT NULL,
+			    `media_id` int(11) unsigned NOT NULL,
+			    `playlist_id` int(11) unsigned DEFAULT NULL,
+			    PRIMARY KEY (`id`),
+			    INDEX `media_id` (`media_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
+		if($wpdb->get_var( "show tables like '$watched_percentage_table'" ) != $watched_percentage_table){
+
+			$sql = "CREATE TABLE $watched_percentage_table ( 
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`title` varchar(300) DEFAULT NULL,
+			    `watched` MEDIUMINT unsigned DEFAULT NULL,
+			    `duration` MEDIUMINT unsigned DEFAULT NULL,
+			    `media_id` int(11) unsigned DEFAULT NULL,
+			    `playlist_id` int(11) unsigned DEFAULT NULL,
+			    PRIMARY KEY (`id`),
+			    INDEX `media_id` (`media_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+	
 	}
 
 	function mvp_plugins_loaded() {
@@ -5246,153 +5265,559 @@ Update URI: https://interactivepixel.net_mvp
 		$subtitle_table = $wpdb->prefix . "mvp_subtitle";
 		$ad_table = $wpdb->prefix . "mvp_ad";
 		$annotation_table = $wpdb->prefix . "mvp_annotation";
+		$statistics_table = $wpdb->prefix . "mvp_statistics";
 		$watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
 
 	
 
+		if($current_version < '2.56'){
 
-		$sql = "SHOW COLUMNS FROM {$settings_table} LIKE 'options'";
-    	$result = $wpdb->query($sql);
-
-    	if($wpdb->num_rows == 0){
-    		$sql = "ALTER TABLE {$settings_table} ADD COLUMN `options` text";
-    		$result = $wpdb->query($sql);
-    	}
-
-
-    	//custom css
-
-		$sql = "SHOW COLUMNS FROM {$player_table} LIKE 'custom_css'";
-    	$result = $wpdb->query($sql);
-
-    	if($wpdb->num_rows == 0){
-    		$sql = "ALTER TABLE {$player_table} ADD COLUMN `custom_css` longtext DEFAULT NULL";
-    		$result = $wpdb->query($sql);
-    	}
-
-		//custom javascript
-
-		$sql = "SHOW COLUMNS FROM {$player_table} LIKE 'custom_js'";
-    	$result = $wpdb->query($sql);
-
-    	if($wpdb->num_rows == 0){
-    		$sql = "ALTER TABLE {$player_table} ADD COLUMN `custom_js` longtext DEFAULT NULL";
-    		$result = $wpdb->query($sql);
-    	}
-	
-
-
-	
-
-	
-	
-
-		//remove playlist id, ads are now sepearate from playlists, add column ad_id.
-
-		$sql = "SHOW COLUMNS FROM {$ad_table} LIKE 'ad_id'";
-    	$result = $wpdb->query($sql);
-
-    	if($wpdb->num_rows == 0){
-
-			$sql = "ALTER TABLE {$ad_table} ADD COLUMN `ad_id` int(11) unsigned DEFAULT NULL";
-		    $result = $wpdb->query($sql);
+			update_option('mvp_video_player_version', '2.65');
+			$current_version = get_option('mvp_video_player_version');
 
 		}
+		if($current_version == '2.65'){
 
-		$sql = "SHOW COLUMNS FROM {$annotation_table} LIKE 'ad_id'";
-    	$result = $wpdb->query($sql);
+			$sql = "SHOW COLUMNS FROM {$settings_table} LIKE 'options'";
+	    	$result = $wpdb->query($sql);
 
-    	if($wpdb->num_rows == 0){
+	    	if($wpdb->num_rows == 0){
+	    		$sql = "ALTER TABLE {$settings_table} ADD COLUMN `options` text";
+	    		$result = $wpdb->query($sql);
+	    	}
 
-		    $sql = "ALTER TABLE {$annotation_table} ADD COLUMN `ad_id` int(11) unsigned DEFAULT NULL";
-		    $result = $wpdb->query($sql);
-
-		}
-
-		//ad global ad table for ads and annotations
-
-		$global_ad_table = $wpdb->prefix . "mvp_global_ad";
-		if($wpdb->get_var( "show tables like '$global_ad_table'" ) != $global_ad_table){
-
-			$sql = "CREATE TABLE $global_ad_table (
-			    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-			    `title` varchar(100) NOT NULL,
-			    `options` longtext NOT NULL,
-			    PRIMARY KEY (`id`)
-			) $charset_collate;";
-			dbDelta( $sql );
+	    	update_option('mvp_video_player_version', 2.7);
+			$current_version = get_option('mvp_video_player_version');
 
 		}
+		if($current_version == '2.7'){
 
-		//watched perc
+			$sql = "SHOW COLUMNS FROM {$player_table} LIKE 'custom_css'";
+	    	$result = $wpdb->query($sql);
 
-		$watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
-		if($wpdb->get_var( "show tables like '$watched_percentage_table'" ) != $watched_percentage_table){
-
-			$sql = "CREATE TABLE $watched_percentage_table ( 
-				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-				`title` varchar(300) DEFAULT NULL,
-			    `watched` MEDIUMINT unsigned DEFAULT NULL,
-			    `duration` MEDIUMINT unsigned DEFAULT NULL,
-			    `media_id` int(11) unsigned DEFAULT NULL,
-			    `playlist_id` int(11) unsigned DEFAULT NULL,
-			    PRIMARY KEY (`id`),
-			    INDEX `media_id` (`media_id`)
-			) $charset_collate;";
-			dbDelta( $sql );
+	    	if($wpdb->num_rows == 0){
+	    		$sql = "ALTER TABLE {$player_table} ADD COLUMN `custom_css` longtext DEFAULT NULL";
+	    		$result = $wpdb->query($sql);
+	    	}
+	
+	    	update_option('mvp_video_player_version', 3.0);
+			$current_version = get_option('mvp_video_player_version');
 
 		}
+		if($current_version == '3.0'){
+
+	    	update_option('mvp_video_player_version', 3.01);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.01'){
+
+			
+	    	update_option('mvp_video_player_version', 3.1);
+			$current_version = get_option('mvp_video_player_version');
+		}
+
+		if($current_version == '3.1'){
+
+			//update playlist item content
+
+ 			$players = $wpdb->get_results("SELECT id, options FROM {$player_table}", ARRAY_A);
+		    if($players){
+		    	foreach($players as $pl) {
+			        $options = unserialize($pl['options']);
+
+			        $options['playlistItemContent'] = array("thumb","title","description");
+
+			        $stmt = $wpdb->update(
+				    	$player_table,
+						array('options' => serialize($options)), 
+						array('id' => $pl['id']),
+						array('%s'),
+						array('%d')
+				    );
+
+			    }
+		    }
+
+		    update_option('mvp_video_player_version', 3.15);
+			$current_version = get_option('mvp_video_player_version');
+	
+		}
+		if($current_version == '3.15'){
+
+			//camelCase playlist options
+
+ 			$playlists = $wpdb->get_results("SELECT id, options FROM {$playlist_table}", ARRAY_A);
+		    if($playlists){
+		    	foreach($playlists as $pl) {
+			        $options = unserialize($pl['options']);
+
+			        if($options){
+
+				        foreach($options as $key => $value){
+				        	if(strpos($key, '_') !== false){
+							    $newkey = mvp_underscoreToCamelCase($key); 
+								$options[$newkey] = $options[$key];
+								unset($options[$key]);
+							}
+						}
+
+				        $stmt = $wpdb->update(
+					    	$playlist_table,
+							array('options' => serialize($options)), 
+							array('id' => $pl['id']),
+							array('%s'),
+							array('%d')
+					    );
+
+					}
+
+			    }
+		    }
+
+		    update_option('mvp_video_player_version', 3.3);
+			$current_version = get_option('mvp_video_player_version');
+	
+		}
+		if($current_version == '3.3'){
+
+			update_option('mvp_video_player_version', 3.4);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.4'){
+
+			update_option('mvp_video_player_version', 3.42);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.42'){
+
+			update_option('mvp_video_player_version', 3.5);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.5'){
+
+			update_option('mvp_video_player_version', 3.51);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.51'){
+
+			update_option('mvp_video_player_version', 3.52);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.52'){
+
+			update_option('mvp_video_player_version', 3.55);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.55'){
+
+			update_option('mvp_video_player_version', 3.56);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.56'){
+
+			//update playback rate
+
+ 			$players = $wpdb->get_results("SELECT id, options FROM {$player_table}", ARRAY_A);
+		    if($players){
+		    	foreach($players as $pl) {
+			        $options = unserialize($pl['options']);
+
+			        unset($options['playbackRateArr']);
+
+			        $options['playbackRateArr'] = array(
+		                  array(
+		                      'value' => 2,
+		                      'menu_title' => '2x'
+		                  ),
+		                  array(
+		                      'value' => 1.5,
+		                      'menu_title' => '1.5x'
+		                  ),
+		                  array(
+		                      'value' => 1.25,
+		                      'menu_title' => '1.25x'
+		                  ),
+		                  array(
+		                      'value' => 1,
+		                      'menu_title' => '1x (Normal)'
+		                  ),
+		                  array(
+		                      'value' => 0.5,
+		                      'menu_title' => '0.5x'
+		                  ),
+		            );
+
+			        $stmt = $wpdb->update(
+				    	$player_table,
+						array('options' => serialize($options)), 
+						array('id' => $pl['id']),
+						array('%s'),
+						array('%d')
+				    );
+
+			    }
+		    }
+
+			update_option('mvp_video_player_version', 3.71);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.71'){
+
+			update_option('mvp_video_player_version', 4.0);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '4.0'){
+
+			//remove playlist id, ads are now sepearate from playlists, add column ad_id.
+
+			$sql = "SHOW COLUMNS FROM {$ad_table} LIKE 'ad_id'";
+	    	$result = $wpdb->query($sql);
+
+	    	if($wpdb->num_rows == 0){
+
+				$sql = "ALTER TABLE {$ad_table} ADD COLUMN `ad_id` int(11) unsigned DEFAULT NULL";
+			    $result = $wpdb->query($sql);
+
+			}
+
+			$sql = "SHOW COLUMNS FROM {$annotation_table} LIKE 'ad_id'";
+	    	$result = $wpdb->query($sql);
+
+	    	if($wpdb->num_rows == 0){
+
+			    $sql = "ALTER TABLE {$annotation_table} ADD COLUMN `ad_id` int(11) unsigned DEFAULT NULL";
+			    $result = $wpdb->query($sql);
+
+			}
+
+			//ad global ad table for ads and annotations
+
+			$global_ad_table = $wpdb->prefix . "mvp_global_ad";
+			if($wpdb->get_var( "show tables like '$global_ad_table'" ) != $global_ad_table){
+
+				$sql = "CREATE TABLE $global_ad_table (
+				    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				    `title` varchar(100) NOT NULL,
+				    `options` longtext NOT NULL,
+				    PRIMARY KEY (`id`)
+				) $charset_collate;";
+				dbDelta( $sql );
+
+			}
+
+			//statistics
+
+			if($wpdb->get_var( "show tables like '$statistics_table'" ) != $statistics_table){
+
+				$sql = "CREATE TABLE $statistics_table ( 
+					`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+					`origtype` varchar(20) DEFAULT NULL,
+					`title` varchar(300) NOT NULL,
+				    `c_play` int(11) unsigned NOT NULL,
+				    `c_time` int(11) unsigned NOT NULL,
+				    `c_date` date NOT NULL,
+				    `media_id` int(11) unsigned NOT NULL,
+				    `playlist_id` int(11) unsigned DEFAULT NULL,
+				    PRIMARY KEY (`id`),
+				    INDEX `media_id` (`media_id`)
+				) $charset_collate;";
+				dbDelta( $sql );
+
+			}
+
+			update_option('mvp_video_player_version', 4.5);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '4.5'){
+
+			update_option('mvp_video_player_version', 4.55);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '4.55'){
+
+			update_option('mvp_video_player_version', 4.56);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '4.56'){
+
+			update_option('mvp_video_player_version', 4.57);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '4.57'){
+
+			$watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
+			if($wpdb->get_var( "show tables like '$watched_percentage_table'" ) != $watched_percentage_table){
+
+				$sql = "CREATE TABLE $watched_percentage_table ( 
+					`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+					`title` varchar(300) DEFAULT NULL,
+				    `watched` MEDIUMINT unsigned DEFAULT NULL,
+				    `duration` MEDIUMINT unsigned DEFAULT NULL,
+				    `media_id` int(11) unsigned DEFAULT NULL,
+				    `playlist_id` int(11) unsigned DEFAULT NULL,
+				    PRIMARY KEY (`id`),
+				    INDEX `media_id` (`media_id`)
+				) $charset_collate;";
+				dbDelta( $sql );
+
+			}
 
 
-		//add title so we can sort videos by title
+			//add title so we can sort videos by title
 
-		$sql = "SHOW COLUMNS FROM {$media_table} LIKE 'title'";
-    	$result = $wpdb->query($sql);
+			$sql = "SHOW COLUMNS FROM {$media_table} LIKE 'title'";
+	    	$result = $wpdb->query($sql);
 
-    	if($wpdb->num_rows == 0){
+	    	if($wpdb->num_rows == 0){
 
-		    $sql = "ALTER TABLE {$media_table} ADD COLUMN `title` varchar(300) DEFAULT NULL";
-		    $result = $wpdb->query($sql);
+			    $sql = "ALTER TABLE {$media_table} ADD COLUMN `title` varchar(300) DEFAULT NULL";
+			    $result = $wpdb->query($sql);
 
-			//move title 
+				//move title 
+
+		    	$media_data = $wpdb->get_results("SELECT id, options FROM {$media_table}", ARRAY_A);
+
+		    	$values = array();
+				$place_holders = array();
+
+		    	foreach ($media_data as $d) { 
+
+					$options = unserialize($d['options']);
+
+					foreach($options as $key => $value){
+						if($key == 'title' && !empty($value)){
+
+							array_push( $values, $value, $d['id']);
+							$place_holders[] = "('%s', '%d')"; 
+						}
+					}
+
+				}
+
+				if(count($values)){
+
+					$query = "INSERT INTO $media_table (title, id) VALUES ";
+					$query .= implode( ', ', $place_holders );
+
+					$query .= "ON DUPLICATE KEY UPDATE title=VALUES(title)";
+
+					$wpdb->query( $wpdb->prepare( "$query ", $values ) );
+
+				}
+
+			}
+
+			//update sort order
+
+ 			$playlists = $wpdb->get_results("SELECT id, options FROM {$playlist_table}", ARRAY_A);
+		    if($playlists){
+
+		    	$values = array();
+				$place_holders = array();
+
+		    	foreach($playlists as $pl) {
+			        $options = unserialize($pl['options']);
+
+			        if($options){
+						$options['sortOrder'] = 'order_id';
+
+						array_push( $values, serialize($options), $pl['id']);
+						$place_holders[] = "('%s', '%d')"; 
+					}
+
+			    }
+
+			    if(count($values)){
+
+				    $query = "INSERT INTO $playlist_table (options, id) VALUES ";
+					$query .= implode( ', ', $place_holders );
+
+					$query .= "ON DUPLICATE KEY UPDATE options=VALUES(options)";
+
+					$wpdb->query( $wpdb->prepare( "$query ", $values ) );
+
+				}
+			}
+
+
+			//stats finish and download
+
+			$sql = "SHOW COLUMNS FROM {$statistics_table} LIKE 'c_download'";
+	    	$result = $wpdb->query($sql);
+
+	    	if($wpdb->num_rows == 0){
+
+				$sql = "ALTER TABLE {$statistics_table} ADD COLUMN `c_download` int(11) DEFAULT '0',
+														ADD COLUMN `c_finish` int(11) unsigned DEFAULT '0'";
+			    $result = $wpdb->query($sql);
+
+			}
+
+			//settings table
+
+			$settings_table = $wpdb->prefix . "mvp_settings";
+		    $result = $wpdb->get_row("SELECT options FROM {$settings_table} WHERE id = '0'", ARRAY_A);
+		    $settings = unserialize($result['options']);
+		    $settings['vimeo_no_cookie'] = 0;
+
+		    $stmt = $wpdb->update(
+		    	$settings_table,
+				array('options' => serialize($settings)), 
+				array('id' => 0),
+				array('%s'),
+				array('%d')
+		    );
+
+			//custom javascript
+
+			$sql = "SHOW COLUMNS FROM {$player_table} LIKE 'custom_js'";
+	    	$result = $wpdb->query($sql);
+
+	    	if($wpdb->num_rows == 0){
+	    		$sql = "ALTER TABLE {$player_table} ADD COLUMN `custom_js` longtext DEFAULT NULL";
+	    		$result = $wpdb->query($sql);
+	    	}
+		
+
+			update_option('mvp_video_player_version', 5.0);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '5.0'){
+
+			//update 360
 
 	    	$media_data = $wpdb->get_results("SELECT id, options FROM {$media_table}", ARRAY_A);
-
-	    	$values = array();
-			$place_holders = array();
 
 	    	foreach ($media_data as $d) { 
 
 				$options = unserialize($d['options']);
 
 				foreach($options as $key => $value){
-					if($key == 'title' && !empty($value)){
+					if($key == 'type' && ($value == 'video_360' || $value == 'image_360')){
 
-						array_push( $values, $value, $d['id']);
-						$place_holders[] = "('%s', '%d')"; 
+						$v = substr($value, 0, 5);///remove _ 360
+
+						$options['type'] = $v;
+						$options['is360'] = '1';
+
+						$stmt = $wpdb->update(
+					    	$media_table,
+							array('options' => serialize($options)), 
+							array('id' => $d['id']),
+							array('%s'),
+							array('%d')
+					    );
+
 					}
 				}
 
 			}
 
-			if(count($values)){
+			update_option('mvp_video_player_version', 5.01);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.01'){
+			update_option('mvp_video_player_version', 5.02);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.02'){
+			update_option('mvp_video_player_version', 5.05);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.05'){
+			update_option('mvp_video_player_version', 5.06);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.06'){
+			update_option('mvp_video_player_version', 5.07);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.07'){
+			update_option('mvp_video_player_version', 5.1);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.1'){
+			update_option('mvp_video_player_version', 5.11);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.11'){
+			update_option('mvp_video_player_version', 5.12);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.12'){
+			update_option('mvp_video_player_version', 5.15);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.15'){
+			update_option('mvp_video_player_version', 5.16);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version <= '5.16'){
 
-				$query = "INSERT INTO $media_table (title, id) VALUES ";
-				$query .= implode( ', ', $place_holders );
+			//update limitDescriptionText
 
-				$query .= "ON DUPLICATE KEY UPDATE title=VALUES(title)";
+ 			$players = $wpdb->get_results("SELECT id, options FROM {$player_table}", ARRAY_A);
+		    if($players){
+		    	foreach($players as $pl) {
+			        $options = unserialize($pl['options']);
 
-				$wpdb->query( $wpdb->prepare( "$query ", $values ) );
+			        $options['limitDescriptionText'] = '2';
 
-			}
+			        $stmt = $wpdb->update(
+				    	$player_table,
+						array('options' => serialize($options)), 
+						array('id' => $pl['id']),
+						array('%s'),
+						array('%d')
+				    );
 
+			    }
+		    }
+
+		    //remove fk
+			/*$sql = "ALTER TABLE $path_table DROP FOREIGN KEY mvp_path_ibfk_1";
+		    $wpdb->query($sql);
+
+		    $sql = "ALTER TABLE $subtitle_table DROP FOREIGN KEY mvp_subtitle_ibfk_1";
+		    $wpdb->query($sql);
+
+		    $sql = "ALTER TABLE $ad_table DROP FOREIGN KEY mvp_ad_ibfk_1";
+		    $wpdb->query($sql);
+
+		    $sql = "ALTER TABLE $annotation_table DROP FOREIGN KEY mvp_annotation_ibfk_1";
+		    $wpdb->query($sql);
+
+		    $sql = "ALTER TABLE $statistics_table DROP FOREIGN KEY mvp_stat_ibfk_1";
+		    $wpdb->query($sql);
+
+			$sql = "ALTER TABLE $media_table DROP FOREIGN KEY mvp_media_ibfk_1";
+		    $wpdb->query($sql);
+
+		    $sql = "ALTER TABLE $watched_percentage_table DROP FOREIGN KEY mvp_wperc_ibfk_1";
+			$wpdb->query($sql);
+
+			$sql = "ALTER TABLE $watched_percentage_table MODIFY COLUMN `playlist_id` int(11) unsigned DEFAULT NULL";
+			$wpdb->query($sql);*/
+
+			update_option('mvp_video_player_version', 6.0);
+			$current_version = get_option('mvp_video_player_version');
 		}
 
-		
-
-
-
-	
 		$sql = "SHOW COLUMNS FROM {$path_table} LIKE 'playlist_id'";
     	$result = $wpdb->query($sql);
 
@@ -5428,6 +5853,77 @@ Update URI: https://interactivepixel.net_mvp
 
 
 
+		$statistics_country_table = $wpdb->prefix . "mvp_statistics_country";
+		if($wpdb->get_var( "show tables like '$statistics_country_table'" ) != $statistics_country_table){
+
+			$sql = "CREATE TABLE $statistics_country_table ( 
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`country` varchar(100),
+				`country_code` varchar(10),
+				`continent` varchar(15),
+			    PRIMARY KEY (`id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$statistics_country_play_table = $wpdb->prefix . "mvp_statistics_country_play";
+		if($wpdb->get_var( "show tables like '$statistics_country_play_table'" ) != $statistics_country_play_table){
+
+			$sql = "CREATE TABLE $statistics_country_play_table ( 
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`title` varchar(300),
+		    	`thumb` varchar(300),
+		    	`video_url` varchar(300),
+			    `c_play` int(11) unsigned,
+			    `c_time` int(11) unsigned,
+			    `c_date` date,
+			    `media_id` int(11) unsigned,
+			    `playlist_id` int(11) unsigned,
+			    `country_id` int(11) unsigned,
+			    PRIMARY KEY (`id`),
+			    INDEX `media_id` (`media_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$statistics_user_table = $wpdb->prefix . "mvp_statistics_user";
+		if($wpdb->get_var( "show tables like '$statistics_user_table'" ) != $statistics_user_table){
+
+			$sql = "CREATE TABLE $statistics_user_table ( 
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`user_id` smallint(11) unsigned,
+				`user_display_name` varchar(100),
+				`user_role` varchar(50),
+			    PRIMARY KEY (`id`),
+			    INDEX `user_id` (`user_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$statistics_user_play_table = $wpdb->prefix . "mvp_statistics_user_play";
+		if($wpdb->get_var( "show tables like '$statistics_user_play_table'" ) != $statistics_user_play_table){
+
+			$sql = "CREATE TABLE $statistics_user_play_table ( 
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`title` varchar(300),
+		    	`thumb` varchar(300),
+		    	`video_url` varchar(300),
+			    `c_play` int(11) unsigned,
+			    `c_time` int(11) unsigned,
+			    `c_date` date,
+			    `media_id` int(11) unsigned,
+			    `playlist_id` int(11) unsigned,
+			    `user_id` int(11) unsigned,
+			    PRIMARY KEY (`id`),
+			    INDEX `media_id` (`media_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
 		//disabled
 
 		$sql = "SHOW COLUMNS FROM {$media_table} LIKE 'disabled'";
@@ -5437,67 +5933,10 @@ Update URI: https://interactivepixel.net_mvp
     		$sql = "ALTER TABLE {$media_table} ADD COLUMN `disabled` tinyint DEFAULT 0";
     		$result = $wpdb->query($sql);
     	}
+	
 
 
-
-    	//user id playlist
-		$sql = "SHOW COLUMNS FROM {$playlist_table} LIKE 'user_id'";
-    	$result = $wpdb->query($sql);
-
-    	if($wpdb->num_rows == 0){
-    		$sql = "ALTER TABLE {$playlist_table} ADD COLUMN `user_id` int(11) unsigned DEFAULT NULL";
-    		$result = $wpdb->query($sql);
-    	}
-
-		//user id media (so we can count how many videos user added)
-		$sql = "SHOW COLUMNS FROM {$media_table} LIKE 'user_id'";
-    	$result = $wpdb->query($sql);
-
-    	if($wpdb->num_rows == 0){
-    		$sql = "ALTER TABLE {$media_table} ADD COLUMN `user_id` int(11) unsigned DEFAULT NULL";
-    		$result = $wpdb->query($sql);
-    	}
-
-    	
-    	//favorites
-		$favorites_table = $wpdb->prefix . "mvp_favorites";
-		if($wpdb->get_var( "show tables like '$favorites_table'" ) != $favorites_table){
-
-			$sql = "CREATE TABLE $favorites_table (
-			    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-				`user_id` int(11) unsigned DEFAULT NULL,
-				`playlist_id` int(11) unsigned DEFAULT NULL,
-				`media_id` int(11) unsigned DEFAULT NULL,
-			    PRIMARY KEY (`id`),
-			    INDEX `media_id` (`media_id`)
-			) $charset_collate;";
-			dbDelta( $sql );
-
-		}
-
-		//watch perc user id
-		$sql = "SHOW COLUMNS FROM {$watched_percentage_table} LIKE 'user_id'";
-    	$result = $wpdb->query($sql);
-
-    	if($wpdb->num_rows == 0){
-    		$sql = "ALTER TABLE {$watched_percentage_table} ADD COLUMN `user_id` int(11) unsigned DEFAULT NULL";
-    		$result = $wpdb->query($sql);
-    	}
-    		
-		//playlist is edited
-		$sql = "SHOW COLUMNS FROM {$playlist_table} LIKE 'is_edit'";
-    	$result = $wpdb->query($sql);
-
-    	if($wpdb->num_rows == 0){
-    		$sql = "ALTER TABLE {$playlist_table} 
-    		ADD COLUMN `is_edit` tinyint DEFAULT 0,
-    		ADD COLUMN `edit_user_id` tinyint unsigned DEFAULT NULL";
-    		$result = $wpdb->query($sql);
-    	}
-    	
-
-
-		update_option('mvp_video_player_version', MVP_PLUGIN_VERSION);
+		update_option('mvp_video_player_version', 7.5);
 	
 		
 

@@ -4,12 +4,12 @@ if (!defined('ABSPATH')) exit;
 
 // This widget ads a player with a playlist to the page.
 
-if (!class_exists('ModernVideoPlayerWidget')) {
-    class ModernVideoPlayerWidget extends WP_Widget {
+if (!class_exists('UltimateMediaGalleryWidget')) {
+    class UltimateMediaGalleryWidget extends WP_Widget {
      
         function __construct() {
             parent::__construct( 'mvp-player-widget',
-             __( 'Modern Video Player', MVP_TEXTDOMAIN ),
+             __( 'Ultimate Media Gallery', MVP_TEXTDOMAIN ),
              array( 'description' => __( 'Add player with playlist in your website.', MVP_TEXTDOMAIN )) 
             ); 
         }

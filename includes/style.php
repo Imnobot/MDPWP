@@ -5,10 +5,6 @@
         <li id="mvp-tab-icons"><?php esc_html_e('Elements', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-ev"><?php esc_html_e('Breakpoints', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-playlist-selector"><?php esc_html_e('Playlist selector', MVP_TEXTDOMAIN); ?></li>
-        <li id="mvp-tab-sort-buttons"><?php esc_html_e('Video sort buttons', MVP_TEXTDOMAIN); ?></li>
-        <?php if(defined('MVP_SCHEDULE')) : ?>
-        <li id="mvp-tab-schedule"><?php esc_html_e('Schedule', MVP_TEXTDOMAIN); ?></li>
-        <?php endif; ?>
     </ul>
 
     <div id="mvp-tab-layout-content" class="mvp-tab-content">
@@ -144,11 +140,33 @@
                     <?php foreach ($options['playlistItemContentArr'] as $key => $value) : ?>
                         <label class="container">
                             <input type="checkbox" name="playlistItemContent[]" value="<?php echo($key); ?>" <?php if(in_array($key, $options['playlistItemContent'])) echo 'checked' ?>><?php echo($value); ?>
-                        </label><br>
+                        </label>
                     <?php endforeach; ?>
 
                 </div>
-                <p><?php esc_html_e('Select content to show in playlist items. Play count uses player own statistics, not statistics from Youtube or Vimeo!', MVP_TEXTDOMAIN); ?></p>
+                <p><?php esc_html_e('Select content to show in playlist items.', MVP_TEXTDOMAIN); ?></p>
+            </td>
+        </tr>
+
+        <tr valign="top" id="navigationType-field">
+            <th><?php esc_html_e('Select playlist navigation type', MVP_TEXTDOMAIN); ?></th>
+            <td>
+                <select id="navigationType" name="navigationType">
+                    <?php foreach ($options['navigationTypeArr'] as $key => $value) : ?>
+                        <option value="<?php echo($key); ?>" <?php if(isset($options['navigationType']) && $options['navigationType'] == $key) echo 'selected' ?>><?php echo($value); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </td>
+        </tr>
+
+         <tr valign="top" id="navigationStyle-field">
+            <th><?php esc_html_e('Select navigation style', MVP_TEXTDOMAIN); ?></th>
+            <td>
+                <select id="navigationStyle" name="navigationStyle">
+                    <?php foreach ($options['navigationStyleArr'] as $key => $value) : ?>
+                        <option value="<?php echo($key); ?>" <?php if(isset($options['navigationStyle']) && $options['navigationStyle'] == $key) echo 'selected' ?>><?php echo($value); ?></option>
+                    <?php endforeach; ?>
+                </select>
             </td>
         </tr>
 
@@ -162,6 +180,19 @@
                 </select>
                 <p><?php esc_html_e('Choose which playlist scroll to use.', MVP_TEXTDOMAIN); ?></p>
                 
+            </td>
+        </tr>
+
+        <tr valign="top" id="playlistScrollTheme-field">
+            <th><?php esc_html_e('Select scroll theme', MVP_TEXTDOMAIN); ?></th>
+            <td>
+                <select name="playlistScrollTheme">
+                    <?php foreach ($options['playlistScrollThemeArr'] as $key => $value) : ?>
+                        <option value="<?php echo($key); ?>" <?php if(isset($options['playlistScrollTheme']) && $options['playlistScrollTheme'] == $key) echo 'selected' ?>><?php echo($value); ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <p class="info"><?php printf(__( 'View scroll examples <a href="%s" target="_blank">here</a>', MVP_TEXTDOMAIN), esc_url( 'http://manos.malihu.gr/repository/custom-scrollbar/demo/examples/scrollbar_themes_demo.html' ));?></p>
+
             </td>
         </tr>
 
@@ -183,19 +214,7 @@
                 <span class="info"><?php esc_html_e('Valid for layouts when playlist is on the side. If true, when playlist is on the side and you open / close playlist, player height will grow / shrink to keep video ratio.', MVP_TEXTDOMAIN); ?></span>
             </td>
         </tr>
-
-        <tr valign="top">
-            <th><?php esc_html_e('Media aspect ratio', MVP_TEXTDOMAIN); ?></th>
-            <td>
-                <select name="aspectRatio">
-                    <?php foreach ($options['aspectRatioArr'] as $key => $value) : ?>
-                        <option value="<?php echo($key); ?>" <?php if(isset($options['aspectRatio']) && $options['aspectRatio'] == $key) echo 'selected' ?>><?php echo($value); ?></option>
-                    <?php endforeach; ?>
-                </select><br>
-                <span class="info"><?php esc_html_e('Set default media resize option inside player (valid for self hosted media).<br>Fit inside will always show whole video, but may leave blank spaces around the video, depending on the resolution.<br>Fit outside will always cover the whole screen with video, leaving no blank spaces, but may cut part of the video, depending on the resolution.', MVP_TEXTDOMAIN); ?></span>
-            </td>
-        </tr>
-    
+        
         <tr valign="top" id="wrapperMaxWidth_field">
             <th><?php esc_html_e('Restrict player width (px or %)', MVP_TEXTDOMAIN); ?></th>
             <td>
@@ -228,22 +247,6 @@
             </td>
         </tr>
 
-        <tr valign="top">
-            <th><?php esc_html_e('Mobile Seekbar Min Width [px]', MVP_TEXTDOMAIN); ?></th>
-            <td>
-                <input type="number" name="mobileSeekbarMinWidth" id="mobileSeekbarMinWidth" min="0" value="<?php echo($options['mobileSeekbarMinWidth']); ?>"><br>
-                <span class="info"><?php esc_html_e('Skin aviva & sirius, on narrow screens width below which seekbar goes above controls to make room for other buttons. Leave empty for none.', MVP_TEXTDOMAIN); ?></span>
-            </td>
-        </tr>
-
-        <tr valign="top">
-            <th><?php esc_html_e('Mobile Controls top Min Width [px]', MVP_TEXTDOMAIN); ?></th>
-            <td>
-                <input type="number" name="mobileControlsTopMinWidth" id="mobileControlsTopMinWidth" min="0" value="<?php echo($options['mobileControlsTopMinWidth']); ?>"><br>
-                <span class="info"><?php esc_html_e('Skin aviva & pollux, on narrow screens width on which top controls become horizontal. Leave empty for none.', MVP_TEXTDOMAIN); ?></span>
-            </td>
-        </tr>
-
         <tr valign="top" id="showSearchField_field">
             <th><?php esc_html_e('Use search field in playlist', MVP_TEXTDOMAIN); ?></th>
             <td>
@@ -264,18 +267,6 @@
                     <?php endforeach; ?>
                 </select>
                 <p class="info"><?php esc_html_e('Select shadow effect below the player.', MVP_TEXTDOMAIN); ?></p>
-            </td>
-        </tr>
-
-        <tr valign="top">
-            <th><?php esc_html_e('Player animation style', MVP_TEXTDOMAIN); ?></th>
-            <td>
-                <select name="playerTransition" id="playerTransition">
-                    <?php foreach ($options['playerTransitionArr'] as $key => $value) : ?>
-                        <option value="<?php echo($key); ?>" <?php if(isset($options['playerTransition']) && $options['playerTransition'] == $key) echo 'selected' ?>><?php echo($value); ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <p class="info"><?php esc_html_e('Player animation style for opened windows (info, share, embed)', MVP_TEXTDOMAIN); ?></p>
             </td>
         </tr>
 
@@ -319,7 +310,296 @@
 
         <table class="form-table">
 
-            <?php include("player_use_elements.php"); ?>
+            <tr valign="top">
+                <th><?php esc_html_e('Use big play button', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="useBigPlay">
+                        <option value="0" <?php if(isset($options['useBigPlay']) && $options['useBigPlay'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useBigPlay']) && $options['useBigPlay'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                    <span class="info"><?php esc_html_e('Show big play button in the center before media starts and when paused.', MVP_TEXTDOMAIN); ?></span>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Big play image url', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <img id="bigPlayImgSrc_preview" class="mvp-img-preview" src="<?php echo (isset($options['bigPlayImgSrc']) ? esc_html($options['bigPlayImgSrc']) : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D'); ?>" alt="">
+                    <input type="text" id="bigPlayImgSrc" name="bigPlayImgSrc" value="<?php echo($options['bigPlayImgSrc']); ?>">
+                    <button type="button" id="bigPlayImgSrc_upload"><?php esc_html_e('Upload', MVP_TEXTDOMAIN); ?></button> 
+                    <button type="button" id="bigPlayImgSrc_remove"><?php esc_html_e('Remove', MVP_TEXTDOMAIN); ?></button><br>  
+                    <span class="info"><?php esc_html_e('Upload your own big play image.', MVP_TEXTDOMAIN); ?></span>  
+
+                    <input type="hidden" id="bigPlayImgW" name="bigPlayImgW" value="<?php echo($options['bigPlayImgW']); ?>">
+                    <input type="hidden" id="bigPlayImgH" name="bigPlayImgH" value="<?php echo($options['bigPlayImgH']); ?>">         
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use seekbar', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="useSeekbar">
+                        <option value="0" <?php if(isset($options['useSeekbar']) && $options['useSeekbar'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useSeekbar']) && $options['useSeekbar'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use bottom seekbar (shown when main controls hide)', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="useSoloSeekbar">
+                        <option value="0" <?php if(isset($options['useSoloSeekbar']) && $options['useSoloSeekbar'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useSoloSeekbar']) && $options['useSoloSeekbar'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use play button', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="usePlay">
+                        <option value="0" <?php if(isset($options['usePlay']) && $options['usePlay'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['usePlay']) && $options['usePlay'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                    <span class="info"><?php esc_html_e('Use small play button.', MVP_TEXTDOMAIN); ?></span>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use next video button', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="useNext">
+                        <option value="0" <?php if(isset($options['useNext']) && $options['useNext'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useNext']) && $options['useNext'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use previous video button', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="usePrevious">
+                        <option value="0" <?php if(isset($options['usePrevious']) && $options['usePrevious'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['usePrevious']) && $options['usePrevious'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use rewind to beginning button', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="useRewind">
+                        <option value="0" <?php if(isset($options['useRewind']) && $options['useRewind'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useRewind']) && $options['useRewind'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use skip backward button (x seconds)', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="useSkipBackward">
+                        <option value="0" <?php if(isset($options['useSkipBackward']) && $options['useSkipBackward'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useSkipBackward']) && $options['useSkipBackward'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use skip forward button (x seconds)', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="useSkipForward">
+                        <option value="0" <?php if(isset($options['useSkipForward']) && $options['useSkipForward'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useSkipForward']) && $options['useSkipForward'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use current and total time', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="useTime">
+                        <option value="0" <?php if(isset($options['useTime']) && $options['useTime'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useTime']) && $options['useTime'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use volume button', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="useVolume">
+                        <option value="0" <?php if(isset($options['useVolume']) && $options['useVolume'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useVolume']) && $options['useVolume'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use unmute button', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="useUnmuteBtn">
+                        <option value="0" <?php if(isset($options['useUnmuteBtn']) && $options['useUnmuteBtn'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useUnmuteBtn']) && $options['useUnmuteBtn'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                    <span class="info"><?php esc_html_e('Use unmute button to unmute the video. Button will be shown above the player if Auto play is true and video starts muted.', MVP_TEXTDOMAIN); ?></span><div class="mvp-help-tip"><p><img src="<?php echo plugins_url().'/apmvp/images/useUnmuteBtn.jpg' ?>"/></p></div>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use download button', MVP_TEXTDOMAIN); ?></th>    
+                <td>
+                    <select name="useDownload">
+                        <option value="0" <?php if(isset($options['useDownload']) && $options['useDownload'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useDownload']) && $options['useDownload'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                    <span class="info"><?php esc_html_e('Download button is automatically hidden is video does not have download url set.', MVP_TEXTDOMAIN); ?></span>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use info button (video description)', MVP_TEXTDOMAIN); ?></th>          
+                <td>
+                    <select name="useInfo">
+                        <option value="0" <?php if(isset($options['useInfo']) && $options['useInfo'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useInfo']) && $options['useInfo'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use embed button', MVP_TEXTDOMAIN); ?></th>          
+                <td>
+                    <select name="useEmbed">
+                        <option value="0" <?php if(isset($options['useEmbed']) && $options['useEmbed'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useEmbed']) && $options['useEmbed'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Show video title about the player', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="showVideoTitle">
+                        <option value="0" <?php if(isset($options['showVideoTitle']) && $options['showVideoTitle'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['showVideoTitle']) && $options['showVideoTitle'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use fullscreen button', MVP_TEXTDOMAIN); ?></th>   
+                <td>
+                    <select name="useFullscreen">
+                        <option value="0" <?php if(isset($options['useFullscreen']) && $options['useFullscreen'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useFullscreen']) && $options['useFullscreen'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use picture in picture button', MVP_TEXTDOMAIN); ?></th>         
+                <td>
+                    <select name="usePip">
+                        <option value="0" <?php if(isset($options['usePip']) && $options['usePip'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['usePip']) && $options['usePip'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use theater mode button', MVP_TEXTDOMAIN); ?></th>         
+                <td>
+                    <select name="useTheaterMode">
+                        <option value="0" <?php if(isset($options['useTheaterMode']) && $options['useTheaterMode'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useTheaterMode']) && $options['useTheaterMode'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use Chromecast button for casting', MVP_TEXTDOMAIN); ?></th>   
+                <td>
+                    <select name="useCasting">
+                        <option value="0" <?php if(isset($options['useCasting']) && $options['useCasting'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useCasting']) && $options['useCasting'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use playback rate menu', MVP_TEXTDOMAIN); ?></th>      
+                <td>
+                    <select name="usePlaybackRate">
+                        <option value="0" <?php if(isset($options['usePlaybackRate']) && $options['usePlaybackRate'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['usePlaybackRate']) && $options['usePlaybackRate'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use video quality menu', MVP_TEXTDOMAIN); ?></th>      
+                <td>
+                    <select name="useQuality">
+                        <option value="0" <?php if(isset($options['useQuality']) && $options['useQuality'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useQuality']) && $options['useQuality'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                    <span class="info"><?php esc_html_e('This is for self hosted media. Youtube and Vimeo automatically choose best suitable quality on their side.', MVP_TEXTDOMAIN); ?></span>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use captions menu (subtitles)', MVP_TEXTDOMAIN); ?></th>         
+                <td>
+                    <select name="useSubtitle">
+                        <option value="0" <?php if(isset($options['useSubtitle']) && $options['useSubtitle'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useSubtitle']) && $options['useSubtitle'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use transcript window', MVP_TEXTDOMAIN); ?></th>         
+                <td>
+                    <select name="useTranscript">
+                        <option value="0" <?php if(isset($options['useTranscript']) && $options['useTranscript'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useTranscript']) && $options['useTranscript'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use quick caption toggle button', MVP_TEXTDOMAIN); ?></th>         
+                <td>
+                    <select name="useCc">
+                        <option value="0" <?php if(isset($options['useCc']) && $options['useCc'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useCc']) && $options['useCc'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select>
+                    <p class="info"><?php esc_html_e('Show button to toggle caption state on/off (remember last used subtitle).', MVP_TEXTDOMAIN); ?></p>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Use AirPlay button', MVP_TEXTDOMAIN); ?></th>         
+                <td>
+                    <select name="useAirPlay">
+                        <option value="0" <?php if(isset($options['useAirPlay']) && $options['useAirPlay'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['useAirPlay']) && $options['useAirPlay'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr valign="top" id="usePlaylistToggle-field">
+                <th><?php esc_html_e('Use playlist toggle button', MVP_TEXTDOMAIN); ?></th>         
+                <td>
+                    <select name="usePlaylistToggle">
+                        <option value="0" <?php if(isset($options['usePlaylistToggle']) && $options['usePlaylistToggle'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['usePlaylistToggle']) && $options['usePlaylistToggle'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select><br>
+                    <span class="info"><?php esc_html_e('Open / close playlist button.', MVP_TEXTDOMAIN); ?></span>
+                </td>
+            </tr>
 
         </table>
 
@@ -401,9 +681,6 @@
                       <input type="checkbox" class="ev_audio_language ev-elem" name="" data-cname="audio_language"><?php esc_html_e('audio language (for live streaming)', MVP_TEXTDOMAIN); ?>
                     </label>
                     <label class="container">
-                      <input type="checkbox" class="ev_settings ev-elem" name="" data-cname="settings"><?php esc_html_e('settings menu (contains video quality, playback speed, subtitles)', MVP_TEXTDOMAIN); ?>
-                    </label>
-                    <label class="container">
                       <input type="checkbox" class="ev_fullscreen ev-elem" name="" data-cname="fullscreen"><?php esc_html_e('fullscreen', MVP_TEXTDOMAIN); ?>
                     </label>
                     <label class="container">
@@ -417,9 +694,6 @@
                     </label>
                     <label class="container">
                       <input type="checkbox" class="ev_annotations ev-elem" name="" data-cname="annotations"><?php esc_html_e('annotations', MVP_TEXTDOMAIN); ?>
-                    </label>
-                    <label class="container">
-                      <input type="checkbox" class="ev_popups ev-elem" name="" data-cname="popups"><?php esc_html_e('popups', MVP_TEXTDOMAIN); ?>
                     </label>
                     <label class="container">
                       <input type="checkbox" class="ev_upnext ev-elem" name="" data-cname="upnext"><?php esc_html_e('upnext', MVP_TEXTDOMAIN); ?>
@@ -510,55 +784,5 @@
         </table>
 
     </div>
-
-    <div id="mvp-tab-sort-buttons-content" class="mvp-tab-content">
-
-        <p class="info"><?php esc_html_e('Display video sort buttons above the thumbnail grid or player', MVP_TEXTDOMAIN); ?></p>
-
-        <table class="form-table">
-
-            <tr valign="top">
-                <th><?php esc_html_e('Use sort buttons', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="useSortButtons">
-                        <option value="0" <?php if(isset($options['useSortButtons']) && $options['useSortButtons'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['useSortButtons']) && $options['useSortButtons'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
-                    <span class="info"><?php esc_html_e('Sort buttons can be used with both grid layouts and the player layouts. Sorting can ONLY work with single videos in the playlist. Its not possible for this to work with Youtube playlist for example or a Vimeo album. For sorting to work, videos need to have date defined and a play count (comes from statistics).', MVP_TEXTDOMAIN); ?></span><div class="mvp-help-tip"><p><img src="<?php echo plugins_url().'/apmvp/images/sort-buttons.jpg' ?>"/></p></div>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Sort buttons align', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="sortButtonsAlign">
-                        <option value="left" <?php if(isset($options['sortButtonsAlign']) && $options['sortButtonsAlign'] == "left") echo 'selected' ?>><?php esc_html_e('Left', MVP_TEXTDOMAIN); ?></option>
-                        <option value="right" <?php if(isset($options['sortButtonsAlign']) && $options['sortButtonsAlign'] == "right") echo 'selected' ?>><?php esc_html_e('Right', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
-                    <span class="info"><?php esc_html_e('Align sort buttons left or right.', MVP_TEXTDOMAIN); ?></span>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Default sort on start', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select id="defaultSort" name="defaultSort">
-                        <?php foreach ($options['defaultSortArr'] as $key => $value) : ?>
-                            <option value="<?php echo($key); ?>" <?php if(isset($options['defaultSort']) && $options['defaultSort'] == $key) echo 'selected' ?>><?php echo($value); ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </td>
-            </tr>
-            
-        </table>
-
-    </div>
-
-    <?php if(defined('MVP_SCHEDULE')) : ?>
-    <div id="mvp-tab-schedule-content" class="mvp-tab-content">
-        <?php /*include(__DIR__."/../../apmvp_schedule/schedule.php");*/
-        include(WP_PLUGIN_DIR.'/apmvp_schedule/schedule.php'); ?>
-    </div>
-    <?php endif; ?>
 
 </div>

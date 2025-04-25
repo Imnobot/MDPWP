@@ -7,12 +7,7 @@
 
 ?>
 
-<div class="wrap">
-
-	<?php include("playeri.php"); ?>
-
-	<div class="mvp-settings-wrap-panel aptenv-ready">
-	<div id="mvp-stat-section" data-admin-url="<?php echo admin_url("admin.php"); ?>">
+<div class="wrap" id="mvp-stat-wrap" data-admin-url="<?php echo admin_url("admin.php"); ?>">
 
 	<h2><?php esc_html_e('Video statistics', MVP_TEXTDOMAIN); ?></h2>
 
@@ -20,45 +15,18 @@
 
 	<div class="mvp-stats-header">
 
-		<div class="mvp-stats-selector">
-
-			<div class="mvp-stats-playlist-selector">
-				<span style="vertical-align: middle;"><?php esc_html_e('Choose playlist to show statistics data:', MVP_TEXTDOMAIN); ?></span>
-
-				<input type="text" id="mvp-stats-playlist-list" list="mvp-stats-playlist-list-select">
-				<datalist id="mvp-stats-playlist-list-select">
-				    <option value="-1"><?php esc_html_e('All playlists', MVP_TEXTDOMAIN); ?></option>
-					<?php foreach ($playlists as $playlist) : ?>
-			            <option value="<?php echo($playlist['id']); ?>"><?php echo($playlist['title'].' - ID #'.$playlist['id']); ?></option>
-			        <?php endforeach; ?>
-				</datalist>
-
-			</div>
-
-			<div class="mvp-stats-user-selector">
-				<span style="vertical-align: middle;"><?php esc_html_e('Choose user to show statistics data:', MVP_TEXTDOMAIN); ?></span>
-				<select id="mvp-stats-user-list">
-					<option value=""><?php esc_html_e('Show all', MVP_TEXTDOMAIN); ?></option>
-					<?php 
-					$users = get_users( 
-						array( 
-						'fields' => array( 'ID', 'display_name') ) 
-					);
-					foreach($users as $user){
-						?> <option value="<?php echo($user->ID); ?>"><?php echo($user->display_name.' - ID #'.$user->ID); ?></option>
-						<?php 
-				    }?>
-			    </select>
-			</div>
-
-		</div>	
-		
-
-
+		<div class="mvp-stats-playlist-selector">
+			<span style="vertical-align: middle;"><?php esc_html_e('Choose playlist to show statistics data:', MVP_TEXTDOMAIN); ?></span>
+			<select name="mvp-stats-playlist-list" id="mvp-stats-playlist-list">
+				<option value="-1"><?php esc_html_e('All playlists', MVP_TEXTDOMAIN); ?></option>
+				<?php foreach ($playlists as $playlist) : ?>
+		            <option value="<?php echo($playlist['id']); ?>"><?php echo($playlist['title'].' - ID #'.$playlist['id']); ?></option>
+		        <?php endforeach; ?>
+		    </select>
+		</div>
 
 		<div>
-			<button type="button" class='button-primary' id="mvp-clear-statistics" title='<?php esc_attr_e('Clear Statistics', MVP_TEXTDOMAIN); ?>'><?php esc_html_e('Clear Statistics', MVP_TEXTDOMAIN); ?></button>
-			<p><?php esc_html_e('This will clear statistics for selected users.', MVP_TEXTDOMAIN); ?></p>
+		<button type="button" class='button-primary' id="mvp-clear-statistics" title='<?php esc_attr_e('Clear Statistics', MVP_TEXTDOMAIN); ?>'><?php esc_html_e('Clear Statistics', MVP_TEXTDOMAIN); ?></button>
 		</div>
 
 	</div>
@@ -102,31 +70,12 @@
 				</div>
 
 				<div class="top-box-content">
-
-					<table class="mvp-table wp-list-table widefat inline-stat-table inline-stat-table-hidden">
-	                <thead>
-	                    <tr>
-	                        <th><?php esc_html_e('#', MVP_TEXTDOMAIN); ?></th>
-	                        <th><?php esc_html_e('Title', MVP_TEXTDOMAIN); ?></th>
-	                        <th><?php esc_html_e('Plays', MVP_TEXTDOMAIN); ?></th>
-	                    </tr>
-	                </thead>
-	                <tbody>
-	                </tbody>
-	                </table>
-
 					<div class="mvp-stat-no-data mvp-stat-hidden"><p><?php esc_html_e('Data Not Available', MVP_TEXTDOMAIN); ?></p></div>
+				</div>
 
-					<div class="mvp-top-box-content-total">
-
-						<div class="mvp-top-box-content-total-wrap">
-							<span class="mvp-top-box-content-total-title"><?php esc_html_e('Grand total:', MVP_TEXTDOMAIN); ?></span>
-							<span class="mvp-top-box-content-total-value"></span>
-						</div>
-
-						<button type="button" class="mvp-stat-export mvp-stat-hidden"><?php esc_html_e('Export', MVP_TEXTDOMAIN); ?></button>
-					</div>
-
+				<div class="top-box-content-total">
+					<span class="top-box-content-total-title"><?php esc_html_e('Grand total:', MVP_TEXTDOMAIN); ?></span>
+					<span class="top-box-content-total-value"></span>
 				</div>
 
 			</div>
@@ -142,31 +91,12 @@
 				</div>
 
 				<div class="top-box-content">
-
-					<table class="mvp-table wp-list-table widefat inline-stat-table inline-stat-table-hidden">
-	                <thead>
-	                    <tr>
-	                        <th><?php esc_html_e('#', MVP_TEXTDOMAIN); ?></th>
-	                        <th><?php esc_html_e('Title', MVP_TEXTDOMAIN); ?></th>
-	                        <th><?php esc_html_e('Plays', MVP_TEXTDOMAIN); ?></th>
-	                    </tr>
-	                </thead>
-	                <tbody>
-	                </tbody>
-	                </table>
-
 					<div class="mvp-stat-no-data mvp-stat-hidden"><p><?php esc_html_e('Data Not Available', MVP_TEXTDOMAIN); ?></p></div>
+				</div>
 
-					<div class="mvp-top-box-content-total">
-
-						<div class="mvp-top-box-content-total-wrap">
-							<span class="mvp-top-box-content-total-title"><?php esc_html_e('Grand total:', MVP_TEXTDOMAIN); ?></span>
-							<span class="mvp-top-box-content-total-value"></span>
-						</div>
-
-						<button type="button" class="mvp-stat-export mvp-stat-hidden"><?php esc_html_e('Export', MVP_TEXTDOMAIN); ?></button>
-					</div>
-
+				<div class="top-box-content-total">
+					<span class="top-box-content-total-title"><?php esc_html_e('Grand total:', MVP_TEXTDOMAIN); ?></span>
+					<span class="top-box-content-total-value"></span>
 				</div>
 
 			</div>
@@ -183,31 +113,12 @@
 				</div>
 
 				<div class="top-box-content">
-
-					<table class="mvp-table wp-list-table widefat inline-stat-table inline-stat-table-hidden">
-	                <thead>
-	                    <tr>
-	                        <th><?php esc_html_e('#', MVP_TEXTDOMAIN); ?></th>
-	                        <th><?php esc_html_e('Title', MVP_TEXTDOMAIN); ?></th>
-	                        <th><?php esc_html_e('Plays', MVP_TEXTDOMAIN); ?></th>
-	                    </tr>
-	                </thead>
-	                <tbody>
-	                </tbody>
-	                </table>
-
 					<div class="mvp-stat-no-data mvp-stat-hidden"><p><?php esc_html_e('Data Not Available', MVP_TEXTDOMAIN); ?></p></div>
+				</div>
 
-					<div class="mvp-top-box-content-total">
-
-						<div class="mvp-top-box-content-total-wrap">
-							<span class="mvp-top-box-content-total-title"><?php esc_html_e('Grand total:', MVP_TEXTDOMAIN); ?></span>
-							<span class="mvp-top-box-content-total-value"></span>
-						</div>
-
-						<button type="button" class="mvp-stat-export mvp-stat-hidden"><?php esc_html_e('Export', MVP_TEXTDOMAIN); ?></button>
-					</div>
-
+				<div class="top-box-content-total">
+					<span class="top-box-content-total-title"><?php esc_html_e('Grand total:', MVP_TEXTDOMAIN); ?></span>
+					<span class="top-box-content-total-value"></span>
 				</div>
 
 			</div>
@@ -228,31 +139,12 @@
 				</div>
 
 				<div class="top-box-content">
-
-					<table class="mvp-table wp-list-table widefat inline-stat-table inline-stat-table-hidden">
-	                <thead>
-	                    <tr>
-	                        <th><?php esc_html_e('#', MVP_TEXTDOMAIN); ?></th>
-	                        <th><?php esc_html_e('Title', MVP_TEXTDOMAIN); ?></th>
-	                        <th><?php esc_html_e('Plays', MVP_TEXTDOMAIN); ?></th>
-	                    </tr>
-	                </thead>
-	                <tbody>
-	                </tbody>
-	                </table>
-
 					<div class="mvp-stat-no-data mvp-stat-hidden"><p><?php esc_html_e('Data Not Available', MVP_TEXTDOMAIN); ?></p></div>
+				</div>
 
-					<div class="mvp-top-box-content-total">
-
-						<div class="mvp-top-box-content-total-wrap">
-							<span class="mvp-top-box-content-total-title"><?php esc_html_e('Grand total:', MVP_TEXTDOMAIN); ?></span>
-							<span class="mvp-top-box-content-total-value"></span>
-						</div>
-
-						<button type="button" class="mvp-stat-export mvp-stat-hidden"><?php esc_html_e('Export', MVP_TEXTDOMAIN); ?></button>
-					</div>
-
+				<div class="top-box-content-total">
+					<span class="top-box-content-total-title"><?php esc_html_e('Grand total:', MVP_TEXTDOMAIN); ?></span>
+					<span class="top-box-content-total-value"></span>
 				</div>
 
 			</div>
@@ -269,31 +161,12 @@
 				</div>
 
 				<div class="top-box-content">
-
-					<table class="mvp-table wp-list-table widefat inline-stat-table inline-stat-table-hidden">
-	                <thead>
-	                    <tr>
-	                        <th><?php esc_html_e('#', MVP_TEXTDOMAIN); ?></th>
-	                        <th><?php esc_html_e('Title', MVP_TEXTDOMAIN); ?></th>
-	                        <th><?php esc_html_e('Downloads', MVP_TEXTDOMAIN); ?></th>
-	                    </tr>
-	                </thead>
-	                <tbody>
-	                </tbody>
-	                </table>
-
 					<div class="mvp-stat-no-data mvp-stat-hidden"><p><?php esc_html_e('Data Not Available', MVP_TEXTDOMAIN); ?></p></div>
+				</div>
 
-					<div class="mvp-top-box-content-total">
-
-						<div class="mvp-top-box-content-total-wrap">
-							<span class="mvp-top-box-content-total-title"><?php esc_html_e('Grand total:', MVP_TEXTDOMAIN); ?></span>
-							<span class="mvp-top-box-content-total-value"></span>
-						</div>
-
-						<button type="button" class="mvp-stat-export mvp-stat-hidden"><?php esc_html_e('Export', MVP_TEXTDOMAIN); ?></button>
-					</div>
-
+				<div class="top-box-content-total">
+					<span class="top-box-content-total-title"><?php esc_html_e('Grand total:', MVP_TEXTDOMAIN); ?></span>
+					<span class="top-box-content-total-value"></span>
 				</div>
 
 			</div>
@@ -310,13 +183,38 @@
 				</div>
 
 				<div class="top-box-content">
+					<div class="mvp-stat-no-data mvp-stat-hidden"><p><?php esc_html_e('Data Not Available', MVP_TEXTDOMAIN); ?></p></div>
+				</div>
+
+				<div class="top-box-content-total">
+					<span class="top-box-content-total-title"><?php esc_html_e('Grand total:', MVP_TEXTDOMAIN); ?></span>
+					<span class="top-box-content-total-value"></span>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+
+	<div class="top-box-wrap">
+
+		<div class="top-box mvp-box-top-plays-country-all-time">
+			<div class="top-box-inner">
+				<div class="top-box-title">
+
+					<h2><?php esc_html_e('TOP PLAYS PER COUNTRY ALL TIME', MVP_TEXTDOMAIN); ?></h2>
+				
+				</div>
+				
+				<div class="top-box-content">
 
 					<table class="mvp-table wp-list-table widefat inline-stat-table inline-stat-table-hidden">
 	                <thead>
 	                    <tr>
-	                        <th><?php esc_html_e('#', MVP_TEXTDOMAIN); ?></th>
-	                        <th><?php esc_html_e('Title', MVP_TEXTDOMAIN); ?></th>
-	                        <th><?php esc_html_e('Finishes', MVP_TEXTDOMAIN); ?></th>
+	                        <th><?php esc_html_e('Country', MVP_TEXTDOMAIN); ?></th>
+	                        <th><?php esc_html_e('Continent', MVP_TEXTDOMAIN); ?></th>
+	                        <th><?php esc_html_e('Plays', MVP_TEXTDOMAIN); ?></th>
+	                        <th><?php esc_html_e('Time played', MVP_TEXTDOMAIN); ?></th>
 	                    </tr>
 	                </thead>
 	                <tbody>
@@ -325,21 +223,52 @@
 
 					<div class="mvp-stat-no-data mvp-stat-hidden"><p><?php esc_html_e('Data Not Available', MVP_TEXTDOMAIN); ?></p></div>
 
-					<div class="mvp-top-box-content-total">
-
-						<div class="mvp-top-box-content-total-wrap">
-							<span class="mvp-top-box-content-total-title"><?php esc_html_e('Grand total:', MVP_TEXTDOMAIN); ?></span>
-							<span class="mvp-top-box-content-total-value"></span>
-						</div>
-
-						<button type="button" class="mvp-stat-export mvp-stat-hidden"><?php esc_html_e('Export', MVP_TEXTDOMAIN); ?></button>
+					<div class="top-box-content-total">
+						<span class="top-box-content-total-title"><?php esc_html_e('Grand total:', MVP_TEXTDOMAIN); ?></span>
+						<span class="top-box-content-total-value"></span>
 					</div>
 
-				</div>
+				</div>	
+
 			</div>
 		</div>
 
-	</div>
+		<div class="top-box mvp-box-top-plays-user-all-time">
+			<div class="top-box-inner">
+				<div class="top-box-title">
+
+					<h2><?php esc_html_e('TOP PLAYS PER USER ALL TIME', MVP_TEXTDOMAIN); ?></h2>
+				
+				</div>
+				
+				<div class="top-box-content">
+
+					<table class="mvp-table wp-list-table widefat inline-stat-table inline-stat-table-hidden">
+	                <thead>
+	                    <tr>
+	                        <th><?php esc_html_e('User name', MVP_TEXTDOMAIN); ?></th>
+	                        <th><?php esc_html_e('Role', MVP_TEXTDOMAIN); ?></th>
+	                        <th><?php esc_html_e('Plays', MVP_TEXTDOMAIN); ?></th>
+	                        <th><?php esc_html_e('Time played', MVP_TEXTDOMAIN); ?></th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+	                </tbody>
+	                </table>
+
+					<div class="mvp-stat-no-data mvp-stat-hidden"><p><?php esc_html_e('Data Not Available', MVP_TEXTDOMAIN); ?></p></div>
+
+					<div class="top-box-content-total">
+						<span class="top-box-content-total-title"><?php esc_html_e('Grand total:', MVP_TEXTDOMAIN); ?></span>
+						<span class="top-box-content-total-value"></span>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+
+	</div>	
 
 	<div id="mvp-stat-graph-options-wrap">
 
@@ -385,19 +314,19 @@
 
   		<div class="list-actions-wrap list-actions-left mvp-playlist-actions">
 
-  			<input type="text" id="mvp-stat-filter-media" placeholder="<?php esc_attr_e('Search video..', MVP_TEXTDOMAIN); ?>">
+  			<input type="text" id="mvp-filter-media" placeholder="<?php esc_attr_e('Search video..', MVP_TEXTDOMAIN); ?>">
 
   		</div>
 
   		<div class="list-actions-wrap list-actions-right mvp-media-pagination-container">
 
 			<div class="mvp-pagination-per-page">
-				<label for="mvp-stat-pag-per-page-num" id="mvp-pag-per-page-label"><?php esc_html_e('Videos per page', MVP_TEXTDOMAIN); ?></label>
-			    <input type="number" min="1" id="mvp-stat-pag-per-page-num" value="10">
-			    <button type="button" id="mvp-stat-pag-per-page-btn"><?php esc_html_e('Set', MVP_TEXTDOMAIN); ?></button>
+				<label for="mvp-pag-per-page-num" id="mvp-pag-per-page-label"><?php esc_html_e('Videos per page', MVP_TEXTDOMAIN); ?></label>
+			    <input type="number" min="1" id="mvp-pag-per-page-num" value="10">
+			    <button type="button" id="mvp-pag-per-page-btn"><?php esc_html_e('Set', MVP_TEXTDOMAIN); ?></button>
 			</div>
 
-		<div class="mvp-stat-pagination-wrap"></div>
+		<div class="mvp-pagination-wrap"></div>
 
 		</div>
 
@@ -420,7 +349,7 @@
 				<th><?php esc_html_e('Actions', MVP_TEXTDOMAIN); ?></th>
 			</tr>
 		</thead>
-		<tbody id="mvp-stat-media-item-list">
+		<tbody id="media-item-list">
 			
 			<tr class="mvp-stat-row media-item media-item-container-hidden mvp-pagination-hidden">
 
@@ -432,17 +361,14 @@
 				<td class="media-finish"></td>
 
 				<td><a href='#' class="mvp-stat-create-graph"><?php esc_html_e('Create graph', MVP_TEXTDOMAIN); ?></a><a href='#' class="mvp-stat-remove-graph"><?php esc_html_e('Remove graph', MVP_TEXTDOMAIN); ?></a></td>
-				
 			</tr>
 
 		</tbody>		 
 	</table>
 
-</div>
-</div>
-</div>
+</div><!-- end wrap -->
 
-<div id="mvp-add-playlist-modal-stat" class="mvp-modal">
+<div id="mvp-add-playlist-modal" class="mvp-modal">
     <div class="mvp-modal-bg">
         <div class="mvp-modal-inner">
         	<div class="mvp-modal-content">
@@ -465,8 +391,8 @@
 					</div>
 
 					<div class="mvp-modal-actions">	
-						<button id="mvp-add-playlist-cancel-stat" type="button"><?php esc_html_e('Cancel', MVP_TEXTDOMAIN); ?></button>
-			            <button id="mvp-add-playlist-submit-stat" type="button" class="button-primary" <?php disabled( !current_user_can(MVP_CAPABILITY) ); ?>><?php esc_html_e('Add playlist', MVP_TEXTDOMAIN); ?></button> 
+						<button id="mvp-add-playlist-cancel" type="button"><?php esc_html_e('Cancel', MVP_TEXTDOMAIN); ?></button>
+			            <button id="mvp-add-playlist-submit" type="button" class="button-primary" <?php disabled( !current_user_can(MVP_CAPABILITY) ); ?>><?php esc_html_e('Add playlist', MVP_TEXTDOMAIN); ?></button> 
 	    			</div>
 
     			</form>
@@ -475,6 +401,41 @@
         </div>
     </div>
 </div>
+
+
+<div id="mvp-user-data-modal" class="mvp-modal">
+    <div class="mvp-modal-bg">
+        <div class="mvp-modal-inner">
+        	<div class="mvp-modal-content">
+
+				<div class="mvp-admin mvp-bg">
+
+					<h2><?php esc_html_e('TOP PLAYS PER USER ALL TIME', MVP_TEXTDOMAIN); ?>&nbsp;<span class="user-data-modal-title"></span></h2>
+					
+					<table class="mvp-table wp-list-table widefat inline-stat-table inline-stat-table-hidden">
+	                <thead>
+	                    <tr>
+	                        <th><?php esc_html_e('Title', MVP_TEXTDOMAIN); ?></th>
+	                        <th><?php esc_html_e('Plays', MVP_TEXTDOMAIN); ?></th>
+	                        <th><?php esc_html_e('Time played', MVP_TEXTDOMAIN); ?></th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+	                </tbody>
+	                </table>
+					
+
+				</div>
+
+				<div class="mvp-modal-actions">	
+					<button id="mvp-user-data-close" type="button"><?php esc_html_e('Close', MVP_TEXTDOMAIN); ?></button>
+    			</div>
+
+    		</div>
+        </div>
+    </div>
+</div>
+
 
 <div id="mvp-loader">
     <div class="mvp-loader-anim">

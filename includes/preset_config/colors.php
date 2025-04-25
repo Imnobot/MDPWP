@@ -4,11 +4,13 @@
         <li id="mvp-tab-css-general"><?php esc_html_e('General', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-css-player-controls"><?php esc_html_e('Player controls', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-css-right-click"><?php esc_html_e('Right click menu', MVP_TEXTDOMAIN); ?></li>
-        <li id="mvp-tab-css-chapter"><?php esc_html_e('Chapters', MVP_TEXTDOMAIN); ?></li>
-        <li id="mvp-tab-css-ad"><?php esc_html_e('Adverts', MVP_TEXTDOMAIN); ?></li>
-        <li id="mvp-tab-css-subtitle"><?php esc_html_e('Subtitles', MVP_TEXTDOMAIN); ?></li>
+        <li id="mvp-tab-css-upnext"><?php esc_html_e('Up next', MVP_TEXTDOMAIN); ?></li>
+        <li id="mvp-tab-css-chapter"><?php esc_html_e('Chapter', MVP_TEXTDOMAIN); ?></li>
+        <li id="mvp-tab-css-ad"><?php esc_html_e('Ad', MVP_TEXTDOMAIN); ?></li>
+        <li id="mvp-tab-css-subtitle"><?php esc_html_e('Subtitle', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-css-lightbox"><?php esc_html_e('Lightbox', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-css-playlist"><?php esc_html_e('Playlist', MVP_TEXTDOMAIN); ?></li>
+        <li id="mvp-tab-css-search"><?php esc_html_e('Search field', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-css-loadmore"><?php esc_html_e('Load more', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-css-unmute"><?php esc_html_e('Unmute', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-css-rel"><?php esc_html_e('Related videos', MVP_TEXTDOMAIN); ?></li>
@@ -22,31 +24,39 @@
                 <th><?php esc_html_e('Theme background color', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     <input name="themeBgColor" class="mvp-checkbox" value="<?php echo($options['themeBgColor']); ?>">
-                    <p class="info"><?php esc_html_e('Player controls and other elements background color', MVP_TEXTDOMAIN); ?></p>
                 </td>
             </tr>   
+            <tr valign="top">
+                <th><?php esc_html_e('Player background color', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <input name="playerBgColor" class="mvp-checkbox" value="<?php echo($options['playerBgColor']); ?>">
+                </td>
+            </tr>
             <tr valign="top">
                 <th><?php esc_html_e('Player dialog background color', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     <input name="dialogBgColor" class="mvp-checkbox" value="<?php echo($options['dialogBgColor']); ?>">
-                    <p class="info"><?php esc_html_e('Background color of popup dialog for social sharing, video description, login, resume screen..', MVP_TEXTDOMAIN); ?></p>
+                    <p class="info"><?php esc_html_e('Background color of social sharing, description, login, resume screen.', MVP_TEXTDOMAIN); ?></p>
                 </td>
             </tr>
             <tr valign="top">
                 <th><?php esc_html_e('Player title text color', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     <input name="playerTitleTextColor" class="mvp-checkbox" value="<?php echo($options['playerTitleTextColor']); ?>">
-                    <p class="info"><?php esc_html_e('Video description which opens above player in popup', MVP_TEXTDOMAIN); ?></p>
                 </td>
             </tr>
             <tr valign="top">
                 <th><?php esc_html_e('Player description text color', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     <input name="playerDescTextColor" class="mvp-checkbox" value="<?php echo($options['playerDescTextColor']); ?>">
-                    <p class="info"><?php esc_html_e('Video description which opens above player in popup', MVP_TEXTDOMAIN); ?></p>
                 </td>
             </tr>
-   
+            <tr valign="top" class="mvp-css-config-pollux">
+                <th><?php esc_html_e('Share item hover color', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <input name="shareItemHoverColor" class="mvp-checkbox" value="<?php echo(isset($options['shareItemHoverColor'])?$options['shareItemHoverColor']:''); ?>">
+                </td>
+            </tr>
             <tr valign="top">
                 <th><?php esc_html_e('Tooltip background color', MVP_TEXTDOMAIN); ?></th>
                 <td>
@@ -114,7 +124,7 @@
             <tr valign="top">
                 <th><?php esc_html_e('Seekbar load color', MVP_TEXTDOMAIN); ?></th>
                 <td>
-                    <input name="seekbarLoadColor" class="mvp-checkbox" value="<?php echo(isset($options['seekbarLoadColor'])?$options['seekbarLoadColor']:''); ?>">
+                    <input name="seekbarLoadColor" class="mvp-checkbox" value="<?php echo($options['seekbarLoadColor']); ?>">
                 </td>
             </tr>
             <tr valign="top">
@@ -229,8 +239,6 @@
 
     <div id="mvp-tab-css-right-click-content" class="mvp-tab-content">
 
-        <p><?php esc_html_e('Custom right click menu', MVP_TEXTDOMAIN); ?></p>
-
         <table class="form-table">
 
             <tr valign="top">
@@ -262,9 +270,28 @@
 
     </div>
 
-    <div id="mvp-tab-css-chapter-content" class="mvp-tab-content">
+    <div id="mvp-tab-css-upnext-content" class="mvp-tab-content">
 
-        <p><?php esc_html_e('Video chapters seekbar settings', MVP_TEXTDOMAIN); ?></p>
+        <table class="form-table">
+            
+            <tr valign="top">
+                <th><?php esc_html_e('Up next text color', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <input name="upNextTextColor" class="mvp-checkbox" value="<?php echo($options['upNextTextColor']); ?>">
+                </td>
+            </tr>
+            <tr valign="top">
+                <th><?php esc_html_e('Up next hover text color', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <input name="upNextHoverTextColor" class="mvp-checkbox" value="<?php echo($options['upNextHoverTextColor']); ?>">
+                </td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <div id="mvp-tab-css-chapter-content" class="mvp-tab-content">
 
         <table class="form-table">
 
@@ -397,13 +424,6 @@
                     <input name="playlistDescriptionBgColor" class="mvp-checkbox" value="<?php echo($options['playlistDescriptionBgColor']); ?>">
                 </td>
             </tr>
-
-        </table>  
-
-        <p><?php esc_html_e('Thumbnail grid layout', MVP_TEXTDOMAIN); ?></p>
-        
-        <table class="form-table">   
-
             <tr valign="top">
                 <th><?php esc_html_e('Playlist item grid description below thumbnail background color', MVP_TEXTDOMAIN); ?></th>
                 <td>
@@ -422,8 +442,6 @@
     </div>
 
     <div id="mvp-tab-css-loadmore-content" class="mvp-tab-content">
-
-        <p><?php esc_html_e('Thumbnail grid layout Load more button', MVP_TEXTDOMAIN); ?></p>
 
         <table class="form-table">
 
@@ -456,6 +474,27 @@
 
     </div>
 
+    <div id="mvp-tab-css-search-content" class="mvp-tab-content">
+
+        <table class="form-table">
+
+            <tr valign="top">
+                <th><?php esc_html_e('Search filter text color', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <input name="searchFilterTextColor" class="mvp-checkbox" value="<?php echo($options['searchFilterTextColor']); ?>">
+                </td>
+            </tr>
+            <tr valign="top">
+                <th><?php esc_html_e('Search filter background color', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <input name="searchFilterBgColor" class="mvp-checkbox" value="<?php echo($options['searchFilterBgColor']); ?>">
+                </td>
+            </tr>
+            
+        </table>
+
+    </div>
+
     <div id="mvp-tab-css-unmute-content" class="mvp-tab-content">
 
         <table class="form-table">
@@ -479,8 +518,6 @@
     </div> 
 
     <div id="mvp-tab-css-rel-content" class="mvp-tab-content">
-
-        <p><?php esc_html_e('Video end action show related videos screen', MVP_TEXTDOMAIN); ?></p>
 
         <table class="form-table">
 

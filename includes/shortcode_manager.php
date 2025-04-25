@@ -11,19 +11,12 @@ $ads = $wpdb->get_results("SELECT id, title FROM {$global_ad_table} ORDER BY tit
 
 ?>
 
-<div class='wrap'>
-
-	<?php include("playeri.php"); ?>
-
-	<div class="mvp-settings-wrap-panel aptenv-ready">
-	<div id="mvp-shortcode-manager-section">
-
 	<?php include("notice.php"); ?>
 
 	<h2><?php esc_html_e('Shortcode manager', MVP_TEXTDOMAIN); ?></h2>
 	<br>
 
-	<div class="mvp-admin">
+	<div class="mvp-admin mvp-shortcode-manager-wrap">
 
 
 	<div class="option-tab">
@@ -45,7 +38,7 @@ $ads = $wpdb->get_results("SELECT id, title FROM {$global_ad_table} ORDER BY tit
 					<tr valign="top">
 						<th style="width:15%"><?php esc_html_e('Select player', MVP_TEXTDOMAIN); ?></th>
 						<td>
-				            <select id="mvp_shortcode_player">
+				            <select id="shortcode_player">
 								<?php foreach($players as $player) : ?>
 					                <option value="<?php echo($player['id']); ?>"><?php echo($player['title']); echo(' - ID #' . $player['id']); ?></option>
 								<?php endforeach; ?>	
@@ -56,7 +49,7 @@ $ads = $wpdb->get_results("SELECT id, title FROM {$global_ad_table} ORDER BY tit
 					<tr valign="top">
 						<th><?php esc_html_e('Select playlist', MVP_TEXTDOMAIN); ?></th>
 						<td>
-				            <select id="mvp_shortcode_playlist">
+				            <select id="shortcode_playlist">
 								<?php foreach($playlists as $playlist) : ?>
 					                <option value="<?php echo($playlist['id']); ?>"><?php echo($playlist['title']); echo(' - ID #' . $playlist['id']); ?></option>
 								<?php endforeach; ?>	
@@ -67,7 +60,7 @@ $ads = $wpdb->get_results("SELECT id, title FROM {$global_ad_table} ORDER BY tit
 					<tr valign="top">
 						<th><?php esc_html_e('Select ads', MVP_TEXTDOMAIN); ?></th>
 						<td>
-				            <select id="mvp_shortcode_ad">
+				            <select id="shortcode_ad">
 				            	<option value=""><?php esc_html_e('None', MVP_TEXTDOMAIN); ?></option>
 								<?php foreach($ads as $ad) : ?>
 					                <option value="<?php echo($ad['id']); ?>"><?php echo($ad['title']); echo(' - ID #' . $ad['id']); ?></option>
@@ -79,14 +72,14 @@ $ads = $wpdb->get_results("SELECT id, title FROM {$global_ad_table} ORDER BY tit
 					<tr valign="top">
 						<th><?php esc_html_e('Shortcode', MVP_TEXTDOMAIN); ?></th>
 						<td>
-				            <textarea id="mvp_shortcode_generator" class="mvp-shortcode-ta" rows="3"></textarea>
+				            <textarea id="shortcode_generator" class="mvp-shortcode-ta" rows="3"></textarea>
 			            </td>
 					</tr>
 
 					<tr valign="top">
 						<th><?php esc_html_e('Shortcode for PHP page', MVP_TEXTDOMAIN); ?></th>
 						<td>
-				            <textarea id="mvp_shortcode_for_php" class="mvp-shortcode-ta" rows="3"></textarea>
+				            <textarea id="shortcode_for_php" class="mvp-shortcode-ta" rows="3"></textarea>
 			            </td>
 					</tr>
 
@@ -94,7 +87,7 @@ $ads = $wpdb->get_results("SELECT id, title FROM {$global_ad_table} ORDER BY tit
 						<th><?php esc_html_e('Shortcode with all attributes', MVP_TEXTDOMAIN); ?></th>
 						<td>
 							<p><?php esc_html_e('Use this if you want to change individual parameters in shortcode.', MVP_TEXTDOMAIN); ?></p>
-				            <textarea id="mvp_shortcode_generator_all_atts" class="mvp-shortcode-ta" rows="10"></textarea>
+				            <textarea id="shortcode_generator_all_atts" class="mvp-shortcode-ta" rows="10"></textarea>
 			            </td>
 					</tr>
 				
@@ -123,31 +116,4 @@ $ads = $wpdb->get_results("SELECT id, title FROM {$global_ad_table} ORDER BY tit
 	</div>
 
 
-</div>
-</div>
-</div>
-
-<div id="mvp-icon-modal" class="mvp-modal">
-    <div class="mvp-modal-bg">
-        <div class="mvp-modal-inner">
-        	<div class="mvp-modal-content">
-        		<input type="search" id="mvp-icon-search" placeholder="<?php esc_attr_e('Search', MVP_TEXTDOMAIN); ?>">
-        		<button class="mvp-icon-modal-close button-primary" type="button"><?php esc_html_e('Close', MVP_TEXTDOMAIN); ?></button> 
-        		<ul id="icon-picker-list">
-					
-				</ul>
-				<button class="mvp-icon-modal-close button-primary" type="button"><?php esc_html_e('Close', MVP_TEXTDOMAIN); ?></button> 
-    		</div>
-        </div>
-    </div>
-</div>
-
-<div id="mvp-loader">
-    <div class="mvp-loader-anim">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
 </div>

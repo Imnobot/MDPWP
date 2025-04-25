@@ -1,34 +1,3 @@
-<?php
-
-	$playerLanguageArr = array(   
-    'en' => 'English',
-    'de' => 'Deutsch',
-    'fr' => 'Français',
-    'it' => 'Italiano',
-    'hu' => 'Magyar',
-    'ro' => 'Romanian',
-    'ru' => 'Русский',
-    'tr' => 'Türkçe',
-    'cs' => 'Čeština',
-    'es' => 'Español',
-    'nl' => 'Nederlands',
-    'no' => 'Norsk',
-    'bg' => 'Bulgarian',
-    'lv' => 'Latvian',
-    'pl' => 'Polski',
-    'cs' => 'Czech',
-    'pt' => 'Português',
-    'sv' => 'Svenska',
-    'el' => 'Greek',
-    'hi' => 'हिन्दी',
-    'zh-HK' => '中文',
-    'ko' => '한국어',
-    'ja' => '日本語',
-);
-
-?>
-
-
 <p><?php esc_html_e('Generate video shortcode here for one or multiple videos and use it directly in your page without creating a player in Player manager beforehand.', MVP_TEXTDOMAIN); ?></p>
 
 <div id="mvp-edit-media-modal">
@@ -100,8 +69,6 @@
 	<button type="button" id="mvp-edit-media-form-submit" style="margin: 10px 0;" class="button-primary mvp-get-video-shortcode-mode" <?php disabled( !current_user_can(MVP_CAPABILITY) ); ?>><?php esc_html_e('Get shortcode', MVP_TEXTDOMAIN); ?></button> 
 
 	<button type="button" id="mvp-edit-media-form-submit2" style="margin: 10px 0;" class="button-primary mvp-get-video-shortcode-mode"><?php disabled( !current_user_can(MVP_CAPABILITY) ); ?><?php esc_html_e('Add video to existing shortcode', MVP_TEXTDOMAIN); ?></button>
-
-	<button type="button" id="mvp-quick-sh-reset" style="margin: 10px 0;" class="button-primary"><?php disabled( !current_user_can(MVP_CAPABILITY) ); ?><?php esc_html_e('Reset', MVP_TEXTDOMAIN); ?></button>
 
 	<textarea id="mvp-quick-video-shortcode-ta" rows="5" style="width:100%; display: block;"></textarea>
 

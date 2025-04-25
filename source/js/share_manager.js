@@ -1,8 +1,12 @@
-(function (window){
+(function (window, $){
 	"use strict"	
 	var MVPShareManager = function(settings){
 
 		var isMobile = MVPUtils.isMobile()
+			
+		if(settings.facebookAppId && window.location.protocol != 'file:'){
+			//injectFbSdk(settings.facebookAppId);
+		}
 
 		this.share = function(type, data, query_string){
 			
@@ -13,7 +17,7 @@
 			description = data.description || '',
 			thumb = data.thumb || data.thumbDefault, url, path;
 			if(data.share)url = data.share;
-			else url = query_string;
+			else url = window.location.href + query_string;
 			
 			if(!MVPUtils.relativePath(thumb))thumb = MVPUtils.qualifyURL(data.thumb);
 
@@ -45,43 +49,46 @@
 
 				path = prefix+'//www.pinterest.com/pin/create/button/?url='+encodeURIComponent(url)+'&media='+encodeURIComponent(thumb)+'&description='+encodeURIComponent(description);	
 
-			}else if(type == "email"){	
-
-				path = 'mailto:?subject='+encodeURIComponent(title)+'&body='+encodeURIComponent(url)+encodeURIComponent("\n\n" + description);
-
-				window.open(path,'_blank');
-
-				return
-				
-			}else if(type == "sms"){	
-
-				path = 'sms:?&body='+encodeURIComponent(url);
-
-				window.open(path,'_blank');
-
-				return		
-
 			}else if(type == "whatsapp"){	
 
-				var message = encodeURIComponent(title)+" - "+encodeURIComponent(url)
+				if(isMobile){
 
-				if(isMobile) {
-	                var link_whatsapp = 'https://api.whatsapp.com/send?text='+message;
-	            } else {
-	                var link_whatsapp = 'https://web.whatsapp.com/send?text='+message;
-	            }
+		            var message = encodeURIComponent(title)+" - "+encodeURIComponent(url),
+		            whatsapp_url = "whatsapp://send?text="+message;
+		            window.location.href = whatsapp_url;
+					return;
 
-	            window.open(link_whatsapp,'_blank');
-
-	            return
+				}else{
+					alert(settings.whatsAppWarning);
+				}
 
 			}
 
 			if(path)window.open(path, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,width='+w+',height='+h+',left='+cw+',top='+ch+'');
 		}	
 
+		function injectFbSdk(fs_api_id) {
+			
+			// this loads the Facebook API
+		    (function (d, s, id) {
+		        var js, fjs = d.getElementsByTagName(s)[0];
+		        if (d.getElementById(id)) { return; }
+		        js = d.createElement(s); js.id = id;
+		        js.src = "https://connect.facebook.net/en_US/sdk.js";
+		        fjs.parentNode.insertBefore(js, fjs);
+		    }(document, 'script', 'facebook-jssdk'));
+
+		    window.fbAsyncInit = function () {
+		        FB.init({
+		            appId: fs_api_id,
+		            xfbml: true,
+		            version: 'v3.2',
+		        });
+		    };
+		}
+
 	};	
 
 	window.MVPShareManager = MVPShareManager;
 
-}(window));
+}(window,jQuery));

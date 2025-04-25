@@ -2,8 +2,12 @@
 
 $presets = array(
 	'aviva' => 'aviva', 
+    'vega' => 'vega', 
     'sirius' => 'sirius', 
-    'pollux' => 'pollux',
+    'pollux' => 'pollux', 
+    'flat-dark' => 'flat dark', 
+    'flat-light' => 'flat light', 
+    'flat-gray' => 'flat gray', 
 );
 
 //load settings
@@ -17,22 +21,12 @@ if($stmt){
 	$settings = $default_settings;
 }
 
-
-
 $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($settings['global_custom_css']) : "";
 
-
 ?>
-<script type="text/javascript">
-    var mvp_userLimit = <?php echo(json_encode($settings['userLimit'], JSON_HEX_TAG)); ?>;
-</script>
+
 
 <div class="wrap">
-
-	<?php include("playeri.php"); ?>
-
-	<div class="mvp-settings-wrap-panel aptenv-ready">
-	<div id="mvp-global-section">
 
 	<?php include("notice.php"); ?>
 
@@ -95,8 +89,6 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 					        </td>
 					    </tr>
 
-					    <?php if(defined('MVP_AWS')) : ?>
-
 					    <tr valign="top">
 					        <th><?php esc_html_e('Amazon S3 user key', MVP_TEXTDOMAIN); ?></th>
 					        <td>
@@ -111,38 +103,6 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 					            <input type="text" name="s3s" value="<?php echo($settings['s3s']); ?>"><br>
 					        </td>
 					    </tr>
-
-					    <tr>
-							<th><?php esc_html_e('Use Cloudfront', MVP_TEXTDOMAIN); ?></th>
-							<td>
-			                    <label><input name="useCloudfront" type="checkbox" value="1" <?php if(isset($settings['useCloudfront']) && $settings['useCloudfront'] == "1") echo 'checked' ?>> <?php esc_html_e('Use Cloudfront with Amazon S3 bucket.', MVP_TEXTDOMAIN); ?></label>
-							</td>
-						
-						</tr>
-
-					    <tr valign="top">
-					        <th><?php esc_html_e('Cloudfront domain url', MVP_TEXTDOMAIN); ?></th>
-					        <td>
-					            <input type="text" name="s3_du" value="<?php echo($settings['s3_du']); ?>"><br>
-					        </td>
-					    </tr>
-
-					    <tr valign="top">
-					        <th><?php esc_html_e('Cloudfront key pair ID', MVP_TEXTDOMAIN); ?></th>
-					        <td>
-					            <input type="text" name="s3_kpid" value="<?php echo($settings['s3_kpid']); ?>"><br>
-					        </td>
-					    </tr>
-
-					    <tr valign="top">
-					        <th><?php esc_html_e('Cloudfront URL expire time', MVP_TEXTDOMAIN); ?></th>
-					        <td>
-					            <input type="number" name="cf_expire" min="0" setp="1" value="<?php echo($settings['cf_expire']); ?>">
-					            <p class="info"><?php esc_html_e('The time at which the URL should expire in seconds.', MVP_TEXTDOMAIN); ?></p>
-					        </td>
-					    </tr>
-
-						<?php endif; ?>
 
 					    <tr valign="top">
 			                <th><?php esc_html_e('Cors url', MVP_TEXTDOMAIN); ?></th>
@@ -175,7 +135,7 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 			                <th><?php esc_html_e('Clear watched percentage', MVP_TEXTDOMAIN); ?></th>
 			                <td>
 			                    <button type="button" class="mvp-clear-watched-percentage-all">Clear</button><br>
-			                    <span class="info"><?php esc_html_e('Player can display watched video percentage in playlist thumbnails (red line representing maximum reached time). Use this to clear watched percentage for all playlists. This will clear data for all users!', MVP_TEXTDOMAIN); ?></span><div class="mvp-help-tip"><p><img src="<?php echo plugins_url().'/apmvp/images/displayWatchedPercentage.jpg' ?>"/></p></div>
+			                    <span class="info"><?php esc_html_e('Player can display watched video percentage in playlist thumbnails (red line representing maximum reached time). Use this to clear watched percentage for all playlists.', MVP_TEXTDOMAIN); ?></span><div class="mvp-help-tip"><p><img src="<?php echo plugins_url().'/apmvp/images/displayWatchedPercentage.jpg' ?>"/></p></div>
 			                </td>
 			            </tr>
 
@@ -209,19 +169,17 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 			                </td>
 			            </tr>
 
-			            <tr valign="top">
-			                <th><?php esc_html_e('Prevent caching', MVP_TEXTDOMAIN); ?></th>
-			                <td>
-			                	<select name="preventCaching">
-					                <option value="0" <?php if(isset($settings['preventCaching']) && $settings['preventCaching'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-					                <option value="1" <?php if(isset($settings['preventCaching']) && $settings['preventCaching'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                		<tr valign="top">
+					        <th><?php esc_html_e('Youtube No Cookie', MVP_TEXTDOMAIN); ?></th>
+					        <td>
+					            <select name="youtube_no_cookie">
+					                <option value="0" <?php if(isset($settings['youtube_no_cookie']) && $settings['youtube_no_cookie'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+					                <option value="1" <?php if(isset($settings['youtube_no_cookie']) && $settings['youtube_no_cookie'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
 					            </select><br>
-					            <p class="info"><?php esc_html_e('Prevent caching of plugin css and javascript files.', MVP_TEXTDOMAIN); ?></p>
+					            <p class="info"><?php esc_html_e('Serve Youtube videos from No Cookie domain', MVP_TEXTDOMAIN); ?></p>
+					        </td>
+					    </tr>
 
-			                </td>
-			            </tr>
-
-                		
 					    <tr valign="top">
 					        <th><?php esc_html_e('Vimeo No Cookie', MVP_TEXTDOMAIN); ?></th>
 					        <td>
@@ -240,7 +198,18 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 					                <option value="0" <?php if(isset($settings['js_to_footer']) && $settings['js_to_footer'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
 					                <option value="1" <?php if(isset($settings['js_to_footer']) && $settings['js_to_footer'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
 					            </select><br>
-					            <p class="info"><?php esc_html_e('Putting the js to footer (instead of the head) can speed up page load.', MVP_TEXTDOMAIN); ?></p>
+					            <p class="info"><?php esc_html_e('Putting the js to footer (instead of the head) can fix some javascript conflicts.', MVP_TEXTDOMAIN); ?></p>
+					        </td>
+					    </tr>
+
+					    <tr valign="top">
+					        <th><?php esc_html_e('jQuery No Conflict mode', MVP_TEXTDOMAIN); ?></th>
+					        <td>
+					            <select name="no_conflict">
+					                <option value="0" <?php if(isset($settings['no_conflict']) && $settings['no_conflict'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+					                <option value="1" <?php if(isset($settings['no_conflict']) && $settings['no_conflict'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+					            </select><br>
+					            <p class="info"><?php esc_html_e('Can fix some javascript conflicts on the page.', MVP_TEXTDOMAIN); ?></p>
 					        </td>
 					    </tr>
 
@@ -263,6 +232,25 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 			                        <option value="1" <?php if(isset($settings['displayAllPlaylistsInPage']) && $settings['displayAllPlaylistsInPage'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
 			                    </select><br>
 			                    <span class="info"><?php esc_html_e('If true, display all playlists in page (from Playlist manager) when player runs. Useful if you want to use API method loadPlaylist (playlist-ID) on run-time. If false, display just active playlist from shortcode.', MVP_TEXTDOMAIN); ?></span>
+			                </td>
+			            </tr>
+
+			            <tr valign="top">
+			                <th><?php esc_html_e('Cache playlist in browser', MVP_TEXTDOMAIN); ?></th>
+			                <td>
+			                    <select name="useCache">
+			                        <option value="0" <?php if(isset($settings['useCache']) && $settings['useCache'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+			                        <option value="1" <?php if(isset($settings['useCache']) && $settings['useCache'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+			                    </select><br>
+			                    <span class="info"><?php esc_html_e('Cache playlist in browser to limit api requests for Youtube, Vimeo and other services.', MVP_TEXTDOMAIN); ?></span>
+			                </td>
+			            </tr>
+
+			            <tr valign="top">
+			                <th><?php esc_html_e('Cache time', MVP_TEXTDOMAIN); ?></th>
+			                <td>
+			                    <input type="number" min="0" name="cacheTime" value="<?php echo($settings['cacheTime']); ?>"><br>
+			                    <span class="info"><?php esc_html_e('How long to cache playlist in browser. For example, if you load a Youtube playlist or a Vimeo channel, and set cacheTime:3600 (1 hour), everytime the page is reloaded within that hour, playlist will be loaded from cache.', MVP_TEXTDOMAIN); ?></span>
 			                </td>
 			            </tr>
 
@@ -290,13 +278,13 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 			            </tr>
 
 			            <tr valign="top">
-			                <th><?php esc_html_e('Add Font Awesome css for player icons.', MVP_TEXTDOMAIN); ?></th>
+			                <th><?php esc_html_e('Add Font Awesome css for playlist icons.', MVP_TEXTDOMAIN); ?></th>
 			                <td>
 			                	<select name="add_font_awesome_css">
 			                        <option value="0" <?php if(isset($settings['add_font_awesome_css']) && $settings['add_font_awesome_css'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
 			                        <option value="1" <?php if(isset($settings['add_font_awesome_css']) && $settings['add_font_awesome_css'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
 			                    </select><br>
-			                    <p class="info"><?php esc_html_e('Enqueue Font Awesome css that will be used for custom icons in player controls or custom icons in playlist items. Not required if you use plain SVG code for icons.', MVP_TEXTDOMAIN); ?></p>
+			                    <p class="info"><?php esc_html_e('Enqueue Font Awesome css that will be used for custom playlist icons.', MVP_TEXTDOMAIN); ?></p>
 			                </td>
 			            </tr>
 
@@ -306,124 +294,6 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 			                	<input name="fontAwesomeCssUrl" type="text" value="<?php echo($settings['fontAwesomeCssUrl']); ?>">
 			                </td>
 			            </tr>
-
-			            <tr valign="top">
-			                <th><?php esc_html_e('Include player CSS', MVP_TEXTDOMAIN); ?></th>
-			                <td>
-			                	<select name="includePlayerCss">
-			                        <option value="0" <?php if(isset($settings['includePlayerCss']) && $settings['includePlayerCss'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-			                        <option value="1" <?php if(isset($settings['includePlayerCss']) && $settings['includePlayerCss'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-			                    </select><br>
-			                    <p class="info"><?php esc_html_e('This will add player default CSS for colors. You can turn this off if you want to style player with your own CSS.', MVP_TEXTDOMAIN); ?></p>
-			                </td>
-			            </tr>
-
-			            <tr valign="top">
-							<th><?php esc_html_e('Deactivate license', MVP_TEXTDOMAIN); ?></th>
-							<td>
-								<p class="info"><?php esc_html_e('Tokens used:', MVP_TEXTDOMAIN); ?></p>
-			                	<textarea readonly="readonly" id="mvp-lic"></textarea><br><br>
-								<button type="button" id="mvp-dea-lic"><?php esc_html_e('Deactivate', MVP_TEXTDOMAIN); ?></button>
-								<p class="info"><?php esc_html_e('This will deactivate license from this website.', MVP_TEXTDOMAIN); ?></p>
-							</td>
-						</tr>
-
-					</table>
-
-                </div>
-            </div>
-
-            <div class="option-tab-divider"></div>
-
-            <div class="option-tab">
-                <div class="option-toggle">
-                    <span class="option-title"><?php esc_html_e('Users', MVP_TEXTDOMAIN); ?></span>
-
-                    <div class="option-toggle-icon">
-		                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" ><path fill="currentColor" d="M376 232H216V72c0-4.42-3.58-8-8-8h-32c-4.42 0-8 3.58-8 8v160H8c-4.42 0-8 3.58-8 8v32c0 4.42 3.58 8 8 8h160v160c0 4.42 3.58 8 8 8h32c4.42 0 8-3.58 8-8V280h160c4.42 0 8-3.58 8-8v-32c0-4.42-3.58-8-8-8z"></path></svg>
-		            </div>
-                </div>
-                <div class="option-content" id="mvp-user-limit-field">
-                    
-                	<table class="form-table">
-					    <tr valign="top">
-					        <th><?php esc_html_e('Playlist capability role', MVP_TEXTDOMAIN); ?></th>
-					        <td>
-					            <input type="text" name="playlistCapability" value="<?php echo($settings['playlistCapability']); ?>"><br>
-					            <p class="info"><?php printf(__( 'Assign <a href="%s" target="_blank">capability</a> for user which is able to create its own playlists. If admin capability is used like manage_options, only admin can create playlists.', MVP_TEXTDOMAIN), esc_url( 'https://wordpress.org/documentation/article/roles-and-capabilities/' ));?></p>
-					        </td>
-					    </tr>
-					    <tr valign="top">
-					        <th><?php esc_html_e('User limits', MVP_TEXTDOMAIN); ?></th>
-					        <td>
-
-			                    <div id="mvp-user-limit-table-wrap" class="mvp-value-table-wrap"></div>
-
-			                    <button type="button" id="user-limit-add"><?php esc_html_e('Add limit', MVP_TEXTDOMAIN); ?></button><br><br>
-
-			                    <table class="mvp-user-limit-table-orig" style="display:none;">
-			                      <thead>
-			                        <tr>
-			                          <th align="left"><?php esc_html_e('User role', MVP_TEXTDOMAIN); ?></th>
-			                          <th align="left"><?php esc_html_e('Playlist limit', MVP_TEXTDOMAIN); ?></th>
-			                          <th align="left"><?php esc_html_e('Video limit', MVP_TEXTDOMAIN); ?></th>
-			                          <th>&nbsp;</th>
-			                        </tr>
-			                      </thead>
-			                      
-			                      <tbody>
-			                        <tr class="mvp-user-limit">
-			                          <td>
-			                          	<select class="user-role" name="user-role[]">
-				                            <option value="default">Default</option>
-				                            <?php 
-					                          	$userRoles = mvp_get_editable_roles();
-
-							                    foreach ($userRoles as $key => $value) : ?>
-							                        <option value="<?php echo($key); ?>"><?php echo($value["name"]); ?>
-							                        </option>
-							                    <?php endforeach; ?>
-						                    ?>
-					                    </select>
-			                          </td>
-			                          <td><input class="playlist-limit" name="playlist_limit[]" type="number" min="0" value="" disabled/></td>
-			                          <td><input class="video-limit" name="video_limit[]" type="number" min="0" value="" disabled/></td>
-			                          <td><button type="button" class="user-limit-remove"><?php esc_html_e('Remove', MVP_TEXTDOMAIN); ?></button></td>
-			                        </tr>
-			                      </tbody>
-			                    </table>
-
-					            <p class="info"><?php esc_html_e('Limit how many playlists and videos specific user role can create.', MVP_TEXTDOMAIN); ?></p>
-					        </td>
-					    </tr>
-
-						<tr valign="top">
-					        <th><?php esc_html_e('User playlist Limit message', MVP_TEXTDOMAIN); ?></th>
-					        <td>
-                    			<textarea id="userPlaylistLimitText"><?php echo(esc_textarea($settings['userPlaylistLimitText'])); ?></textarea>
-                    			<p class="info"><?php esc_html_e('Display message shown to user when he reaches maximum number of allowed playlists.', MVP_TEXTDOMAIN); ?></p>
-                    		</td>
-					    </tr>	
-
-					    <tr valign="top">
-					        <th><?php esc_html_e('User video Limit message', MVP_TEXTDOMAIN); ?></th>
-					        <td>
-                    			<textarea id="userVideoLimitText"><?php echo(esc_textarea($settings['userVideoLimitText'])); ?></textarea>
-                    			<p class="info"><?php esc_html_e('Display message shown to user when he reaches maximum number of allowed videos in playlist.', MVP_TEXTDOMAIN); ?></p>
-                    		</td>
-					    </tr>	
-
-					    <tr valign="top">
-			                <th><?php esc_html_e('Track Playlist Edit', MVP_TEXTDOMAIN); ?></th>
-			                <td>
-			                	<select name="trackPlaylistEdit">
-			                        <option value="0" <?php if(isset($settings['trackPlaylistEdit']) && $settings['trackPlaylistEdit'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-			                        <option value="1" <?php if(isset($settings['trackPlaylistEdit']) && $settings['trackPlaylistEdit'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-			                    </select><br>
-			                    <p class="info"><?php esc_html_e('Track which playlist is currently being edited and locks playlist from editing. This is used to prevent both admin and user editing the same playlist at once. NOTE: this feature is experimental. If its causing any issues, you can turn it off.', MVP_TEXTDOMAIN); ?></p>
-			                </td>
-			            </tr>
-
 
 					</table>
 
@@ -449,7 +319,6 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 				</div>
             </div>
 
-
         </div>
 
         <div id="mvp-sticky-action" class="mvp-sticky">
@@ -463,8 +332,6 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 
 	</form>
 	
-</div>
-</div>
 </div>
 
 <div id="mvp-loader">

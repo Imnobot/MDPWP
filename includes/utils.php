@@ -15,7 +15,6 @@
 		$arr = array("\r\n", "\r", "\n", "\t", "  ", "    ", "    ");
 		$rep = array("", "", "", "", " ", " ", " ");
 		$buffer = str_replace($arr, $rep, $buffer);
-		$buffer = str_replace('"', "'", $buffer);
 		/* remove whitespaces around {}:, */
 		$buffer = preg_replace("/\s*([\{\}:,])\s*/", "$1", $buffer);
 		/* remove last ; */
@@ -98,7 +97,7 @@
 	    }
 	} 
 
-	/*function mvp_getAdOptions(&$options, $ad_type, $ad_data){//not used any more
+	function mvp_getAdOptions(&$options, $ad_type, $ad_data){
 		//called from edit_playlist.php and ad_manager.php
 
 		$options['ad_type'] = $ad_type;
@@ -115,7 +114,7 @@
 		} 
 	}
 
-	function mvp_getAnnotationOptions(&$options, $an){//
+	function mvp_getAnnotationOptions(&$options, $an){
 		//called from edit_playlist.php and ad_manager.php
 
 		$type = $an['type'];
@@ -140,10 +139,15 @@
 		$options['close_btn'] = $an['close_btn'];
 		$options['close_btn_position'] = $an['close_btn_position'];
 		$options['position'] = $an['position'];
+		if($an['margin_top'] !== '') $options['margin_top'] = $an['margin_top'];
+		if($an['margin_right'] !== '') $options['margin_right'] = $an['margin_right'];
+		if($an['margin_bottom'] !== '') $options['margin_bottom'] = $an['margin_bottom'];
+		if($an['margin_left'] !== '') $options['margin_left'] = $an['margin_left'];
+		if($an['opacity'] !== '') $options['opacity'] = $an['opacity'];
 		if($an['adit_class'] !== '') $options['adit_class'] = str_replace('"', "'", stripslashes($an['adit_class']));
 		if($an['css'] !== '') $options['css'] = str_replace('"', "'", stripslashes($an['css']));
 
-	}*/
+	}
 
 	function mvp_get_editable_roles() {
 	    global $wp_roles;
@@ -181,149 +185,9 @@
 	}
 
 	function mvp_checkPreset($preset){
-		if($preset == 'flat-light' || $preset == 'flat-dark' || $preset == 'flat-gray') $preset = 'aviva';
-		else if($preset == 'vega') $preset = 'sirius';
-		else if($preset == 'grid1' || $preset == 'list1' || $preset == 'list2') $preset = 'aviva';
-
-		if(!($preset == 'sirius' || $preset == 'aviva' || $preset == 'pollux'))$preset = 'aviva';
-
+		if($preset == 'flat-light' || $preset == 'flat-dark' || $preset == 'flat-gray') $preset = 'flat';
+		if($preset == 'vega') $preset = 'sirius';
 		return $preset;
-	}
-
-	function mvp_checkUserLimit($settings, $user){
-		$userLimit = null;
-		foreach ($settings['userLimit'] as $k => $v) {
-			if(in_array($k, $user->roles)){
-				$userLimit = $v;
-				break;
-			}
-		}
-		if($userLimit == null){
-			if(isset($settings['userLimit']) && isset($settings['userLimit'][0]) && isset($settings['userLimit'][0]['default'])){
-				$userLimit = $settings['userLimit'][0]['default'];
-			}
-		}
-		return $userLimit;
-	}
-
-	function mvp_isAdmin($user){
-		if(in_array('administrator', (array) $user->roles) || current_user_can( 'setup_network' ))return true;
-		else return false;
-	}
-
-	function mvp_timezone_list() {
-	    static $timezones = null;
-	    
-	    if ($timezones === null) {
-	        $timezones = [];
-	        $offsets = [];
-	        $now = new DateTime('now', new DateTimeZone('UTC'));
-	        
-	        foreach (DateTimeZone::listIdentifiers() as $timezone) {
-	            $now->setTimezone(new DateTimeZone($timezone));
-	            $offsets[] = $offset = $now->getOffset();
-	            $timezones[$timezone] = '(' . mvp_format_GMT_offset($offset) . ') ' . mvp_format_timezone_name($timezone);
-	        }
-	        
-	        array_multisort($offsets, $timezones);
-	    }
-	    
-	    return $timezones;
-	}
-
-	function mvp_format_GMT_offset($offset) {
-	    $hours = intval($offset / 3600);
-	    $minutes = abs(intval($offset % 3600 / 60));
-	    return 'GMT' . ($offset!==false ? sprintf('%+03d:%02d', $hours, $minutes) : '');
-	}
-
-	function mvp_format_timezone_name($name) {
-	    $name = str_replace('/', ', ', $name);
-	    $name = str_replace('_', ' ', $name);
-	    $name = str_replace('St ', 'St. ', $name);
-	    return $name;
-	}
-
-	function mvp_checkDatePeriod($when, $now1, $timeZone){
-
-		$now = new DateTime("now");
-        $now->settime(0,0);//exclude time for comparison
-        $timeZone = $now->getTimezone();
-
-		if(isset($when['start_date']) && isset($when['end_date'])){
-			$start_date = new DateTime($when['start_date'], $timeZone);
-			$end_date = new DateTime($when['end_date'], $timeZone);
-
-			if($now < $start_date || $now > $end_date){
-				return false;
-			}
-			
-		}
-		else if(isset($when['start_date'])){
-			$start_date = new DateTime($when['start_date'], $timeZone);
-
-			if($now < $start_date){
-				return false;
-			}
-		}
-		else if(isset($when['end_date'])){
-			$end_date = new DateTime($when['end_date'], $timeZone);
-
-			if($now > $end_date){
-				return false;
-			}
-		}
-
-		return true;
-
-	}
-
-	function mvp_get_lang_arr(){
-
-		return array(   
-		    'ar' => 'العربية - Arabic',
-		    'bg' => 'български - Bulgarian',
-		    'cs' => 'Čeština - Czech',
-		    'da' => 'Dansk - Danish',
-		    'de' => 'Deutsch - German',
-		    'el' => 'Ελληνικά - Greek',
-		    'en' => 'English',
-		    'es' => 'Español - Spanish',
-		    'et' => 'Eesti Keel - Estonian',
-		    'fa' => 'فارسی - Persian',
-		    'fr' => 'Français - French',
-		    'fil' => 'Filipino - Filipino',
-		    'fi' => 'Suomen Kieli - Finnish',
-		    'he' => 'עִברִית - Hebrew',
-		    'hi' => 'हिंदी - Hindi',
-		    'hr' => 'Hrvatski - Croatian',
-		    'hu' => 'Magyar - Hungarian',
-		    'id' => 'Bahasa Indonesia - Indonesian',
-		    'it' => 'Italiano - Italian',
-		    'ja' => '日本語 - Japanese',
-		    'ko' => '한국어 - Korean',
-		    'lv' => 'Latviski - Latvian',
-		    'lt' => 'Lietuvių - Lithuanian',
-		    'nl' => 'Nederlands - Dutch',
-		    'no' => 'Norsk - Norwegian',
-		    'pl' => 'Polski - Polish',
-		    'pt' => 'Português - Portuguese',
-		    'ro' => 'Română - Romanian',
-		    'ru' => 'Русский - Russian',
-		    'sk' => 'Slovenský - Slovak',
-		    'sl' => 'Slovenščina - Slovenian',
-		    'sq' => 'Shqip - Albanian',
-		    'sv' => 'Svenska - Swedish',
-		    'tg' => 'Тоҷикӣ - Tajik',
-		    'th' => 'ไทย - Thai',
-		    'tr' => 'Türkçe - Turkish',
-		    'uk' => 'Yкраїнська - Ukrainian',
-		    'vi' => 'Tiếng Việt - Vietnamese',
-		    'zh-CN' => '简体中文 - Chinese Simplified',
-		    'zh-HK' => '繁體中文（香港) - Chinese Traditional zh_HK',
-		    'zh-TW' => '繁體中文（台灣) - Chinese Traditional zh_TW',
-		);
-
 	}
 
 ?>

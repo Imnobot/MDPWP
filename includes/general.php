@@ -18,15 +18,11 @@ $userRoles = mvp_get_editable_roles();
         <li id="mvp-tab-youtube"><?php esc_html_e('Youtube Player', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-vimeo"><?php esc_html_e('Vimeo Player', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-audio"><?php esc_html_e('Audio', MVP_TEXTDOMAIN); ?></li>
-        <?php if(defined('MVP_AWS')) : ?>
         <li id="mvp-tab-s3"><?php esc_html_e('Amazon S3', MVP_TEXTDOMAIN); ?></li>
-        <?php endif; ?>
         <li id="mvp-tab-vast"><?php esc_html_e('Vast', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-vr"><?php esc_html_e('Virtual reality', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-stream"><?php esc_html_e('Live streaming', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-advert"><?php esc_html_e('Adverts', MVP_TEXTDOMAIN); ?></li>
-        <li id="mvp-tab-annotation"><?php esc_html_e('Annotations', MVP_TEXTDOMAIN); ?></li>
-        <li id="mvp-tab-popups"><?php esc_html_e('Popups', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-logo"><?php esc_html_e('Logo', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-offline"><?php esc_html_e('Offline image', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-preloader"><?php esc_html_e('Preloader', MVP_TEXTDOMAIN); ?></li>
@@ -38,21 +34,13 @@ $userRoles = mvp_get_editable_roles();
         <li id="mvp-tab-transform"><?php esc_html_e('Video transform', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-age-verify"><?php esc_html_e('Age verify', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-ga"><?php esc_html_e('Google Analytics', MVP_TEXTDOMAIN); ?></li>
-        <?php if(defined('MVP_STAT')) : ?>
         <li id="mvp-tab-stats"><?php esc_html_e('Statistics', MVP_TEXTDOMAIN); ?></li>
-        <?php endif; ?>
         <li id="mvp-tab-folder"><?php esc_html_e('Folder playlist', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-minimize"><?php esc_html_e('Minimize on scroll', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-theater"><?php esc_html_e('Theater mode', MVP_TEXTDOMAIN); ?></li>
         <li id="mvp-tab-restrict"><?php esc_html_e('Restrict content', MVP_TEXTDOMAIN); ?></li>
-        <li id="mvp-tab-restrict-ad"><?php esc_html_e('Restrict ads', MVP_TEXTDOMAIN); ?></li>
-        <li id="mvp-tab-inline-ad"><?php esc_html_e('Inline ads', MVP_TEXTDOMAIN); ?></li>  
-        <li id="mvp-tab-add-to-fav"><?php esc_html_e('Add To Favorites', MVP_TEXTDOMAIN); ?></li> 
-        <li id="mvp-tab-camera"><?php esc_html_e('Camera', MVP_TEXTDOMAIN); ?></li>
-        <?php if(defined('MVP_VIDEO_HEATMAP')) : ?>
-        <li id="mvp-tab-heatmap"><?php esc_html_e('Video Heatmap', MVP_TEXTDOMAIN); ?></li>
-        <?php endif; ?>
-        <li id="mvp-tab-player-icons"><?php esc_html_e('Player icons', MVP_TEXTDOMAIN); ?></li> 
+        <li id="mvp-tab-restrict-ad"><?php esc_html_e('Restrict ads', MVP_TEXTDOMAIN); ?></li> 
+        <li id="mvp-tab-playlist-icons"><?php esc_html_e('Playlist icons', MVP_TEXTDOMAIN); ?></li> 
     </ul>
 
     <div id="mvp-tab-playback-content" class="mvp-tab-content">
@@ -76,7 +64,7 @@ $userRoles = mvp_get_editable_roles();
             </tr>
 
             <tr valign="top">
-                <th><?php esc_html_e('Auto play video', MVP_TEXTDOMAIN); ?></th>
+                <th><?php esc_html_e('Auto play', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     <select name="autoPlay">
                         <option value="0" <?php if(isset($options['autoPlay']) && $options['autoPlay'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
@@ -117,27 +105,6 @@ $userRoles = mvp_get_editable_roles();
                         <?php endforeach; ?>
                     </select>
                     <p class="info"><?php esc_html_e('Valid for HTML5 video.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Crossorigin attribute', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="crossorigin" value="<?php echo($options['crossorigin']); ?>">
-                    <p class="info"><?php esc_html_e('Media crossorigin attribute', MVP_TEXTDOMAIN); ?>&nbsp;<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/crossorigin" target="_blank">https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/crossorigin</a></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Disable Remote Playback', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="disableRemotePlayback">
-                        <option value="0" <?php if(isset($options['disableRemotePlayback']) && $options['disableRemotePlayback'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['disableRemotePlayback']) && $options['disableRemotePlayback'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
-                    <p class="info"><?php esc_html_e('Valid for HTML video. Set to true if you use casting to hide native chromecast button over the video.', MVP_TEXTDOMAIN); ?>&nbsp;<a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/disableRemotePlayback" target="_blank">https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/disableRemotePlayback</a>
-                    <br>
-                    <?php esc_html_e('If you use Airplay this needs to be false.', MVP_TEXTDOMAIN); ?></p>
                 </td>
             </tr>
 
@@ -235,6 +202,39 @@ $userRoles = mvp_get_editable_roles();
             </tr>
 
             <tr valign="top">
+                <th><?php esc_html_e('Create advert markers in seekbar', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="createAdMarkers">
+                        <option value="0" <?php if(isset($options['createAdMarkers']) && $options['createAdMarkers'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['createAdMarkers']) && $options['createAdMarkers'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select>
+                    <p class="info"><?php esc_html_e('Create markers for the mid-roll adverts in seekbar.', MVP_TEXTDOMAIN); ?></p>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Play adverts only once per media', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="playAdsOnlyOnce">
+                        <option value="0" <?php if(isset($options['playAdsOnlyOnce']) && $options['playAdsOnlyOnce'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['playAdsOnlyOnce']) && $options['playAdsOnlyOnce'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select>
+                    <p class="info"><?php esc_html_e('If user seeks back in time, adverts that were already shown will not be shown again.', MVP_TEXTDOMAIN); ?></p>
+                </td>
+            </tr>
+
+            <tr valign="top">
+                <th><?php esc_html_e('Show annotations only once per media', MVP_TEXTDOMAIN); ?></th>
+                <td>
+                    <select name="showAnnotationsOnlyOnce">
+                        <option value="0" <?php if(isset($options['showAnnotationsOnlyOnce']) && $options['showAnnotationsOnlyOnce'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
+                        <option value="1" <?php if(isset($options['showAnnotationsOnlyOnce']) && $options['showAnnotationsOnlyOnce'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
+                    </select>
+                    <p class="info"><?php esc_html_e('If user seeks back in time, annotations that were closed will not be shown again.', MVP_TEXTDOMAIN); ?></p>
+                </td>
+            </tr>
+
+            <tr valign="top">
                 <th><?php esc_html_e('Up Next screen', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     <input type="number" min="0" name="upNextTime" placeholder="<?php esc_attr_e('Enter seconds', MVP_TEXTDOMAIN); ?>" value="<?php echo($options['upNextTime']); ?>">
@@ -265,27 +265,6 @@ $userRoles = mvp_get_editable_roles();
                     <p class="info"><?php esc_html_e('This will clear all video times for all playlists so no more videos will be resumed.', MVP_TEXTDOMAIN); ?></p>
                 </td>
             </tr>
-            
-            <tr valign="top">
-                <th><?php esc_html_e('Remember video quality across different videos', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select id="rememberVideoQuality" name="rememberVideoQuality">
-                        <option value="0" <?php if(isset($options['rememberVideoQuality']) && $options['rememberVideoQuality'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['rememberVideoQuality']) && $options['rememberVideoQuality'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('If your videos have multiple qualities and you want to preserve video quality across different videos (valid for html5 hosted video, audio).', MVP_TEXTDOMAIN); ?>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Preserve playback rate when changing video ', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="preservePlaybackRate">
-                        <option value="0" <?php if(isset($options['preservePlaybackRate']) && $options['preservePlaybackRate'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['preservePlaybackRate']) && $options['preservePlaybackRate'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                </td>
-            </tr>
 
             <tr valign="top">
                 <th><?php esc_html_e('Pause video on dialog open', MVP_TEXTDOMAIN); ?></th>
@@ -298,37 +277,6 @@ $userRoles = mvp_get_editable_roles();
                 </td>
             </tr>
 
-            <tr valign="top">
-                <th><?php esc_html_e('Auto advance to next video on error', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select id="autoAdvanceToNextMediaOnError" name="autoAdvanceToNextMediaOnError">
-                        <option value="0" <?php if(isset($options['autoAdvanceToNextMediaOnError']) && $options['autoAdvanceToNextMediaOnError'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['autoAdvanceToNextMediaOnError']) && $options['autoAdvanceToNextMediaOnError'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('If current video fails, it will auto advance to next video.', MVP_TEXTDOMAIN); ?>
-                </td>
-            </tr>
-
-            <tr>
-                <th><?php esc_html_e('Make Cue point markers', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="cueMakeMarkers">
-                        <option value="0" <?php if(isset($options['cueMakeMarkers']) && $options['cueMakeMarkers'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['cueMakeMarkers']) && $options['cueMakeMarkers'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
-                    <span class="info"><?php esc_html_e('Display Cue point markers in progress seekbar if video has cue points.', MVP_TEXTDOMAIN); ?></span>
-            </tr>
-
-            <tr>
-                <th><?php esc_html_e('Execute Cue point Only Once', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="executeCueOnlyOnce">
-                        <option value="0" <?php if(isset($options['executeCueOnlyOnce']) && $options['executeCueOnlyOnce'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['executeCueOnlyOnce']) && $options['executeCueOnlyOnce'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
-                    <span class="info"><?php esc_html_e('If false, and the user seeks back in time it will trigger cue point again.', MVP_TEXTDOMAIN); ?></span>
-            </tr>
-
         </table>
 
     </div>
@@ -338,65 +286,25 @@ $userRoles = mvp_get_editable_roles();
         <table class="form-table">
 
             <tr valign="top">
+                <th>Media aspect ratio</th>
+                <td>
+                    <select name="aspectRatio">
+                        <?php foreach ($options['aspectRatioArr'] as $key => $value) : ?>
+                            <option value="<?php echo($key); ?>" <?php if(isset($options['aspectRatio']) && $options['aspectRatio'] == $key) echo 'selected' ?>><?php echo($value); ?></option>
+                        <?php endforeach; ?>
+                    </select><br>
+                    <span class="info">Set default media resize option inside player (valid for self hosted media).<br>Fit inside will always show whole video, but may leave blank spaces around the video, depending on the resolution.<br>Fit outside will always cover the whole screen with video, leaving no blank spaces, but may cut part of the video, depending on the resolution.</span>
+                </td>
+            </tr>
+
+            <tr valign="top">
                 <th><?php esc_html_e('Use swipe navigation', MVP_TEXTDOMAIN); ?></th>
                 <td> 
                     <select name="useSwipeNavigation">
                         <option value="0" <?php if(isset($options['useSwipeNavigation']) && $options['useSwipeNavigation'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
                         <option value="1" <?php if(isset($options['useSwipeNavigation']) && $options['useSwipeNavigation'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
                     </select><br>
-                    <span class="info"><?php esc_html_e('Use swipe navigation on touch sensitive devices. Note: Works with self hosted audio, video and images, Youtube or Vimeo chromeless players. It does not work with 360 videos or images which require gesture control to move!', MVP_TEXTDOMAIN); ?></span>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Choose swipe action', MVP_TEXTDOMAIN); ?></th>
-                <td> 
-                    <select name="swipeAction">
-                        <?php foreach ($options['swipeActionArr'] as $key => $value) : ?>
-                            <option value="<?php echo($key); ?>" <?php if(isset($options['swipeAction']) && $options['swipeAction'] == $key) echo 'selected' ?>><?php echo($value); ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Swipe tolerance', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="number" min="0" id="swipeTolerance" name="swipeTolerance" value="<?php echo($options['swipeTolerance']); ?>">
-                      <br><span class="info"><?php esc_html_e('Minimum distance to trigger swipe (how much user has to drag to trigger swipe), default 100 px.', MVP_TEXTDOMAIN); ?></span>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Use load more button', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="useLoadMoreBtn">
-                        <option value="0" <?php if(isset($options['useLoadMoreBtn']) && $options['useLoadMoreBtn'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['useLoadMoreBtn']) && $options['useLoadMoreBtn'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Use load more button when pagination is used (valid for Outer and Grid wall layout).', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-<?php /*
-            <tr valign="top">
-                <th><?php esc_html_e('Make document fullscreen', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="documentFullsceen">
-                        <option value="0" <?php if(isset($options['documentFullsceen']) && $options['documentFullsceen'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['documentFullsceen']) && $options['documentFullsceen'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
-                    <span class="info"><?php esc_html_e('When entering fullscreen, make whole document fullscreen or just player div.', MVP_TEXTDOMAIN); ?></span>
-                </td>
-            </tr>
-            */ ?>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Auto enter fullscreen on video play click', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="openFsOnPlay">
-                        <option value="0" <?php if(isset($options['openFsOnPlay']) && $options['openFsOnPlay'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['openFsOnPlay']) && $options['openFsOnPlay'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
+                    <span class="info"><?php esc_html_e('Use swipe navigation on touch sensitive devices to move to next or previous media when swiping on player. Note: Works with self hosted audio, video and images, Youtube or Vimeo chromeless players. It does not work with 360 videos or images which require gesture control to move!', MVP_TEXTDOMAIN); ?></span>
                 </td>
             </tr>
             
@@ -422,29 +330,7 @@ $userRoles = mvp_get_editable_roles();
 
                 </td>
             </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Display some options in player in mobile friendly list menu', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="useMobileListMenu">
-                        <option value="0" <?php if(isset($options['useMobileListMenu']) && $options['useMobileListMenu'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['useMobileListMenu']) && $options['useMobileListMenu'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('These include playback rate menu, subtitles menu, playback quality menu, audio language menu (for live streaming), transcript language menu', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Use video url as blob', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="useBlob">
-                        <option value="0" <?php if(isset($options['useBlob']) && $options['useBlob'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['useBlob']) && $options['useBlob'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Note that this might slow down video loading on start since it involves video conversion. If you experience such behavior, try to deactivate this feature to see if this makes a difference.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-            
+               
         </table>
 
     </div>
@@ -544,17 +430,6 @@ $userRoles = mvp_get_editable_roles();
                 <span class="info"><?php esc_html_e('Border around the lightbox.', MVP_TEXTDOMAIN); ?></span>
             </tr>
 
-            <tr valign="top">
-                <th><?php esc_html_e('Destroy playlist on lightbox close', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="destroyPlaylistOnLightboxClose">
-                        <option value="0" <?php if(isset($options['destroyPlaylistOnLightboxClose']) && $options['destroyPlaylistOnLightboxClose'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['destroyPlaylistOnLightboxClose']) && $options['destroyPlaylistOnLightboxClose'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
-                    <span class="info"><?php esc_html_e('Set yes if you use Shelf addOn.', MVP_TEXTDOMAIN); ?></span>
-                </td>
-            </tr>
-
         </table>
 
     </div>
@@ -567,7 +442,7 @@ $userRoles = mvp_get_editable_roles();
                 <th><?php esc_html_e('Captions font size breakpoints', MVP_TEXTDOMAIN); ?></th>
                 <td>
 
-                    <div class="mvp-caption-br-table-section"></div>
+                    <div class="mvp-caption-br-table-section">
 
                     <div id="mvp-caption-br-table-wrap" class="mvp-value-table-wrap"></div>
 
@@ -627,19 +502,6 @@ $userRoles = mvp_get_editable_roles();
                 </td>
             </tr>
 
-            <tr valign="top">
-                <th><?php esc_html_e('Syncronize transcript language with subtitles', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="syncTranscriptWithSubs">
-                        <option value="0" <?php if(isset($options['syncTranscriptWithSubs']) && $options['syncTranscriptWithSubs'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['syncTranscriptWithSubs']) && $options['syncTranscriptWithSubs'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Changing subtitle language will change language in transcript menu (if transcript menu is used) and vice versa.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            
-
         </table>
 
     </div>
@@ -678,7 +540,7 @@ $userRoles = mvp_get_editable_roles();
 
                 </td>
             </tr>
-            
+
         </table>
 
     </div>
@@ -710,71 +572,36 @@ $userRoles = mvp_get_editable_roles();
                </td>
             </tr>
 
-            <tr valign="top">
-                <th><?php esc_html_e('Create keyboard info dialog', MVP_TEXTDOMAIN); ?></th>
-                <td>
+            <tr valign="top" id="mvp-keyboard-controls-field">
+                <th><?php esc_html_e('Keyboard controls', MVP_TEXTDOMAIN); ?></th>
+                <td id="mvp-keyboard-controls-field-inner">
 
-                    <select name="createKeyboardInfo">
-                        <option value="0" <?php if(isset($options['createKeyboardInfo']) && $options['createKeyboardInfo'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['createKeyboardInfo']) && $options['createKeyboardInfo'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
-                    <span class="info"><?php esc_html_e('Create dialog info with all currently used keyboard keys and add button to settings menu which opens the dialog.', MVP_TEXTDOMAIN); ?></span>
-               </td>
+                    <table class="mvp-value-table-wrap-orig">
+                      <thead>
+                        <tr>
+                          <th align="left"><?php esc_html_e('Enter key here', MVP_TEXTDOMAIN); ?></th>
+                          <th align="left"><?php esc_html_e('Key', MVP_TEXTDOMAIN); ?></th>
+                          <th align="left"><?php esc_html_e('Action', MVP_TEXTDOMAIN); ?></th>
+                          <th>&nbsp;</th>
+                        </tr>
+                      </thead>
+                      
+                      <tbody>
+                        <tr>
+                          <td><input class="mvp-keyboard-key-enter" type="text" maxlength="1"></td>
+                          <td><input class="mvp-keyboard-key" type="text" readonly></td>
+                          <td><input class="mvp-keyboard-action-display" type="text" readonly></td>
+                          <td><button type="button" class="keyboard-controls-toggle"><?php esc_html_e('Disable', MVP_TEXTDOMAIN); ?></button></td>
+
+
+                          <input class="mvp-keyboard-keycode" type="hidden">
+                          <input class="mvp-keyboard-action" type="hidden">
+                        </tr>
+                      </tbody>
+                    </table>
+
+                </td>
             </tr>
-
-            </table>
-
-            <table class="form-table">
-
-                <tr valign="top" id="mvp-keyboard-controls-field">
-                    <th><?php esc_html_e('Keyboard controls', MVP_TEXTDOMAIN); ?></th>
-                    <td id="mvp-keyboard-controls-field-inner">
-
-                        <table class="mvp-value-table-wrap-orig">
-                          <thead>
-                            <tr>
-                              <th align="left"><?php esc_html_e('Enter key here', MVP_TEXTDOMAIN); ?></th>
-                              <th align="left"><?php esc_html_e('Key', MVP_TEXTDOMAIN); ?></th>
-                              <th align="left"><?php esc_html_e('Action', MVP_TEXTDOMAIN); ?></th>
-                              <th>&nbsp;</th>
-                            </tr>
-                          </thead>
-                          
-                          <tbody>
-                            <tr>
-                              <td><input class="mvp-keyboard-key-enter" type="text" maxlength="1"></td>
-                              <td><input class="mvp-keyboard-key" type="text" readonly></td>
-                              <td>
-                                <select name="mvp-keyboard-action" class="mvp-keyboard-action">
-                                    <?php foreach ($options['keyboardActions'] as $key => $value) : ?>
-                                        <option value="<?php echo($key); ?>"><?php echo($value); ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                              </td>
-                              <td><button type="button" class="keyboard-controls-remove"><?php esc_attr_e('Remove', MVP_TEXTDOMAIN); ?></button></td>
-
-
-                              <input class="mvp-keyboard-keycode" type="hidden">
-                              <input class="mvp-keyboard-action" type="hidden">
-                            </tr>
-                          </tbody>
-                        </table>
-
-                    </td>
-                </tr>
-
-                <tr valign="top">
-                    <th></th>
-                    <td>
-
-                        <button type="button" id="mvp-keyboard-controls-add"><?php esc_attr_e('Add new', MVP_TEXTDOMAIN); ?></button>
-                    </td>
-
-                </tr>
-
-            </table>
-
-            <table class="form-table">
 
             <tr valign="top">
                 <th><?php esc_html_e('Modifier key', MVP_TEXTDOMAIN); ?></th>
@@ -824,26 +651,6 @@ $userRoles = mvp_get_editable_roles();
             </tr>
 
             <tr valign="top">
-                <th><?php esc_html_e('Format Date From Now', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="formatDateFromNow">
-                        <option value="0" <?php if(isset($options['formatDateFromNow']) && $options['formatDateFromNow'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['formatDateFromNow']) && $options['formatDateFromNow'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
-                    <span class="info"><?php esc_html_e('If date is shown in playlist items, display date in format like "2 days ago", "5 months ago" etc..', MVP_TEXTDOMAIN); ?></span>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Format Date language locale', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="text" name="locale" value="<?php echo($options['locale']); ?>"><br>
-                    <span class="info"><?php esc_html_e('Language code for formatDateFromNow:', MVP_TEXTDOMAIN); ?></span>
-                    <a href="https://en.wikipedia.org/wiki/IETF_language_tag#:~:text=An%20IETF%20BCP%2047%20language,the%20IANA%20Language%20Subtag%20Registry." target="_blank">https://en.wikipedia.org/wiki/IETF_language_tag#:~:text=An%20IETF%20BCP%2047%20language,the%20IANA%20Language%20Subtag%20Registry.</a>
-                </td>
-            </tr>
-
-            <tr valign="top">
                 <th><?php esc_html_e('Limit description text', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     <input type="number" name="limitDescriptionText" value="<?php echo($options['limitDescriptionText']); ?>"><br>
@@ -851,18 +658,6 @@ $userRoles = mvp_get_editable_roles();
 
                 </td>
             </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Convert Url To Links In Description', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="convertUrlToLinksInDesc">
-                        <option value="0" <?php if(isset($options['convertUrlToLinksInDesc']) && $options['convertUrlToLinksInDesc'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['convertUrlToLinksInDesc']) && $options['convertUrlToLinksInDesc'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
-                    <p class="info"><?php esc_html_e('Youtube / Vimeo video description does not provide clickable url links. This will convert http urls in description (if exist) into href clickable links. Use with care because it may return unexpected results since it has to scan all description text and try to convert to href tags.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
             <tr valign="top">
                 <th><?php esc_html_e('Display watched percentage in thumbnails', MVP_TEXTDOMAIN); ?></th>
                 <td>
@@ -871,17 +666,6 @@ $userRoles = mvp_get_editable_roles();
                         <option value="1" <?php if(isset($options['displayWatchedPercentage']) && $options['displayWatchedPercentage'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
                     </select><br>
                     <span class="info"><?php esc_html_e('Display video percentage played in thumbnails. Creates a red line in thumbnail representing how much of the video has been watched so far.', MVP_TEXTDOMAIN); ?></span><div class="mvp-help-tip"><p><img src="<?php echo plugins_url().'/apmvp/images/displayWatchedPercentage.jpg' ?>"/></p></div>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Use mobile friendly playlist', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="useMobileCompactPlaylist">
-                        <option value="0" <?php if(isset($options['useMobileCompactPlaylist']) && $options['useMobileCompactPlaylist'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['useMobileCompactPlaylist']) && $options['useMobileCompactPlaylist'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Display playlist on mobile in fullscreen layout which opens above the player. Works will all player layouts except Outer and Grid wall with lightbox, just player.', MVP_TEXTDOMAIN); ?></p>
                 </td>
             </tr>
 
@@ -928,17 +712,6 @@ $userRoles = mvp_get_editable_roles();
                 </td>
             </tr>
 
-            <tr valign="top">
-                <th><?php esc_html_e('Hide youtube elements above player', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="forceYtChromeless">
-                        <option value="0" <?php if(isset($options['forceYtChromeless']) && $options['forceYtChromeless'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['forceYtChromeless']) && $options['forceYtChromeless'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
-                    <span class="info"><?php esc_html_e('Hide youtube elements above player (title, share, related videos etc..)', MVP_TEXTDOMAIN); ?></span>
-                </td>
-            </tr>
-
             <tr valign="top" class="youtubePlayerTypeChromeless_field">
                 <th><?php esc_html_e('Block Youtube right click', MVP_TEXTDOMAIN); ?></th>
                 <td>
@@ -949,15 +722,6 @@ $userRoles = mvp_get_editable_roles();
                     <span class="info"><?php esc_html_e('Place transparent div over youtube iframe to disable right click over the player (only for Youtube chromeless player).', MVP_TEXTDOMAIN); ?></span>
                 </td>
             </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Hide Youtube shorts from showing', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="number" min="0" step="1" class="hideShortsFromShowing" name="hideShortsFromShowing">
-                    <p class="info"><?php esc_html_e('Hide youtube short videos in seconds. All videos below this value will be hidden.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
             
            
         </table>
@@ -1065,11 +829,9 @@ $userRoles = mvp_get_editable_roles();
 
     </div>
 
-    <?php if(defined('MVP_AWS')) : ?>
-
     <div id="mvp-tab-s3-content" class="mvp-tab-content">
 
-        <h4><?php esc_html_e('Settings when reading video files from Amazon', MVP_TEXTDOMAIN); ?></h4>
+        <h4><?php esc_html_e('Settings when reading video files from Amazon S3:', MVP_TEXTDOMAIN); ?></h4>
 
         <table class="form-table">
 
@@ -1090,35 +852,13 @@ $userRoles = mvp_get_editable_roles();
             </tr>
 
             <tr valign="top">
-                <th><?php esc_html_e('Read video poster from bucket', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="getPosterFromBucket">
-                        <option value="0" <?php if(isset($options['getPosterFromBucket']) && $options['getPosterFromBucket'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['getPosterFromBucket']) && $options['getPosterFromBucket'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Use this to automatically fetch video poster from a bucket. Requires CORS set on bucket. Your poster images in the bucket need to have the same name as video files!', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
                 <th><?php esc_html_e('Read image thumbnails from bucket', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     <select name="getThumbFromBucket">
                         <option value="0" <?php if(isset($options['getThumbFromBucket']) && $options['getThumbFromBucket'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
                         <option value="1" <?php if(isset($options['getThumbFromBucket']) && $options['getThumbFromBucket'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
                     </select>
-                    <p class="info"><?php esc_html_e('Use this to automatically fetch image thumbnails from a bucket. Requires CORS set on bucket. Your thumbnail images in the bucket need to have the same name as video files!', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Read subtitles from bucket', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="getSubsFromBucket">
-                        <option value="0" <?php if(isset($options['getSubsFromBucket']) && $options['getSubsFromBucket'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['getSubsFromBucket']) && $options['getSubsFromBucket'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Use this to automatically fetch subtitles from a bucket. Requires CORS set on bucket. Valid for reading whole bucket of videos (media type).', MVP_TEXTDOMAIN); ?></p>
+                    <p class="info"><?php esc_html_e('Use this to automatically fetch image thumbnails from a bucket. Requires CORS set on bucket. Your thumbnails in the bucket need to have the same name as video files!', MVP_TEXTDOMAIN); ?></p>
                 </td>
             </tr>
 
@@ -1126,15 +866,13 @@ $userRoles = mvp_get_editable_roles();
                 <th><?php esc_html_e('Thumb extension', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     <input type="text" name="s3ThumbExtension" value="<?php echo($options['s3ThumbExtension']); ?>">
-                    <p class="info"><?php esc_html_e('Specify extension that thumbnails / poster images in the bucket will have (all thumbnails are expected to have the same extension).', MVP_TEXTDOMAIN); ?></p>
+                    <p class="info"><?php esc_html_e('Specify extension that thumbnails in the bucket will have (all thumbnails are expected to have the same extension).', MVP_TEXTDOMAIN); ?></p>
                 </td>
             </tr>
        
         </table>
 
     </div>
-
-    <?php endif; ?>
 
     <div id="mvp-tab-vast-content" class="mvp-tab-content">
 
@@ -1237,7 +975,6 @@ $userRoles = mvp_get_editable_roles();
 
                 </td>
             </tr>
-
             <tr valign="top">
                 <th><?php esc_html_e('Show audio quality menu', MVP_TEXTDOMAIN); ?></th>
                 <td>
@@ -1246,22 +983,6 @@ $userRoles = mvp_get_editable_roles();
                         <option value="1" <?php if(isset($options['showStreamAudioBitrateMenu']) && $options['showStreamAudioBitrateMenu'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
                     </select><br>
                     <span class="info"><?php esc_html_e('Show audio bitrate menu for live streaming.', MVP_TEXTDOMAIN); ?></span><div class="mvp-help-tip"><p><img src="<?php echo plugins_url().'/apmvp/images/showStreamAudioBitrateMenu.jpg' ?>"/></p></div>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('HLS config', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <textarea id="mvp_hls_config"><?php echo($options['hlsConfig']); ?></textarea>
-                    <p class="info"><?php esc_html_e('Add aditional hls config parameters', MVP_TEXTDOMAIN); ?>&nbsp;<a href="https://github.com/video-dev/hls.js/blob/master/docs/API.md" target="_blank">config parameters </a></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Dash config', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <textarea id="mvp_dash_config"><?php echo($options['dashConfig']); ?></textarea>
-                    <p class="info"><?php esc_html_e('Add aditional dash config parameters', MVP_TEXTDOMAIN); ?>&nbsp;<a href="https://github.com/Dash-Industry-Forum/dash.js/" target="_blank">config parameters </a></p>
                 </td>
             </tr>
            
@@ -1292,147 +1013,6 @@ $userRoles = mvp_get_editable_roles();
                     <p class="info"><?php esc_html_e('Time before midroll advert starts to show message (seconds)', MVP_TEXTDOMAIN); ?></p>
                 </td>
             </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Show Ad controls', MVP_TEXTDOMAIN); ?></th>
-                <td>
-
-                    <select name="useAdControls">
-                        <option value="0" <?php if(isset($options['useAdControls']) && $options['useAdControls'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['useAdControls']) && $options['useAdControls'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
-                    <p><?php esc_html_e('Show ad controls (volume, fullscreen).', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Show Ad line progress bar', MVP_TEXTDOMAIN); ?></th>
-                <td>
-
-                    <select name="useAdSeekbar">
-                        <option value="0" <?php if(isset($options['useAdSeekbar']) && $options['useAdSeekbar'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['useAdSeekbar']) && $options['useAdSeekbar'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
-                    <p><?php esc_html_e('Show ad progress line beneath the video.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Create advert markers in seekbar', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="createAdMarkers">
-                        <option value="0" <?php if(isset($options['createAdMarkers']) && $options['createAdMarkers'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['createAdMarkers']) && $options['createAdMarkers'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Create markers for the mid-roll adverts in seekbar.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Play adverts only once per media', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="playAdsOnlyOnce">
-                        <option value="0" <?php if(isset($options['playAdsOnlyOnce']) && $options['playAdsOnlyOnce'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['playAdsOnlyOnce']) && $options['playAdsOnlyOnce'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('If user seeks back in time, adverts that were already shown will not be shown again.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-           
-        </table>
-
-    </div>
-
-    <div id="mvp-tab-annotation-content" class="mvp-tab-content">
-
-        <table class="form-table">
-
-            <tr valign="top">
-                <th><?php esc_html_e('Show annotations only once per media', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="showAnnotationsOnlyOnce">
-                        <option value="0" <?php if(isset($options['showAnnotationsOnlyOnce']) && $options['showAnnotationsOnlyOnce'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['showAnnotationsOnlyOnce']) && $options['showAnnotationsOnlyOnce'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('If user seeks back in time, annotations that were closed will not be shown again.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Hide Annotations On Mobile', MVP_TEXTDOMAIN); ?></th>
-                <td>
-
-                    <select name="hideAnnotationOnMobile">
-                        <option value="0" <?php if(isset($options['hideAnnotationOnMobile']) && $options['hideAnnotationOnMobile'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['hideAnnotationOnMobile']) && $options['hideAnnotationOnMobile'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                </td>
-            </tr>
-           
-        </table>
-
-    </div>
-
-    <div id="mvp-tab-popups-content" class="mvp-tab-content">
-
-        <table class="form-table">
-
-            <tr valign="top">
-                <th><?php esc_html_e('Show popups only once per media', MVP_TEXTDOMAIN); ?></th>
-                <td>
-
-                    <select name="showPopupsOnlyOnce">
-                        <option value="0" <?php if(isset($options['showPopupsOnlyOnce']) && $options['showPopupsOnlyOnce'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['showPopupsOnlyOnce']) && $options['showPopupsOnlyOnce'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('If user seeks back in time, popups that were closed will not be shown again.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Hide popups On Mobile', MVP_TEXTDOMAIN); ?></th>
-                <td>
-
-                    <select name="hidePopupsOnMobile">
-                        <option value="0" <?php if(isset($options['hidePopupsOnMobile']) && $options['hidePopupsOnMobile'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['hidePopupsOnMobile']) && $options['hidePopupsOnMobile'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Randomize pause popups', MVP_TEXTDOMAIN); ?></th>
-                <td>
-
-                    <select name="randomizePausePopups">
-                        <option value="0" <?php if(isset($options['randomizePausePopups']) && $options['randomizePausePopups'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['randomizePausePopups']) && $options['randomizePausePopups'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('If you have multiple pause popups, they can be randomized on video start.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Resume video after popup close', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="resumeMediaAfterPopupClose">
-                        <option value="0" <?php if(isset($options['resumeMediaAfterPopupClose']) && $options['resumeMediaAfterPopupClose'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['resumeMediaAfterPopupClose']) && $options['resumeMediaAfterPopupClose'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Video is paused once popup appears and user needs to close popup for video to continue automatically.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Use global popup close btn', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="useGlobalPopupCloseBtn">
-                        <option value="0" <?php if(isset($options['useGlobalPopupCloseBtn']) && $options['useGlobalPopupCloseBtn'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['useGlobalPopupCloseBtn']) && $options['useGlobalPopupCloseBtn'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('If you dont want to add close popup button to each popup, you can activate global popup close button here.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr> 
            
         </table>
 
@@ -1751,17 +1331,6 @@ $userRoles = mvp_get_editable_roles();
                 </td>
             </tr>
 
-            <tr valign="top">
-                <th><?php esc_html_e('Use mobile chapter menu', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="useMobileChapterMenu">
-                        <option value="0" <?php if(isset($options['useMobileChapterMenu']) && $options['useMobileChapterMenu'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['useMobileChapterMenu']) && $options['useMobileChapterMenu'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Display chapters in mobile friendly list when viewed on mobile. Only available when chapters are shown in chapter menu (not in chapter window). Auto open chapters menu is not compatible when this is activated.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
         </table>
 
     </div>
@@ -1771,13 +1340,12 @@ $userRoles = mvp_get_editable_roles();
         <table class="form-table">
 
             <tr valign="top">
-                <th><?php esc_html_e('Use default share', MVP_TEXTDOMAIN); ?></th>
+                <th><?php esc_html_e('Use social sharing in player', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     <select name="useShare" id="useShare">
                         <option value="0" <?php if(isset($options['useShare']) && $options['useShare'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
                         <option value="1" <?php if(isset($options['useShare']) && $options['useShare'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Default share method uses social sharing icons (Facebook, Twitter etc) for sharing.', MVP_TEXTDOMAIN); ?></p>
+                    </select><br>
                 </td>
             </tr>
 
@@ -1859,49 +1427,7 @@ $userRoles = mvp_get_editable_roles();
                         <option value="1" <?php if(isset($options['useSharePinterest']) && $options['useSharePinterest'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
                     </select>
                 </td>
-            </tr>
-
-            <tr valign="top" class="mvp_share">
-                <th><?php esc_html_e('Use Email share', MVP_TEXTDOMAIN); ?></th>     
-                <td>
-                    <select name="useShareEmail">
-                        <option value="0" <?php if(isset($options['useShareEmail']) && $options['useShareEmail'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['useShareEmail']) && $options['useShareEmail'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                </td>
             </tr>  
-
-            <tr valign="top" class="mvp_share">
-                <th><?php esc_html_e('Use Sms share', MVP_TEXTDOMAIN); ?></th>     
-                <td>
-                    <select name="useShareSms">
-                        <option value="0" <?php if(isset($options['useShareSms']) && $options['useShareSms'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['useShareSms']) && $options['useShareSms'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                </td>
-            </tr>    
-
-            <tr valign="top">
-                <th><?php esc_html_e('Use native sharing', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="useNativeShare">
-                        <option value="0" <?php if(isset($options['useNativeShare']) && $options['useNativeShare'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['useNativeShare']) && $options['useNativeShare'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Use native browser share where available.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Share video url with native share', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="nativeShareMedia">
-                        <option value="0" <?php if(isset($options['nativeShareMedia']) && $options['nativeShareMedia'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['nativeShareMedia']) && $options['nativeShareMedia'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Share video url with native share (same domain restriction applies, which means its only possible to share video from the same domain player is located).', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
 
         </table>            
 
@@ -1968,14 +1494,6 @@ $userRoles = mvp_get_editable_roles();
                     </select>
                     <p class="info"><?php esc_html_e('This will save transform state after editing, so next time video will load with same transform settings.', MVP_TEXTDOMAIN); ?></p>
 
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Max zoom', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="number" min="1" name="maxZoom" value="<?php echo($options['maxZoom']); ?>">
-                    <p class="info"><?php esc_html_e('Max zoom value (default 5)', MVP_TEXTDOMAIN); ?></p>
                 </td>
             </tr>
 
@@ -2055,17 +1573,6 @@ $userRoles = mvp_get_editable_roles();
                         <option value="1" <?php if(isset($options['requireThumbnailsFromFolder']) && $options['requireThumbnailsFromFolder'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
                     </select><br>
                     <span class="info"><?php esc_html_e('If true, player will assume you have thumbnail images as per required folder organization when loading playlist from folder.', MVP_TEXTDOMAIN); ?></span>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Require subtitles from folder', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="requireSubtitlesFromFolder">
-                        <option value="0" <?php if(isset($options['requireSubtitlesFromFolder']) && $options['requireSubtitlesFromFolder'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['requireSubtitlesFromFolder']) && $options['requireSubtitlesFromFolder'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select><br>
-                    <span class="info"><?php esc_html_e('If true, player will assume you have subtitles as per required folder organization when loading playlist from folder.', MVP_TEXTDOMAIN); ?></span>
                 </td>
             </tr>
            
@@ -2210,7 +1717,7 @@ $userRoles = mvp_get_editable_roles();
 
                             <label class="container">
                                 <input type="checkbox" name="downloadVideoUserRoles[]" value="<?php echo($key); ?>" <?php if(in_array($key, $options['downloadVideoUserRoles'])) echo 'checked' ?>><?php echo($value["name"]); ?>
-                            </label><br>
+                            </label>
                         <?php endforeach; ?>
 
                         <p class="info"><?php esc_html_e('Only selected user roles can download video. If no user roles are selected everybody can download video.', MVP_TEXTDOMAIN); ?></p>
@@ -2288,7 +1795,7 @@ $userRoles = mvp_get_editable_roles();
 
                             <label class="container">
                                 <input type="checkbox" name="viewVideoWithoutAdsUserRoles[]" value="<?php echo($key); ?>" <?php if(in_array($key, $options['viewVideoWithoutAdsUserRoles'])) echo 'checked' ?>><?php echo($value["name"]); ?>
-                            </label><br>
+                            </label>
                         <?php endforeach; ?>
 
                         <p class="info"><?php esc_html_e('Only selected user roles can view video without ads. If no user roles are selected everybody will have ads playing.', MVP_TEXTDOMAIN); ?></p>
@@ -2301,66 +1808,25 @@ $userRoles = mvp_get_editable_roles();
 
     </div>
 
-    <div id="mvp-tab-inline-ad-content" class="mvp-tab-content">
-
-        <p><?php esc_html_e('Select which users can view video without inline ads.', MVP_TEXTDOMAIN); ?></p>
+    <div id="mvp-tab-playlist-icons-content" class="mvp-tab-content">
 
         <table class="form-table">
 
             <tr valign="top">
-                <th><?php esc_html_e('Play inline ads for non logged in users', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select id="showInlineAdsNonLoggedInUser" name="showInlineAdsNonLoggedInUser">
-                        <option value="0" <?php if(isset($options['showInlineAdsNonLoggedInUser']) && $options['showInlineAdsNonLoggedInUser'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['showInlineAdsNonLoggedInUser']) && $options['showInlineAdsNonLoggedInUser'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Users who are not logged in will have inline ads playing.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top" id="showInlineAdsUserRoles-field">
-                <th><?php esc_html_e('Select user role which will have inline ads playing', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <div class="item-content-list">
-
-                        <?php 
-                        foreach ($userRoles as $key => $value) : ?>
-
-                            <label class="container">
-                                <input type="checkbox" name="showInlineAdsUserRoles[]" value="<?php echo($key); ?>" <?php if(in_array($key, $options['showInlineAdsUserRoles'])) echo 'checked' ?>><?php echo($value["name"]); ?>
-                            </label><br>
-                        <?php endforeach; ?>
-
-                    </div>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Continue in (..seconds) text', MVP_TEXTDOMAIN); ?></th>
+                <th><?php esc_html_e('Playlist icon container', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     
-                    <input type="text" name="inlineAdsContinueInText" value="<?php echo($options['inlineAdsContinueInText']); ?>">
+                    <input type="text" name="playlistIconContainer" value="<?php echo($options['playlistIconContainer']); ?>">
+                    <p class="info"><?php esc_html_e('Element to add playlist icons into.', MVP_TEXTDOMAIN); ?></p>
                 </td>
             </tr>
 
             <tr valign="top">
-                <th><?php esc_html_e('Upgrade text', MVP_TEXTDOMAIN); ?></th>
+                <th><?php esc_html_e('Playlist icon click trigger', MVP_TEXTDOMAIN); ?></th>
                 <td>
-                    <textarea rows="3" name="inlineAdsUpgradeText"><?php echo($options['inlineAdsUpgradeText']); ?></textarea>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Number of seconds to countdown', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="number" min="0" name="inlineAdsCountdown" value="<?php echo($options['inlineAdsCountdown']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('How often inline ads appear (miliseconds)', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="number" min="0" name="inlineAdsOccurence" value="<?php echo($options['inlineAdsOccurence']); ?>">
+                    
+                    <input type="text" name="playlistItemClickTrigger" value="<?php echo($options['playlistItemClickTrigger']); ?>">
+                    <p class="info"><?php esc_html_e('What element triggers the click (to load new video).', MVP_TEXTDOMAIN); ?></p>
                 </td>
             </tr>
            
@@ -2368,650 +1834,6 @@ $userRoles = mvp_get_editable_roles();
 
     </div>
 
-    <div id="mvp-tab-add-to-fav-content" class="mvp-tab-content">
-
-        <p class="info"><?php esc_html_e('Add to favorites allows user to save specific video to favorites list. Add To Favorites is available for logged in users and only works with single videos from any source, but not grouped video sources like Youtube playlist or similar.', MVP_TEXTDOMAIN); ?></p>
-
-        <table class="form-table">
-
-            <tr valign="top">
-                <th><?php esc_html_e('Create Add To Favorites to context menu', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="useAddToFavoritesToContextMenu">
-                        <option value="0" <?php if(isset($options['useAddToFavoritesToContextMenu']) && $options['useAddToFavoritesToContextMenu'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['useAddToFavoritesToContextMenu']) && $options['useAddToFavoritesToContextMenu'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Will create Add To Favorites button in right click context menu. Right click context menu needs to be set to custom for this to work.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Create Add To Favorites in playlist item menu', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="useAddToFavoritesToPlaylistItemMenu">
-                        <option value="0" <?php if(isset($options['useAddToFavoritesToPlaylistItemMenu']) && $options['useAddToFavoritesToPlaylistItemMenu'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['useAddToFavoritesToPlaylistItemMenu']) && $options['useAddToFavoritesToPlaylistItemMenu'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Will create Add To Favorites button accessible in playlist items more menu (3 dots).', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Show Favorite indicator over thumb', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="showFavIndicator">
-                        <option value="0" <?php if(isset($options['showFavIndicator']) && $options['showFavIndicator'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['showFavIndicator']) && $options['showFavIndicator'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Show star icon over thumbnail to indicate this is favorite video.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-        </table>
-
-    </div>
-
-    <div id="mvp-tab-camera-content" class="mvp-tab-content">
-
-        <p class="info"><?php esc_html_e('Display video from your camera inside the player.', MVP_TEXTDOMAIN); ?></p>
-
-        <table class="form-table">
-
-            <tr valign="top">
-                <th><?php esc_html_e('Use camera stream', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="streamCamera">
-                        <option value="0" <?php if(isset($options['streamCamera']) && $options['streamCamera'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['streamCamera']) && $options['streamCamera'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Auto start camera stream on player start', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="autoStartStream">
-                        <option value="0" <?php if(isset($options['autoStartStream']) && $options['autoStartStream'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['autoStartStream']) && $options['autoStartStream'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Start streaming automatically if camera is connected.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-     
-
-        </table>
-
-    </div>  
-
-    <?php if(defined('MVP_VIDEO_HEATMAP')) : ?>
-
-    <div id="mvp-tab-heatmap-content" class="mvp-tab-content">
-
-        <p class="info"><?php esc_html_e('Video Heatmap statistics is available with video, audio, Youtube and Vimeo with chromeless players.', MVP_TEXTDOMAIN); ?></p> 
-
-        <table class="form-table">
-
-            <tr valign="top">
-                <th><?php esc_html_e('Track Video Heatmap', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="trackVideoHeatmap">
-                        <option value="0" <?php if(isset($options['trackVideoHeatmap']) && $options['trackVideoHeatmap'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['trackVideoHeatmap']) && $options['trackVideoHeatmap'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('Track Video Heatmap data. You can use this just to track video data, but not necessarily show it in the player.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Show Video Heatmap', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <select name="showVideoHeatmap">
-                        <option value="0" <?php if(isset($options['showVideoHeatmap']) && $options['showVideoHeatmap'] == "0") echo 'selected' ?>><?php esc_html_e('no', MVP_TEXTDOMAIN); ?></option>
-                        <option value="1" <?php if(isset($options['showVideoHeatmap']) && $options['showVideoHeatmap'] == "1") echo 'selected' ?>><?php esc_html_e('yes', MVP_TEXTDOMAIN); ?></option>
-                    </select>
-                    <p class="info"><?php esc_html_e('This can show Video Heatmap graph in the player controls above seekbar, if you have been tracking this data. Only with custom player controls.', MVP_TEXTDOMAIN); ?></p> 
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Video heatmap height [px]', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input type="number" min="1" name="heatmapHeight" value="<?php echo($options['heatmapHeight']); ?>">
-                    <p class="info"><?php esc_html_e('Height of the video heatmap which sits above the seekbar in player controls.', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Video heatmap color', MVP_TEXTDOMAIN); ?></th>
-                <td>
-                    <input name="heatmapColor" class="mvp-checkbox" value="<?php echo($options['heatmapColor']); ?>"><br>
-                    <span class="info"><?php esc_html_e('Video heatmap graph background color.', MVP_TEXTDOMAIN); ?></span>
-                </td>
-            </tr>
-
-        </table>
-
-    </div>  
-
-    <?php endif; ?>
-
-    <div id="mvp-tab-player-icons-content" class="mvp-tab-content">
-
-        <p class="info"><?php esc_html_e('General', MVP_TEXTDOMAIN); ?></p>
-
-        <table class="form-table">
-
-            <tr valign="top">
-                <th><?php esc_html_e('Close icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="closeIcon" value="<?php echo($options['closeIcon']); ?>">
-                    <br>
-                    <p class="info"><?php esc_html_e('Close dialog share, embed etc..', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Unmute icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="unmuteIcon" value="<?php echo($options['unmuteIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Coming Next icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="comingNextIcon" value="<?php echo($options['comingNextIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Live stream scheduled icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="upcomingLiveStreamIcon" value="<?php echo($options['upcomingLiveStreamIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Related videos close icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="relCloseIcon" value="<?php echo($options['relCloseIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Related videos next icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="relNextIcon" value="<?php echo($options['relNextIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Related videos previous icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="relPrevIcon" value="<?php echo($options['relPrevIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Playlist selector toggle language menu icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="playlistSelectorLangToggleIcon" value="<?php echo($options['playlistSelectorLangToggleIcon']); ?>">
-                    <br>
-                    <p><?php esc_html_e('The same for transcript language menu', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Close annotation icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="annotationCloseIcon" value="<?php echo($options['annotationCloseIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Lightbox close icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="lightboxCloseIcon" value="<?php echo($options['lightboxCloseIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Lightbox next icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="lightboxNextIcon" value="<?php echo($options['lightboxNextIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Lightbox previous icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="lightboxPreviousIcon" value="<?php echo($options['lightboxPreviousIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Minimize video close icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="minimizeCloseIcon" value="<?php echo($options['minimizeCloseIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('More icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="dotsIcon" value="<?php echo($options['dotsIcon']); ?>">
-                    <br>
-                    <p class="info"><?php esc_html_e('Icon to open playlist action menu (3 dots)', MVP_TEXTDOMAIN); ?></p>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Zoom to Center button icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="zoomCenterIcon" value="<?php echo($options['zoomCenterIcon']); ?>">
-                    <br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Reset zoom button icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="zoomResetIcon" value="<?php echo($options['zoomResetIcon']); ?>">
-                    <br>
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Video favorite star icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="starIcon" value="<?php echo($options['starIcon']); ?>">
-                    <br>
-                </td>
-            </tr>
-           
-           
-        </table>
-
-        <p class="info"><?php esc_html_e('Social sharing', MVP_TEXTDOMAIN); ?></p> 
-
-        <table class="form-table">
-
-            <tr valign="top">
-                <th><?php esc_html_e('Share toggle icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="shareToggleIcon" value="<?php echo($options['shareToggleIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Share Tumblr icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="shareTumblrIcon" value="<?php echo($options['shareTumblrIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Share Twitter icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="shareTwitterIcon" value="<?php echo($options['shareTwitterIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Share Facebook icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="shareFacebookIcon" value="<?php echo($options['shareFacebookIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Share WhatsApp icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="shareWhatsAppIcon" value="<?php echo($options['shareWhatsAppIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Share LinkedIn icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="shareLinkedInIcon" value="<?php echo($options['shareLinkedInIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Share Reddit icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="shareRedditIcon" value="<?php echo($options['shareRedditIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Share Digg icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="shareDiggIcon" value="<?php echo($options['shareDiggIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Share Pinterest icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="sharePinterestIcon" value="<?php echo($options['sharePinterestIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Share Email icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="shareEmailIcon" value="<?php echo($options['shareEmailIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Share Sms icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="shareSmsIcon" value="<?php echo($options['shareSmsIcon']); ?>">
-                </td>
-            </tr>
-
-
-        </table>  
-
-        <p class="info"><?php esc_html_e('Controls', MVP_TEXTDOMAIN); ?></p>   
-
-        <table class="form-table">
-
-            <tr valign="top">
-                <th><?php esc_html_e('Volume up icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="volumeUpIcon" value="<?php echo($options['volumeUpIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Volume down icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="volumeDownIcon" value="<?php echo($options['volumeDownIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Volume off icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="volumeOffIcon" value="<?php echo($options['volumeOffIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Fullscreen enter icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="fullscreenEnterIcon" value="<?php echo($options['fullscreenEnterIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Fullscreen exit icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="fullscreenExitIcon" value="<?php echo($options['fullscreenExitIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Playlist toggle icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="playlistToggleIcon" value="<?php echo($options['playlistToggleIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Video info icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="videoInfoIcon" value="<?php echo($options['videoInfoIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Embed toggle icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="embedToggleIcon" value="<?php echo($options['embedToggleIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Download toggle icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="downloadIcon" value="<?php echo($options['downloadIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Picture in picture icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="pipIcon" value="<?php echo($options['pipIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Go to previous video icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="prevVideoIcon" value="<?php echo($options['prevVideoIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Go to next video icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="nextVideoIcon" value="<?php echo($options['nextVideoIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Play icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="playIcon" value="<?php echo($options['playIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Pause icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="pauseIcon" value="<?php echo($options['pauseIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Rewind icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="rewindIcon" value="<?php echo($options['rewindIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Skip backward icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="skipBackwardIcon" value="<?php echo($options['skipBackwardIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Skip forward icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="skipForwardIcon" value="<?php echo($options['skipForwardIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Virtual reality icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="vrIcon" value="<?php echo($options['vrIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Caption toggle icon (caption on/off)', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="ccToggleIcon" value="<?php echo($options['ccToggleIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Transcript toggle icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="transcriptIcon" value="<?php echo($options['transcriptIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Settings menu icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="settingsMenuIcon" value="<?php echo($options['settingsMenuIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Previous chapter icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="prevChapterIcon" value="<?php echo($options['prevChapterIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Next chapter icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="nextChapterIcon" value="<?php echo($options['nextChapterIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Toggle chapters menu icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="chapterToggleIcon" value="<?php echo($options['chapterToggleIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Chapter repeat icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="chapterRepeatIcon" value="<?php echo($options['chapterRepeatIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Chapter share icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="chapterShareIcon" value="<?php echo($options['chapterShareIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Theater toggle icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="theaterToggleIcon" value="<?php echo($options['theaterToggleIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Casting off icon (chromecast)', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="castOffIcon" value="<?php echo($options['castOffIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Casting on icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="castOnIcon" value="<?php echo($options['castOnIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Airplay toggle icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="airplayIcon" value="<?php echo($options['airplayIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Big play icon in player center', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="bigPlayIcon" value="<?php echo($options['bigPlayIcon']); ?>">
-                </td>
-            </tr>
-
-            <tr valign="top">
-                <th><?php esc_html_e('Annotation Close icon', MVP_TEXTDOMAIN); ?></th>
-                <td class="mvp-icon-td">
-                    <span class="mvp-icon-preview"></span>
-                    <input type="text" class="mvp-icon-field" name="annotationCloseIcon" value="<?php echo($options['annotationCloseIcon']); ?>">
-                    <br>
-                </td>
-            </tr>
-
-
-        </table>
-
-    </div>
-
-    <?php if(defined('MVP_STAT')) : ?>
     <div id="mvp-tab-stats-content" class="mvp-tab-content">
 
         <p><?php esc_html_e('Statistics options', MVP_TEXTDOMAIN); ?></p>
@@ -3033,13 +1855,12 @@ $userRoles = mvp_get_editable_roles();
                 <th><?php esc_html_e('Percent listened to count as played', MVP_TEXTDOMAIN); ?></th>
                 <td>
                     <input type="number" min="1" max="100" name="percentToCountAsPlay" value="<?php echo($options['percentToCountAsPlay']); ?>">
-                    <p class="info"><?php esc_html_e('Set percentage of video that user needs to watch to be counted as played. 100 means full video. Default is 25.', MVP_TEXTDOMAIN); ?></p>
+                    <p class="info"><?php esc_html_e('Set percentage of video that user needs to watch to be counted as played. 100 means full video. Default is 25. Note that user can skip video which may interfere with results. You can disable video skip in Player options.', MVP_TEXTDOMAIN); ?></p>
                 </td>
             </tr>
 
         </table>
 
-    </div>  
-    <?php endif; ?>  
+    </div>    
             
 </div>
