@@ -13,8 +13,7 @@ jQuery(document).ready(function($) {
     playlistItemList = $('#mvp-playlist-item-list'),
     curr_playlist_id = mediaTable.attr('data-playlist-id'),
     playlistTable = $('.mvp-playlist-table'),
-    // Removed jquery_csv_js reference as it's no longer needed
-    // jquery_csv_js = 'https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.5/jquery.csv.min.js',
+    jquery_csv_js = 'https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.5/jquery.csv.min.js',
      quickShortcodeKey = 'mvp-quick-shortcode-data',
      shortcodeManagerSection = $('#mvp-shortcode-manager-section'),
      singleMediaSourcesArr = ['audio', 'video', 'image', 'youtube_single', 'vimeo_single', 'hls', 'dash']
@@ -35,7 +34,7 @@ jQuery(document).ready(function($) {
         trackPlaylistEdit = mediaTable.attr('data-track-playlist-edit')
 
         if(trackPlaylistEdit == '1'){
-            window.addEventListener('beforeunload', function (event) {
+            window.addEventListener('beforeunload', function (event) { 
                 setEditPlaylist('0')
             });
 
@@ -65,7 +64,7 @@ jQuery(document).ready(function($) {
             url: mvp_data.ajax_url,
             type: 'post',
             data: postData,
-            dataType: 'json',
+            dataType: 'json',   
         }).done(function(response){
 
             if(editingIntervalID)clearTimeout(editingIntervalID)
@@ -91,7 +90,7 @@ jQuery(document).ready(function($) {
             url: mvp_data.ajax_url,
             type: 'post',
             data: postData,
-            dataType: 'json',
+            dataType: 'json',   
         }).done(function(response){
             //console.log('checkEditPlaylist ', response)
 
@@ -161,12 +160,12 @@ jQuery(document).ready(function($) {
 
 
     var playlistManagerSection = $('#mvp-playlist-manager-section')
-
-
+    
+   
 
     var mediaItemList = $('#media-item-list'),
     _MVPAdContent,
-    activeMediaUrl,
+    activeMediaUrl, 
     activeMediaType,
     activeMediaDuration,
     editMediaData
@@ -200,7 +199,7 @@ jQuery(document).ready(function($) {
         var title_field = $('#playlist-title')
 
         if(isEmpty(title_field.val())){
-            title_field.addClass('aprf');
+            title_field.addClass('aprf'); 
             addPlaylistModalBg.scrollTop(0);
             alert(mvp_translate.attr('data-title-required'));
             $('#playlist-title').focus()
@@ -225,7 +224,7 @@ jQuery(document).ready(function($) {
             url: mvp_data.ajax_url,
             type: 'post',
             data: postData,
-            dataType: 'json',
+            dataType: 'json',   
         }).done(function(response){
 
             //go to edit playlist page
@@ -243,9 +242,9 @@ jQuery(document).ready(function($) {
     });
 
     function removePlaylistModal(){
-        addPlaylistModal.hide();
+        addPlaylistModal.hide();  
 
-        addPlaylistModal.find('#playlist-title').val('').removeClass('aprf');
+        addPlaylistModal.find('#playlist-title').val('').removeClass('aprf'); 
     }
 
     $('#mvp-add-playlist').on('click',function(e){
@@ -260,9 +259,9 @@ jQuery(document).ready(function($) {
                 return;
             }
         }
-
+            
         showPlaylistModal()
-
+        
     });
 
     function showPlaylistModal(){
@@ -293,7 +292,7 @@ jQuery(document).ready(function($) {
     });
 
     function removeUserPlaylistLimitModal(){
-        userPlaylistLimitModal.hide();
+        userPlaylistLimitModal.hide();  
     }
 
     function showUserPlaylistLimitModal(){
@@ -317,7 +316,7 @@ jQuery(document).ready(function($) {
     });
 
     function removeUserVideoLimitModal(){
-        userVideoLimitModal.hide();
+        userVideoLimitModal.hide();  
     }
 
     function showUserVideoLimitModal(){
@@ -347,7 +346,7 @@ jQuery(document).ready(function($) {
     paginationCurrentPage = 0,
     paginationPerPage = parseInt(paginationPerPageNum.val(),10),
     paginationTotalPages,
-    paginationInited,
+    paginationInited, 
     lastActivePaginationBtn,
     lastPaginationPage,
     paginationWrap = $('.mvp-pagination-wrap')
@@ -490,7 +489,7 @@ jQuery(document).ready(function($) {
         str += '<div class="mvp-pagination-total">Page '+page+' of '+paginationTotalPages+'</div>';
 
         paginationWrap.html(str);
-
+        
         if(!paginationInited){
             paginationInited = true;
 
@@ -504,14 +503,14 @@ jQuery(document).ready(function($) {
                 if(page == 'prev')paginationCurrentPage -= 1;
                 else if(page == 'next')paginationCurrentPage += 1;
                 else if(page == 'first')paginationCurrentPage = 0;
-                else if(page == 'last')paginationCurrentPage = paginationTotalPages - 1;
+                else if(page == 'last')paginationCurrentPage = paginationTotalPages - 1; 
                 else paginationCurrentPage = parseInt(page,10);
 
                 if(paginationTotalPages > 1)createPaginationBtn(paginationCurrentPage);
                 else paginationWrap.html('');
 
                 if(paginationArr.length)showPaginationTracks()
-
+                
             });
 
             lastActivePaginationBtn = paginationWrap.find('.mvp-pagination-currentpage')
@@ -629,7 +628,7 @@ jQuery(document).ready(function($) {
             url: mvp_data.ajax_url,
             type: 'post',
             data: postData,
-            dataType: 'json',
+            dataType: 'json', 
         }).done(function(response){
 
             sortIsBeingSet = false;
@@ -637,7 +636,7 @@ jQuery(document).ready(function($) {
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR, textStatus, errorThrown);
             sortIsBeingSet = false;
-        });
+        }); 
 
     }
 
@@ -678,7 +677,7 @@ jQuery(document).ready(function($) {
         })
 
     }
-
+    
 
 
     //user playlist
@@ -753,7 +752,7 @@ jQuery(document).ready(function($) {
             });
 
             deletePlaylist(arr)
-
+             
         }
     });
 
@@ -786,7 +785,7 @@ jQuery(document).ready(function($) {
             url: mvp_data.ajax_url,
             type: 'post',
             data: postData,
-            dataType: 'json',
+            dataType: 'json',   
         }).done(function(response){
 
             preloader.hide();
@@ -803,13 +802,12 @@ jQuery(document).ready(function($) {
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText, textStatus, errorThrown);
             preloader.hide();
-        });
+        }); 
 
     }
 
 
-
-
+    
 
 
 
@@ -823,8 +821,8 @@ jQuery(document).ready(function($) {
     playlist_options_tabs.find('.mvp-tab-header li').click(function(){
         var tab = $(this), id = tab.attr('id');
 
-        if(!tab.hasClass('mvp-tab-active')){
-            playlist_options_tabs.find('.mvp-tab-header li').removeClass('mvp-tab-active');
+        if(!tab.hasClass('mvp-tab-active')){ 
+            playlist_options_tabs.find('.mvp-tab-header li').removeClass('mvp-tab-active');  
             tab.addClass('mvp-tab-active');
             playlist_options_tabs.find('.mvp-tab-content').hide();
 
@@ -888,8 +886,8 @@ jQuery(document).ready(function($) {
     media_tabs.find('.mvp-tab-header li').click(function(){
         var tab = $(this), id = tab.attr('id');
 
-        if(!tab.hasClass('mvp-tab-active')){
-            media_tabs.find('.mvp-tab-header li').removeClass('mvp-tab-active');
+        if(!tab.hasClass('mvp-tab-active')){ 
+            media_tabs.find('.mvp-tab-header li').removeClass('mvp-tab-active');  
             tab.addClass('mvp-tab-active');
             media_tabs.find('.mvp-tab-content').hide();
 
@@ -906,7 +904,7 @@ jQuery(document).ready(function($) {
     media_tabs.find('.mvp-tab-header li').eq(0).addClass('mvp-tab-active');
     media_tabs.find('.mvp-tab-content').eq(0).show();
 
-
+  
 
 
 
@@ -917,8 +915,8 @@ jQuery(document).ready(function($) {
     quick_sh_tabs.find('.mvp-tab-header li').click(function(){
         var tab = $(this), id = tab.attr('id');
 
-        if(!tab.hasClass('mvp-tab-active')){
-            quick_sh_tabs.find('.mvp-tab-header li').removeClass('mvp-tab-active');
+        if(!tab.hasClass('mvp-tab-active')){ 
+            quick_sh_tabs.find('.mvp-tab-header li').removeClass('mvp-tab-active');  
             tab.addClass('mvp-tab-active');
             quick_sh_tabs.find('.mvp-tab-content').hide();
 
@@ -966,8 +964,8 @@ jQuery(document).ready(function($) {
     //sortable media order
 
     if(mediaItemList.length){
-
-        mediaItemList.sortable({
+       
+        mediaItemList.sortable({ 
             handle: ".media-id",
            // helper: fixWidthHelper,
             placeholder: "ui-placeholder",
@@ -982,7 +980,7 @@ jQuery(document).ready(function($) {
 
                 var key = 'mvp_last_media_sort_in_backend_pid' + curr_playlist_id
                 localStorage.removeItem(key);
-
+                
                 updateSortOrder()
             }
         });
@@ -1000,7 +998,7 @@ jQuery(document).ready(function($) {
     //favorite
 
     mediaTable.on('change', '.mvp-media-favorite', function(){
-
+      
         if($(this).is(':checked')){
             var action = 'mvp_add_to_favorites'
         }else{
@@ -1020,12 +1018,12 @@ jQuery(document).ready(function($) {
             url: mvp_data.ajax_url,
             type: 'post',
             data: postData,
-            dataType: 'json',
+            dataType: 'json',   
         }).done(function(response){
 
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText, textStatus, errorThrown);
-        });
+        });  
 
     });
 
@@ -1041,7 +1039,7 @@ jQuery(document).ready(function($) {
         url: mvp_data.ajax_url,
         type: 'post',
         data: postData,
-        dataType: 'json',
+        dataType: 'json',   
     }).done(function(response){
 
         var i, len = response.length
@@ -1051,11 +1049,13 @@ jQuery(document).ready(function($) {
 
     }).fail(function(jqXHR, textStatus, errorThrown) {
         console.log(jqXHR.responseText, textStatus, errorThrown);
-    });
+    });  
 
 
 
 
+
+  
 
 
 
@@ -1110,7 +1110,7 @@ jQuery(document).ready(function($) {
         }
 
     });
-
+    
     //select all
     mediaTable.on('click', '.mvp-media-all', function(){
         if($(this).is(':checked')){
@@ -1121,7 +1121,7 @@ jQuery(document).ready(function($) {
     });
 
     mediaTable.on('click', '.mvp-delete-media', function(){
-
+        
         var result = confirm(mvp_translate.attr('data-sure-to-delete'));
         if(result){
 
@@ -1150,7 +1150,7 @@ jQuery(document).ready(function($) {
             url: mvp_data.ajax_url,
             type: 'post',
             data: postData,
-            dataType: 'json',
+            dataType: 'json',   
         }).done(function(response){
 
             preloader.hide();
@@ -1170,7 +1170,7 @@ jQuery(document).ready(function($) {
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText, textStatus, errorThrown);
             preloader.hide();
-        });
+        });  
 
     }
 
@@ -1194,14 +1194,14 @@ jQuery(document).ready(function($) {
             url: mvp_data.ajax_url,
             type: 'post',
             data: postData,
-            dataType: 'json',
+            dataType: 'json',   
         }).done(function(response){
             console.log(response)
 
             editMediaData = response
 
             preloader.hide();
-
+           
             inputMediaFields('edit', response)
 
             mediaSaveType = 'edit_media'
@@ -1212,7 +1212,7 @@ jQuery(document).ready(function($) {
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText, textStatus, errorThrown);
             preloader.hide();
-        });
+        });  
 
         return false;
 
@@ -1231,14 +1231,14 @@ jQuery(document).ready(function($) {
          playlistSelectorWrap.css('display','none');
     })
 
-
+    
 
     //copy selected
     $('#mvp_playlist_action_do').on('click', function(){
         if(mediaItemList.find('.mvp-media-indiv').length == 0)return false;//no media
 
         var selected = mediaItemList.find('.mvp-media-indiv:checked');
-
+     
         var action = $("#mvp_playlist_action").val()
 
         if(action == "mvp-copy-media"){
@@ -1247,7 +1247,7 @@ jQuery(document).ready(function($) {
                 alert(mvp_translate.attr('data-media-selected'));
                 return false;
             }
-
+                
             action_do = 'copy';
 
             playlistSelectorWrap.find('option[value='+curr_playlist_id+']').show();
@@ -1269,8 +1269,8 @@ jQuery(document).ready(function($) {
             playlistSelectorWrap.css('display','block');
 
 
-        }
-        else if(action == "mvp-delete-media"){
+        }   
+        else if(action == "mvp-delete-media"){ 
 
             if(selected.length == 0) {
                 alert(mvp_translate.attr('data-media-selected'));
@@ -1290,12 +1290,12 @@ jQuery(document).ready(function($) {
                 });
 
                 deleteMedia(arr)
-
-
+                
+         
             }
 
-        }
-        else if(action == "mvp-deactivate-media" ||  action == "mvp-activate-media"){
+        }   
+        else if(action == "mvp-deactivate-media" ||  action == "mvp-activate-media"){ 
 
             if(selected.length == 0) {
                 alert(mvp_translate.attr('data-media-selected'));
@@ -1317,7 +1317,7 @@ jQuery(document).ready(function($) {
                 if(action == "mvp-deactivate-media"){
                     item.addClass('mvp-item-disabled')
                 }
-                else{
+                else{ 
                     item.removeClass('mvp-item-disabled')
                 }
 
@@ -1329,13 +1329,13 @@ jQuery(document).ready(function($) {
                 {name: 'media_id', value: arr},
                 {name: 'security', value: mvp_data.security}
             ];
-
+            
 
             $.ajax({
                 url: mvp_data.ajax_url,
                 type: 'post',
                 data: postData,
-                dataType: 'json',
+                dataType: 'json',   
             }).done(function(response){
                 console.log(response)
 
@@ -1344,10 +1344,10 @@ jQuery(document).ready(function($) {
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText, textStatus, errorThrown);
                 preloader.hide();
-            });
-
-        }
-        else if(action == "mvp-show-favorite"){
+            });  
+          
+        } 
+        else if(action == "mvp-show-favorite"){ 
 
             mediaItemList.find('.media-item:not(.mvp-pagination-hidden)').hide()
 
@@ -1359,16 +1359,16 @@ jQuery(document).ready(function($) {
             })
 
         }
-        else if(action == "mvp-show-all"){
+        else if(action == "mvp-show-all"){ 
 
             mediaItemList.find('.media-item:not(.mvp-pagination-hidden)').show()
 
         }
-
+           
     });
 
 
-
+   
     $('#selected-ok').on('click', function(){
 
         var result = confirm("Are you sure to "+action_do+" selected media?");
@@ -1382,7 +1382,7 @@ jQuery(document).ready(function($) {
             selected.each(function(){
                 arr.push(parseInt($(this).closest('.media-item').attr('data-media-id'),10));
             });
-
+            
             var action = action_do == 'copy' ? 'mvp_copy_media' : 'mvp_move_media';
             var postData = [
                 {name: 'action', value: action},
@@ -1395,7 +1395,7 @@ jQuery(document).ready(function($) {
                 url: mvp_data.ajax_url,
                 type: 'post',
                 data: postData,
-                dataType: 'json',
+                dataType: 'json',   
             }).done(function(response){
 
                 preloader.hide();
@@ -1412,7 +1412,7 @@ jQuery(document).ready(function($) {
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText, textStatus, errorThrown);
                 preloader.hide();
-            });
+            });  
         }
 
     });
@@ -1424,9 +1424,9 @@ jQuery(document).ready(function($) {
 
 
 
+   
 
-
-
+ 
 
     //add/edit media form submit
     var editMediaForm = $('#mvp-edit-media-form');
@@ -1524,7 +1524,7 @@ jQuery(document).ready(function($) {
             var parent, first_input;
 
             //check video tab
-
+         
             get_video_shortcode_submit.find('input:visible[ap-required=true], textarea:visible[ap-required=true]').each(function(){
                 var input = $(this);
                 if(input.val() == ""){
@@ -1621,7 +1621,7 @@ jQuery(document).ready(function($) {
 
                 var quality_title = item.find('.quality_title').val().replace(/"/g, "'")
                 obj.quality_title = quality_title
-
+                
                 if(item.find('.quality_default').is(':checked')){
                     obj.def = quality_title
                     s_quality = quality_title
@@ -1653,19 +1653,19 @@ jQuery(document).ready(function($) {
 
             var idata = [], obj = {}
 
-            obj.path = path.val().replace(/"/g, "'");
+            obj.path = path.val().replace(/"/g, "'"); 
             s += ' path="'+obj.path+'"'
 
             to_update_data.path = obj.path
 
-            if(!isEmpty(mp4.val()))obj.mp4 = mp4.val().replace(/"/g, "'");
+            if(!isEmpty(mp4.val()))obj.mp4 = mp4.val().replace(/"/g, "'");  
 
             idata.push(obj)
 
             var media_path = idata;
 
         }
-
+            
         if(media_type == 'folder_video' || media_type == 'folder_audio' || media_type == 'folder_image' || media_type == 'folder_hls' || media_type == 'folder_dash'){
             options.folder_sort = folder_sort.val()
             options.id3 = id3.val()
@@ -1673,19 +1673,19 @@ jQuery(document).ready(function($) {
             s += ' folder_sort="'+options.folder_sort+'"'
             if(options.id3 && options.id3 == '1')s += ' id3="'+options.id3+'"'
 
-            options.folder_custom_url = folder_custom_url.is(":checked") ? '1' : '0'; // Ensure it's '1' or '0'
+            options.folder_custom_url = folder_custom_url.is(":checked")
             if(options.folder_custom_url == '1')s += ' folder_custom_url="'+options.folder_custom_url+'"'
 
         }
         if(!isEmpty(user_id.val())){
-            options.user_id = user_id.val().replace(/"/g, "'");
+            options.user_id = user_id.val().replace(/"/g, "'");   
             if(options.user_id)s += ' user_id="'+options.user_id+'"'
         }
 
         if(media_type == 'youtube_video_query' || media_type == 'youtube_channel') options.sort_type = yt_sort.val()
         else if(media_type == 'vimeo_channel')options.sort_type = vimeo_channel_sort.val();
         else if(media_type == 'vimeo_user_album' || media_type == 'vimeo_album') options.sort_type = vimeo_album_sort.val();
-        else if(media_type == 'vimeo_group') options.sort_type = vimeo_group_sort.val();
+        else if(media_type == 'vimeo_group') options.sort_type = vimeo_group_sort.val(); 
         else if(media_type == 'vimeo_ondemand') options.sort_type = vimeo_ondemand_sort.val();
         else if(media_type == 'vimeo_folder') options.sort_type = vimeo_folder_sort.val();
 
@@ -1700,14 +1700,14 @@ jQuery(document).ready(function($) {
 
         if(gdrive_sort_field.css('display') != 'none'){
             if(!isEmpty(gdrive_sort.val())){
-                options.gdrive_sort = gdrive_sort.val()
+                options.gdrive_sort = gdrive_sort.val()    
                 if(options.gdrive_sort)s += ' gdrive_sort="'+options.gdrive_sort+'"'
             }
         }
 
         if(onedrive_sort_field.css('display') != 'none'){
             if(!isEmpty(onedrive_sort.val())){
-                options.onedrive_sort = onedrive_sort.val()
+                options.onedrive_sort = onedrive_sort.val()    
                 if(options.onedrive_sort)s += ' onedrive_sort="'+options.onedrive_sort+'"'
             }
         }
@@ -1778,8 +1778,7 @@ jQuery(document).ready(function($) {
 
         if(!isEmpty(poster_frame_time.val())){
             options.poster_frame_time = poster_frame_time.val();
-            // Corrected shortcode attribute name below
-            if(options.poster_frame_time)s += ' poster_frame_time="'+options.poster_frame_time+'"'
+            if(options.video_frame_time)s += ' video_frame_time="'+options.video_frame_time+'"'
         }
         if(!isEmpty(thumb.val())){
             options.thumb = thumb.val().replace(/"/g, "'");
@@ -1795,7 +1794,7 @@ jQuery(document).ready(function($) {
             options.hover_preview = hover_preview.val().replace(/"/g, "'");
             if(options.hover_preview)s += ' hover_preview="'+options.hover_preview+'"'
         }
-
+        
         if(!isEmpty(description.val())){
             options.description = description.val().replace(/"/g, "'");
             if(options.description)s += ' description="'+options.description.replace(/(\r\n|\n|\r)/gm, "")+'"'
@@ -1851,27 +1850,27 @@ jQuery(document).ready(function($) {
 
         if(!isEmpty(preview_seek.val())){
             options.preview_seek = preview_seek.val().replace(/"/g, "'");
-            if(options.preview_seek)s += ' preview_seek="'+options.preview_seek +'"'
+            if(options.preview_seek)s += ' preview_seek="'+options.preview_seek +'"' 
         }
 
         if(!isEmpty(chapters.val())){
             options.chapters = chapters.val().replace(/"/g, "'");
-            if(options.chapters)s += ' chapters="'+options.chapters +'"'
+            if(options.chapters)s += ' chapters="'+options.chapters +'"'    
 
             if(chapters_cors.is(':checked')){
                 options.chapters_cors = '1';
-                if(options.chapters_cors)s += ' chapters_cors="1"'
+                if(options.chapters_cors)s += ' chapters_cors="1"'     
             }
         }
 
         if(!isEmpty(vast.val())){
             options.vast = vast.val().replace(/"/g, "'");
             if(options.vast){
-                s += ' vast="'+options.vast +'"'
-
+                s += ' vast="'+options.vast +'"'     
+                
                 if(vast_loop.val() == '1'){
                     options.vast_loop = vast_loop.val();
-                    s += ' vast_loop="1"'
+                    s += ' vast_loop="1"'     
                 }
             }
         }
@@ -1886,7 +1885,7 @@ jQuery(document).ready(function($) {
             options.target = target.val();
 
             if(options.link){
-                s += ' link="'+options.link +'"'
+                s += ' link="'+options.link +'"' 
                 if(options.target)s += ' target="'+options.target+'"'
             }
         }
@@ -1896,28 +1895,28 @@ jQuery(document).ready(function($) {
             options.end_target = end_target.val();
 
             if(options.end_link){
-                s += ' end_link="'+options.end_link +'"'
+                s += ' end_link="'+options.end_link +'"' 
                 if(options.end_target)s += ' end_target="'+options.end_target+'"'
             }
         }
 
         if(!isEmpty(pwd.val())){
             options.pwd = pwd.val().replace(/"/g, "'");
-            //if(options.pwd)s += ' pwd="'+options.pwd +'"'
+            //if(options.pwd)s += ' pwd="'+options.pwd +'"' 
         }
 
         if(!isEmpty(vpwd.val())){
             options.vpwd = vpwd.val().replace(/"/g, "'");
-            if(options.vpwd)s += ' vpwd="'+options.vpwd +'"'
+            if(options.vpwd)s += ' vpwd="'+options.vpwd +'"' 
         }
 
         if(age_verify.val() && !isEmpty(age_verify.val())){
             options.age_verify = age_verify.val().replace(/"/g, "'");
-            if(options.age_verify)s += ' age_verify="'+options.age_verify +'"'
+            if(options.age_verify)s += ' age_verify="'+options.age_verify +'"' 
         }
 
         if(media_type == 'video' || media_type == 'audio' || media_type == 'youtube_single' || media_type == 'vimeo_single'){
-
+         
           var cue_point_arr = [], s_cue_start_time = '', s_cue_code_type = '', s_cue_code = ''
 
           mediaModal.find('.cue_point_section').each(function(){
@@ -1935,7 +1934,7 @@ jQuery(document).ready(function($) {
 
                 s_cue_start_time += obj.cue_start_time + ','
                 s_cue_code_type += obj.cue_code_type + ','
-                s_cue_code += obj.cue_code + ','
+                s_cue_code += obj.cue_code + ',' 
 
                 cue_point_arr.push(obj)
 
@@ -1964,7 +1963,7 @@ jQuery(document).ready(function($) {
 
 
         //subtitles
-
+ 
         var idata = [], s_subtitle_src = '', s_subtitle_label = '', s_subtitle_cors = '', s_subtitle_active
 
         mediaModal.find('.subtitle_section').each(function(){
@@ -2062,7 +2061,7 @@ jQuery(document).ready(function($) {
                 dataType: 'json',
             }).done(function(response){
 
-                //create track
+                //create track 
 
                 if(mediaSaveType == 'add_media'){
 
@@ -2089,7 +2088,7 @@ jQuery(document).ready(function($) {
                 console.log(jqXHR.responseText, textStatus, errorThrown);
                 preloader.hide();
                 editMediaSubmit = false;
-            });
+            }); 
 
         }
         else if($(this).hasClass('mvp-get-video-shortcode-mode')){
@@ -2124,16 +2123,16 @@ jQuery(document).ready(function($) {
 
                 var curr_sh = $('#mvp-quick-video-shortcode-ta').val()
                 if(curr_sh.length == 0){
-
+                    
                     //if user first clicks on add video and shortcode field is empty, redirect to get shortcode button
 
                     editMediaSubmit = false;
                     $('#mvp-edit-media-form-submit').click()
-
+                    
                     return false;
                 }
 
-                var s1 = curr_sh.substr(0,curr_sh.indexOf('[/apmvp]'))
+                var s1 = curr_sh.substr(0,curr_sh.indexOf('[/apmvp]')) 
 
                 s += ']'
 
@@ -2165,7 +2164,7 @@ jQuery(document).ready(function($) {
 
                 var player_options = {};
 
-               /*
+               /* 
                $.each(quickPlayerShortcodeForm.serializeArray(), function(i, field) {
 
                     if(field.name == 'playlistPosition')_playlistPosition = field.value
@@ -2179,10 +2178,10 @@ jQuery(document).ready(function($) {
 
                 $.each(f_data.split('&'), function (index, elem) {
 
-                    var vals = elem.split('='), name = vals[0], value = vals[1];
+                    var vals = elem.split('='), name = vals[0], value = vals[1];    
 
                     if(name == 'playlistPosition')_playlistPosition = value
-
+    
                     if(value.indexOf('%2F'))value = decodeURIComponent(value)//url
 
                     player_options[name] = value;
@@ -2191,9 +2190,9 @@ jQuery(document).ready(function($) {
 
 
                 var player_options_s = ''
-                for (var [key, value] of Object.entries(player_options)) {
+                for (var [key, value] of Object.entries(player_options)) { 
                     //console.log(key, value)
-
+                    
                     o = key.split(/(?=[A-Z])/).join('_').toLowerCase();//camelcase to underscore
 
                     if(_playlistPosition == 'wall' || _playlistPosition == 'outer'){
@@ -2206,14 +2205,14 @@ jQuery(document).ready(function($) {
                     player_options_s += ' '+o+'="'+value+'"';
                 }
                 if(_playlistPosition == 'wall' || _playlistPosition == 'outer')player_options_s += ' active_item="-1"'
-
+              
 
                 var s1 = '[apmvp' + player_options_s + ']',
                 s3 = '[/apmvp]'
                 var final_s = s1 + s + s3
 
 
-
+                
                 if(localStorage){
 
                     var mvp_quick_shortcode_state = {
@@ -2264,7 +2263,7 @@ jQuery(document).ready(function($) {
     if(localStorage && localStorage.getItem(quickShortcodeKey) && shortcodeManagerSection.length){
 
         setTimeout(function(){
-
+        
 
         var qss = JSON.parse(localStorage.getItem(quickShortcodeKey))
 
@@ -2301,7 +2300,7 @@ jQuery(document).ready(function($) {
 
             for(i = 0; i < len; i++){
                 data = qss.media_path[i]
-
+               
                 obj = quick_sh_video_tab.find('.multi_path_section').eq(i)
 
                 obj.find('.multi_path').val(data.path)
@@ -2312,7 +2311,7 @@ jQuery(document).ready(function($) {
                 if(data.defMobile){
                     obj.find('.quality_mobile_default').prop('checked', 'checked')
                 }
-
+               
             }
         }
 
@@ -2326,7 +2325,7 @@ jQuery(document).ready(function($) {
 
             for(i = 0; i < len; i++){
                 data = qss.subtitle_src[i]
-
+               
                 obj = quick_sh_video_tab.find('.subtitle_section').eq(i)
                 obj.find('.subtitle_src').val(data.src)
                 obj.find('.subtitle_label').val(data.label)
@@ -2336,7 +2335,7 @@ jQuery(document).ready(function($) {
                 if(data.cors){
                     obj.find('.subtitle_cors').prop('checked', 'checked')
                 }
-
+               
             }
         }
 
@@ -2350,7 +2349,7 @@ jQuery(document).ready(function($) {
 
             for(i = 0; i < len; i++){
                 data = qss.options.pi_icons[i]
-
+               
                 obj = quick_sh_video_tab.find('.mvp-pi-table').eq(i)
 
                 if(data.title)obj.find('.mvp-pi-title').val(data.title)
@@ -2361,7 +2360,7 @@ jQuery(document).ready(function($) {
                 if(data.rel)obj.find('.mvp-pi-rel').val(data.rel)
                 if(data.icon)obj.find('.mvp-pi-icon').val(data.icon)
                 if(data.class)obj.find('.mvp-pi-class').val(data.class)
-
+               
             }
         }
 
@@ -2380,7 +2379,7 @@ jQuery(document).ready(function($) {
                     _MVPAdContent.addAdSource(obj.ad_type, obj, true);
                 }
             }
-
+            
         }
 
         if(qss.ad_mid){
@@ -2393,7 +2392,7 @@ jQuery(document).ready(function($) {
                     _MVPAdContent.addAdSource(obj.ad_type, obj, true);
                 }
             }
-
+            
         }
 
         if(qss.ad_end){
@@ -2406,7 +2405,7 @@ jQuery(document).ready(function($) {
                     _MVPAdContent.addAdSource(obj.ad_type, obj, true);
                 }
             }
-
+            
         }
 
         _MVPAdContent.setRandomize(qss.options)
@@ -2448,7 +2447,7 @@ jQuery(document).ready(function($) {
         },100)
 
 
-    }
+    }    
 
 
 
@@ -2469,23 +2468,23 @@ jQuery(document).ready(function($) {
         }
     }
 
-
+ 
 
     function getAddData(){
 
-        var ad_pre_data = []
+        var ad_pre_data = [] 
         $('.mvp-reel-ad-source.ad-pre').each(function(){
             var item = $(this)
             ad_pre_data.push(getAdOptions(item, 'ad-pre'))
         })
 
-        var ad_mid_data = []
+        var ad_mid_data = [] 
         $('.mvp-reel-ad-source.ad-mid').each(function(){
             var item = $(this)
             ad_mid_data.push(getAdOptions(item, 'ad-mid'))
         })
 
-        var ad_end_data = []
+        var ad_end_data = [] 
         $('.mvp-reel-ad-source.ad-end').each(function(){
             var item = $(this)
             ad_end_data.push(getAdOptions(item, 'ad-end'))
@@ -2497,7 +2496,7 @@ jQuery(document).ready(function($) {
 
     function getAnnotationData(){
 
-        var idata = []
+        var idata = [] 
         mediaModal.find('.mvp-annotation-source').each(function(){
             var item = $(this), obj = {}
 
@@ -2539,7 +2538,7 @@ jQuery(document).ready(function($) {
 
             }
             else{
-
+                
                 obj.path = item.find('.annotation_path').val().replace(/"/g, "'")
             }
 
@@ -2612,7 +2611,7 @@ jQuery(document).ready(function($) {
 
             }
             else{
-
+                
                 obj.path = item.find('.popup_path').val().replace(/"/g, "'")
             }
 
@@ -2638,7 +2637,7 @@ jQuery(document).ready(function($) {
 
             idata.push(obj)
         })
-
+        
         return idata;
 
     }
@@ -2726,12 +2725,12 @@ jQuery(document).ready(function($) {
         var mvp_ad_link = item.find('.mvp_ad_link').val()
         if(!isEmpty(mvp_ad_link)){
             s += ' link="'+mvp_ad_link+'"'
-
+           
             var target = item.find('.ad_target').val()
-            s += ' target="'+target+'"' // Corrected: Was using mvp_ad_link again
+            s += ' target="'+mvp_ad_link+'"' 
 
             var rel = item.find('.ad_rel').val()
-            if(rel)s += ' rel="'+rel+'"'
+            if(rel)s += ' rel="'+rel+'"' 
         }
 
         s += '][/apmvp_ad]'
@@ -2742,7 +2741,7 @@ jQuery(document).ready(function($) {
 
 
     function removeMediaModal(){
-        mediaModal.hide();
+        mediaModal.hide();  
         _body.removeClass('mvp-modal-open');
 
         $('#ad-section-live').html('')
@@ -2783,7 +2782,7 @@ jQuery(document).ready(function($) {
 
         //live
 
-        $('#ad-section-timeline-holder').find('.ad-section-timeline-point').remove()
+        $('#ad-section-timeline-holder').find('.ad-section-timeline-point').remove() 
 
     }
 
@@ -2826,12 +2825,12 @@ jQuery(document).ready(function($) {
         _body.addClass('mvp-modal-open');
     }
 
+    
 
 
 
 
-
-
+   
     //upload multiple
 
     //modal select type
@@ -2925,7 +2924,7 @@ jQuery(document).ready(function($) {
             multiple:true
         })
         .on("select", function(){
-            var attachment_data = multi_uploader.state().get('selection').map(
+            var attachment_data = multi_uploader.state().get('selection').map( 
                 function( attachment ) {
                     attachment.toJSON();
                     return attachment;
@@ -2951,13 +2950,13 @@ jQuery(document).ready(function($) {
                     var dt = setInputDate(attachment.date)
                     obj.date = dt
                 }
-
+         
                 if(attachment.title)obj.title = attachment.title.replace(/"/g, "'")
 
                 if(attachment.description)obj.description = attachment.description.replace(/"/g, "'")
 
                 if(attachment.image && attachment.image.src){
-                    if(attachment.image.src.indexOf("wp-includes/images/media/video.png") == -1){
+                    if(attachment.image.src.indexOf("wp-includes/images/media/video.png") == -1){ 
                         obj.thumb = attachment.image.src;
                     }
                 }
@@ -3003,7 +3002,7 @@ jQuery(document).ready(function($) {
             for(i = 0; i < len; i++){
                 createTracksFromResponse(response[i])
             }
-
+            
             preloader.hide();
             editMediaSubmit = false;
 
@@ -3013,7 +3012,7 @@ jQuery(document).ready(function($) {
             console.log(jqXHR.responseText, textStatus, errorThrown);
             preloader.hide();
             editMediaSubmit = false;
-        });
+        }); 
 
     }
 
@@ -3029,7 +3028,7 @@ jQuery(document).ready(function($) {
         .attr('data-media-id', media_id).attr('data-order-id', order_id)
 
         container.find('.media-id').html(media_id)
-
+        
         if(response.options){
             if(response.options.type)container.find('.media-type').html(response.options.type)
             if(response.options.title)container.find('.media-title').html(response.options.title)
@@ -3069,7 +3068,7 @@ jQuery(document).ready(function($) {
                     }
                 }
             });
-
+            
             if(toinsert){
                 mediaItemList.append(container);
             }
@@ -3089,7 +3088,7 @@ jQuery(document).ready(function($) {
 
     //save playlist options submit
 
-
+    
 
     //prevent enter sumbit form
     editPlaylistForm.keydown(function(event){
@@ -3112,14 +3111,14 @@ jQuery(document).ready(function($) {
 
             if(field.name != 'lockVideoUserRoles[]'){
                 options[field.name] = field.value;
-            }
-
+            } 
+            
         });
 
         //category
         var lockVideoUserRoles = []
         $('#lockVideoUserRoles_field').find("input:checkbox:checked").each(function() {
-            lockVideoUserRoles.push($(this).val());
+            lockVideoUserRoles.push($(this).val()); 
         });
 
         options['lockVideoUserRoles'] = lockVideoUserRoles;
@@ -3145,14 +3144,14 @@ jQuery(document).ready(function($) {
             console.log(jqXHR.responseText, textStatus, errorThrown);
             preloader.hide();
             editPlaylistSubmit = false;
-        });
+        }); 
 
         return false;
-
+      
     });
 
-
-
+    
+    
 
     //multi quality
 
@@ -3169,7 +3168,7 @@ jQuery(document).ready(function($) {
 
     });
 
-
+    
     multi_path_content.on('blur', '.multi_path', function(){
 
         var v = $(this).val()
@@ -3180,17 +3179,18 @@ jQuery(document).ready(function($) {
                 return;
             }/*
             else if(v.indexOf('vimeo') > -1){//we cant use this because they might host video on vimeo directly
-                alert("It looks like you are trying to enter Vimeo video as mp4, choose correct media type for your video!")
+                alert("It looks like you are trying to enter Vimeo video as mp4, choose correct media type for your video!")    
                 return;
             }*/
         }
     })
 
+        
 
+    
+    
 
-
-
-
+  
 
     var multi_path_field = $('#multi_path_field').on('click', '.multi_path_upload', function(e){
         e.preventDefault();
@@ -3229,7 +3229,7 @@ jQuery(document).ready(function($) {
             if(attachment.description)$('#description').val(attachment.description)
             if(attachment.fileLength){
                 $('#duration').val(hmsToSecondsOnly(attachment.fileLength))
-            }
+            }      
 
         })
         .open();
@@ -3259,7 +3259,7 @@ jQuery(document).ready(function($) {
 
     checkMultiPathRemoveBtn();
 
-
+    
 
 
 
@@ -3378,7 +3378,7 @@ jQuery(document).ready(function($) {
             setVideoPreview(media_type, activeMediaUrl)
 
         }
-
+        
 
     }
 
@@ -3397,22 +3397,22 @@ jQuery(document).ready(function($) {
             var str = '<iframe id="mvp-ad-iframe" class="ad-section-preview" width="100%" height="100%" src="'+p+'" frameborder="0" allowfullscreen></iframe>';
 
         }
-        else if(type == 'vimeo_single'){
+        else if(type == 'vimeo_single'){    
 
             var p = '//player.vimeo.com/video/'+url
 
             var str = '<iframe id="mvp-ad-iframe" class="ad-section-preview" width="100%" height="100%" src="'+p+'" frameborder="0" allowfullscreen></iframe>';
 
         }
-
-
+        
+        
         $('#ad-section-live').html(str)
 
 
         if(editMediaData.data.duration){
             $('#ad-section-timeline').attr('data-duration', editMediaData.data.duration)
         }
-
+        
 
         if(type == 'video' || type == 'audio'){
 
@@ -3432,7 +3432,7 @@ jQuery(document).ready(function($) {
                     $('#ad-section-timeline').attr('data-duration', editMediaData.data.duration)
                 }
             }, 200);
-
+                        
         }
         else if(type == 'youtube_single'){
 
@@ -3453,7 +3453,7 @@ jQuery(document).ready(function($) {
                             'onReady': onPlayerReady
                         }
                     });
-
+                  
                 }
             }, 100);
 
@@ -3501,7 +3501,7 @@ jQuery(document).ready(function($) {
 
         })
 
-    }
+    }   
 
 
 
@@ -3576,8 +3576,8 @@ jQuery(document).ready(function($) {
         }else{
             slideshow_images_field.removeClass('slideshow_images_field_hidden')
             slideshow_remove_all.show()
-        }
-
+        } 
+        
     }
 
     function createslideShowImage(url){
@@ -3604,7 +3604,7 @@ jQuery(document).ready(function($) {
     })
 
     if(slideshow_images_field.length){
-        slideshow_images_field.sortable({
+        slideshow_images_field.sortable({ 
             items: ".slideshow-img-wrap",
             tolerance: 'pointer',
             helper: 'clone',
@@ -3615,6 +3615,7 @@ jQuery(document).ready(function($) {
         });
     }
 
+    
 
 
 
@@ -3689,10 +3690,10 @@ jQuery(document).ready(function($) {
             s += ' player_id="'+player_id+'"'
         }
 
-        s += ' playlist_id="'+curr_playlist_id+'"'
+        s += ' playlist_id="'+curr_playlist_id+'"' 
 
         if(includeWholePlaylist == '0'){
-            s += ' single_video="1"'
+            s += ' single_video="1"' 
         }
 
         if(singleMediaSourcesArr.indexOf(sv_type) > -1){
@@ -3701,7 +3702,7 @@ jQuery(document).ready(function($) {
 
         s += ' auto_play="'+auto_play+'"'
 
-        s += ']'
+        s += ']' 
 
         videoLinkTa.val(s)
 
@@ -3742,6 +3743,13 @@ jQuery(document).ready(function($) {
 
     })
 
+    
+    
+
+
+
+
+
 
 
 
@@ -3774,12 +3782,12 @@ jQuery(document).ready(function($) {
     function createIconModal(){
 
         //load css
-        var head = document.getElementsByTagName('head')[0];
+        var head = document.getElementsByTagName('head')[0]; 
         var link = document.createElement('link');
-        link.rel = 'stylesheet';
+        link.rel = 'stylesheet'; 
         link.type = 'text/css';
-        link.href = mvp_data.fontAwesomeUrl
-        head.appendChild(link);
+        link.href = mvp_data.fontAwesomeUrl 
+        head.appendChild(link); 
 
         $.ajax({
             type: 'GET',
@@ -3798,11 +3806,11 @@ jQuery(document).ready(function($) {
             });
 
             iconModalReady = true;
-
+      
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR, textStatus, errorThrown);
             iconModalReady = true;
-        });
+        }); 
 
     }
 
@@ -3882,7 +3890,7 @@ jQuery(document).ready(function($) {
             }, 100);
 
         }else{
-            showIconModal()
+            showIconModal() 
         }
 
     })
@@ -3903,14 +3911,14 @@ jQuery(document).ready(function($) {
         })
     }
 
-
+    
 
     //add new pi
 
     $('#pi_add').on('click', function(e){
         addPi();
         mvp_pi_table_wrap.show()
-    });
+    });   
 
     function addPi(item){
 
@@ -3941,14 +3949,9 @@ jQuery(document).ready(function($) {
 
 
 
+                                
 
-
-
-
-
-
-
-
+                           
 
 
     var select_media_type_field = mediaModal.find('#select_media_type_field'),
@@ -3965,8 +3968,8 @@ jQuery(document).ready(function($) {
     title_field = mediaModal.find('#title_field'),
     title = mediaModal.find('#title'),
     description_field = mediaModal.find('#description_field'),
-    description = mediaModal.find('#description'),
-    description_custom = mediaModal.find('#description_custom'),
+    description = mediaModal.find('#description'), 
+    description_custom = mediaModal.find('#description_custom'), 
     thumb_field = mediaModal.find('#thumb_field'),
     thumb_alt_field = mediaModal.find('#thumb_alt_field'),
     thumb = mediaModal.find('#thumb').on('keyup',function(){
@@ -3990,34 +3993,34 @@ jQuery(document).ready(function($) {
     poster_audio_info = mediaModal.find('#poster_audio_info'),
 
     exclude_field = mediaModal.find('#exclude_field'),
-    exclude = mediaModal.find('#exclude'),
+    exclude = mediaModal.find('#exclude'), 
 
     hl_field = mediaModal.find('#hl_field'),
-    hl = mediaModal.find('#hl'),
+    hl = mediaModal.find('#hl'), 
 
     cc_lang_pref_field = mediaModal.find('#cc_lang_pref_field'),
-    cc_lang_pref = mediaModal.find('#cc_lang_pref'),
+    cc_lang_pref = mediaModal.find('#cc_lang_pref'), 
 
     bkey_field = mediaModal.find('#bkey_field'),
     bkey = mediaModal.find('#bkey'),
 
     download_field = mediaModal.find('#download_field'),
-    download = mediaModal.find('#download'),
+    download = mediaModal.find('#download'),   
     download_upload = mediaModal.find('#download_upload'),
 
     preview_seek_upload = mediaModal.find('#preview_seek_upload'),
     preview_seek_field = mediaModal.find('#preview_seek_field'),
-    preview_seek = mediaModal.find('#preview_seek'),
+    preview_seek = mediaModal.find('#preview_seek'),  
     hover_preview_upload = mediaModal.find('#hover_preview_upload'),
     hover_preview_field = mediaModal.find('#hover_preview_field'),
     hover_preview = mediaModal.find('#hover_preview'),
     folder_sort = mediaModal.find('#folder_sort'),
     limit = mediaModal.find('#limit'),
 
-    chapters_upload = mediaModal.find('#chapters_upload'),
+    chapters_upload = mediaModal.find('#chapters_upload'), 
     chapters_field = mediaModal.find('#chapters_field'),
-    chapters = mediaModal.find('#chapters'),
-    chapters_cors = mediaModal.find('#chapters_cors'),
+    chapters = mediaModal.find('#chapters'), 
+    chapters_cors = mediaModal.find('#chapters_cors'),     
     share_field = mediaModal.find('#share_field'),
     limit_field = mediaModal.find('#limit_field'),
     id3_field = mediaModal.find('#id3_field'),
@@ -4025,39 +4028,39 @@ jQuery(document).ready(function($) {
     folder_custom_url_field = mediaModal.find('#folder_custom_url_field'),
     folder_custom_url = mediaModal.find('#folder_custom_url'),
 
-    vast_upload = mediaModal.find('#vast_upload'),
-    vast = mediaModal.find('#vast'),
-    vast_loop = mediaModal.find('#vast_loop'),
+    vast_upload = mediaModal.find('#vast_upload'), 
+    vast = mediaModal.find('#vast'),   
+    vast_loop = mediaModal.find('#vast_loop'),   
 
     folder_sort_field = mediaModal.find('#folder_sort_field'),//folder sort
     start_field = mediaModal.find('#start_field'),
-    start = mediaModal.find('#start'),
+    start = mediaModal.find('#start'),   
     end_field = mediaModal.find('#end_field'),
-    end = mediaModal.find('#end'),
+    end = mediaModal.find('#end'),    
     playback_rate_field = mediaModal.find('#playback_rate_field'),
-    playback_rate = mediaModal.find('#playback_rate'),
-    yt_quality_field = mediaModal.find('#yt_quality_field'),
+    playback_rate = mediaModal.find('#playback_rate'),   
+    yt_quality_field = mediaModal.find('#yt_quality_field'), 
 
     yt_sort_field = mediaModal.find('#yt_sort_field'),
-    yt_sort = mediaModal.find('#yt_sort'),
+    yt_sort = mediaModal.find('#yt_sort'), 
 
     vimeo_channel_sort_field = mediaModal.find('#vimeo_channel_sort_field'),
-    vimeo_channel_sort = mediaModal.find('#vimeo_channel_sort'),
+    vimeo_channel_sort = mediaModal.find('#vimeo_channel_sort'), 
     vimeo_album_sort_field = mediaModal.find('#vimeo_album_sort_field'),
-    vimeo_album_sort = mediaModal.find('#vimeo_album_sort'),
+    vimeo_album_sort = mediaModal.find('#vimeo_album_sort'), 
     vimeo_group_sort_field = mediaModal.find('#vimeo_group_sort_field'),
-    vimeo_group_sort = mediaModal.find('#vimeo_group_sort'),
+    vimeo_group_sort = mediaModal.find('#vimeo_group_sort'), 
     vimeo_video_query_sort_field = mediaModal.find('#vimeo_video_query_sort_field'),
     vimeo_folder_sort_field = mediaModal.find('#vimeo_folder_sort_field'),
-    vimeo_folder_sort = mediaModal.find('#vimeo_folder_sort'),
+    vimeo_folder_sort = mediaModal.find('#vimeo_folder_sort'),  
     vimeo_ondemand_sort_field = mediaModal.find('#vimeo_ondemand_sort_field'),
-    vimeo_ondemand_sort = mediaModal.find('#vimeo_ondemand_sort'),
+    vimeo_ondemand_sort = mediaModal.find('#vimeo_ondemand_sort'), 
 
     vimeo_sort_dir_field = mediaModal.find('#vimeo_sort_dir_field'),
-    vimeo_sort_dir = mediaModal.find('#vimeo_sort_dir'),
-
-    lock_time_field = mediaModal.find('#lock_time_field'),
-    lock_time = mediaModal.find('#lock_time'),
+    vimeo_sort_dir = mediaModal.find('#vimeo_sort_dir'), 
+       
+    lock_time_field = mediaModal.find('#lock_time_field'), 
+    lock_time = mediaModal.find('#lock_time'), 
     noapi_field = mediaModal.find('#noapi_field'),
     noapi = mediaModal.find('#noapi'),
     is360_field = mediaModal.find('#is360_field'),
@@ -4082,13 +4085,13 @@ jQuery(document).ready(function($) {
 
     age_verify = mediaModal.find('#age_verify'),
 
-    link = mediaModal.find('#link'),
-    target = mediaModal.find('#target'),
+    link = mediaModal.find('#link'), 
+    target = mediaModal.find('#target'),   
 
     end_link_field = mediaModal.find('#end_link_field'),
-    end_link = mediaModal.find('#end_link'),
+    end_link = mediaModal.find('#end_link'), 
     end_target_field = mediaModal.find('#end_target_field'),
-    end_target = mediaModal.find('#end_target'),
+    end_target = mediaModal.find('#end_target'),   
     islive_field = mediaModal.find('#islive_field'),
     islive = mediaModal.find('#islive'),
 
@@ -4129,7 +4132,7 @@ jQuery(document).ready(function($) {
     var randomizeAdPre = mediaModal.find('#randomizeAdPre'),
     randomizeAdEnd = mediaModal.find('#randomizeAdEnd')
 
-
+    
 
     var path_remove = editMediaForm.find("#path_remove").on('click', function(e){
         e.preventDefault();
@@ -4158,7 +4161,7 @@ jQuery(document).ready(function($) {
 
 
 
-    var inited,
+    var inited, 
     last_media_type,//save
     type_selector = mediaModal.find('#type').on('change',function(){
 
@@ -4221,7 +4224,7 @@ jQuery(document).ready(function($) {
         end_field.hide();
         duration_field.hide();
         pwd_field.hide();
-        vpwd_field.hide();
+        vpwd_field.hide(); 
         end_link_field.hide();
         end_target_field.hide();
         cue_point_field.hide();
@@ -4229,7 +4232,7 @@ jQuery(document).ready(function($) {
         user_id_field.hide();
         user_id.attr('ap-required', false).val('');
 
-
+  
 
         //info
         video_info.hide();
@@ -4294,7 +4297,7 @@ jQuery(document).ready(function($) {
         if(mediaSaveType == 'add_media'){
             date.val(getDate())
         }
-
+        
 
 
 
@@ -4313,7 +4316,7 @@ jQuery(document).ready(function($) {
             share_field.show();
             download_field.show();
             duration_field.show();
-            $('.duration-media-info').show();
+            $('.duration-media-info').show(); 
             $('.duration-image-info').hide();
             playback_rate_field.show();
             start_field.show();
@@ -4348,7 +4351,7 @@ jQuery(document).ready(function($) {
             path.attr('ap-required', true);
 
             s3_bucket_video_info.show();
-
+            
             bkey_field.show();
             bkey.attr('ap-required', true);
 
@@ -4361,7 +4364,7 @@ jQuery(document).ready(function($) {
             share_field.show();
             download_field.show();
             duration_field.show();
-            $('.duration-media-info').show();
+            $('.duration-media-info').show(); 
             $('.duration-image-info').hide();
             playback_rate_field.show();
             start_field.show();
@@ -4401,7 +4404,7 @@ jQuery(document).ready(function($) {
             is360_field.show();
             vrMode_field.show();
 
-            hls_info.show();
+            hls_info.show(); 
 
         }else if(media_type == 'dash'){
 
@@ -4428,7 +4431,7 @@ jQuery(document).ready(function($) {
             is360_field.show();
             vrMode_field.show();
 
-            dash_info.show();
+            dash_info.show(); 
 
         }else if(media_type == 'audio'){
 
@@ -4442,7 +4445,7 @@ jQuery(document).ready(function($) {
             share_field.show();
             download_field.show();
             duration_field.show();
-            $('.duration-media-info').show();
+            $('.duration-media-info').show(); 
             $('.duration-image-info').hide();
             playback_rate_field.show();
             start_field.show();
@@ -4499,7 +4502,7 @@ jQuery(document).ready(function($) {
             share_field.show();
             download_field.show();
             duration_field.show();
-            $('.duration-media-info').hide();
+            $('.duration-media-info').hide(); 
             $('.duration-image-info').show();
             hover_preview_field.show();
             pwd_field.show();
@@ -4542,8 +4545,8 @@ jQuery(document).ready(function($) {
             onedrive_sort_field.show();
             share_field.show();
 
-            is360_field.show();
-            vrMode_field.show();
+            is360_field.show();  
+            vrMode_field.show();  
 
         }else if(media_type == 'youtube_single'){
 
@@ -4588,8 +4591,8 @@ jQuery(document).ready(function($) {
             end_link_field.show();
             end_target_field.show();
             subtitle_field.show();
-           // islive_field.show();
-            is360_field.show();
+           // islive_field.show(); 
+            is360_field.show();  
             hl_field.show();
             cc_lang_pref_field.show();
 
@@ -4611,7 +4614,7 @@ jQuery(document).ready(function($) {
             cc_lang_pref_field.show();
 
             yt_playlist_info.show();
-
+            
         }else if(media_type == 'youtube_channel'){
 
             path_field.show();
@@ -4674,8 +4677,8 @@ jQuery(document).ready(function($) {
             end_link_field.show();
             end_target_field.show();
             subtitle_field.show();
-            islive_field.show();
-            is360_field.show();
+            islive_field.show(); 
+            is360_field.show();  
 
             vim_video_multiple_info.show();
 
@@ -4698,7 +4701,7 @@ jQuery(document).ready(function($) {
 
             vimeo_group_sort_field.show();
             vimeo_sort_dir_field.show();
-
+            
         }else if(media_type == 'vimeo_channel'){
 
             path_field.show();
@@ -4718,7 +4721,7 @@ jQuery(document).ready(function($) {
 
             vimeo_channel_sort_field.show();
             vimeo_sort_dir_field.show();
-
+            
         }else if(media_type == 'vimeo_user_album'){
 
             user_id_field.show();
@@ -4800,7 +4803,7 @@ jQuery(document).ready(function($) {
 
             path_field.show();
             path.attr('ap-required', true);
-
+            
             user_id_field.show();
             user_id.attr('ap-required', true);
 
@@ -4817,7 +4820,7 @@ jQuery(document).ready(function($) {
             vim_folder_info.show();
 
             vimeo_folder_sort_field.show();
-            vimeo_sort_dir_field.show();
+            vimeo_sort_dir_field.show();    
 
         }else if(media_type == 'custom_html'){
 
@@ -4834,7 +4837,7 @@ jQuery(document).ready(function($) {
             hover_preview_field.show();
 
             duration_field.show();
-            $('.duration-media-info').hide();
+            $('.duration-media-info').hide(); 
             $('.duration-image-info').show();
 
         }else if(media_type == 'custom'){
@@ -4853,7 +4856,7 @@ jQuery(document).ready(function($) {
             hover_preview_field.show();
 
             duration_field.show();
-            $('.duration-media-info').hide();
+            $('.duration-media-info').hide(); 
             $('.duration-image-info').show();
 
         }else if(media_type == 'xml'){
@@ -4950,22 +4953,22 @@ jQuery(document).ready(function($) {
 
         if(data.bkey)bkey.val(data.bkey);
         if(data.folder_custom_url == '1')folder_custom_url.prop('checked', true)
-
+            
         if(data.id3)id3.val(data.id3)
         if(data.folder_sort)folder_sort.val(data.folder_sort)
         if(data.gdrive_sort)gdrive_sort.val(data.gdrive_sort);
         if(data.onedrive_sort)onedrive_sort.val(data.onedrive_sort);
-        if(data.user_id)user_id.val(data.user_id)
-        if(data.limit)limit.val(data.limit)
+        if(data.user_id)user_id.val(data.user_id)    
+        if(data.limit)limit.val(data.limit)    
 
-        if(data.yt_sort)yt_sort.val(data.yt_sort)
+        if(data.yt_sort)yt_sort.val(data.yt_sort)  
 
-        if(data.vimeo_channel_sort)vimeo_channel_sort.val(data.vimeo_channel_sort)
-        if(data.vimeo_album_sort)vimeo_album_sort.val(data.vimeo_album_sort)
-        if(data.vimeo_group_sort)vimeo_group_sort.val(data.vimeo_group_sort)
-        if(data.vimeo_ondemand_sort)vimeo_ondemand_sort.val(data.vimeo_ondemand_sort)
-        if(data.vimeo_folder_sort)vimeo_folder_sort.val(data.vimeo_folder_sort)
-        if(data.vimeo_sort_dir)vimeo_sort_dir.val(data.vimeo_sort_dir)
+        if(data.vimeo_channel_sort)vimeo_channel_sort.val(data.vimeo_channel_sort)   
+        if(data.vimeo_album_sort)vimeo_album_sort.val(data.vimeo_album_sort) 
+        if(data.vimeo_group_sort)vimeo_group_sort.val(data.vimeo_group_sort) 
+        if(data.vimeo_ondemand_sort)vimeo_ondemand_sort.val(data.vimeo_ondemand_sort)   
+        if(data.vimeo_folder_sort)vimeo_folder_sort.val(data.vimeo_folder_sort)             
+        if(data.vimeo_sort_dir)vimeo_sort_dir.val(data.vimeo_sort_dir)     
 
         if(data.is360)is360.val(data.is360)
         if(data.vrMode)vrMode.val(data.vrMode)
@@ -5002,7 +5005,7 @@ jQuery(document).ready(function($) {
         }
         if(data.alt_text)alt_text.val(data.alt_text);//thumb alt
         if(data.hover_preview)hover_preview.val(data.hover_preview);
-
+        
         if(data.title)title.val(data.title);
         if(data.description)description.val(data.description);
 
@@ -5021,7 +5024,7 @@ jQuery(document).ready(function($) {
             vast.val(data.vast);
             if(data.vast_loop)vast_loop.val(data.vast_loop)
         }
-
+        
         //subs
         if(response.subtitle){
             var i, len = response.subtitle.length, cont, obj
@@ -5084,7 +5087,7 @@ jQuery(document).ready(function($) {
                 _MVPAdContent.adjustAd('ad_mid');
                 _MVPAdContent.adjustAd('ad_end');*/
             }
-
+            
         }
 
         _MVPAdContent.setRandomize(data)
@@ -5117,15 +5120,15 @@ jQuery(document).ready(function($) {
     if(get_video_shortcode_submit.length){
 
         multi_path_field_add.click()//create first field on start
-        type_selector.change();
+        type_selector.change();  
     }
 
 
-
+    
 
 
     /* uploaders */
-
+    
     var playlistUploadManagerArr = [
         {btn: editMediaForm.find("#path_upload"), manager:null},
         {btn: editMediaForm.find("#poster_upload"), manager:null},
@@ -5144,10 +5147,10 @@ jQuery(document).ready(function($) {
         var i, len = arr.length, item;
         for(i=0;i<len;i++){
             item = arr[i].btn.attr('data-id',i);
-
+        
             item.on('click',function(e){
                 e.preventDefault();
-
+            
                 var library, source, id = $(this).attr("id"), data_id = parseInt($(this).attr("data-id"),10), custom_uploader, multiple;
 
                 if(playlistUploadManagerArr[data_id].manager){//reuse
@@ -5160,21 +5163,21 @@ jQuery(document).ready(function($) {
                     if(media_type == 'image')library = "image";
                     else if(media_type == 'hls' || media_type == 'dash')library = "";
                     else if(media_type == 'xml' || media_type == 'json')library = "application/xml,application/json,text/*";
-
+                    
                     source = path;
 
                 }else if(id == 'thumb_upload'){
-
+                
                     library = "image";
                     source = thumb;
 
                 }else if(id == 'poster_upload'){
-
+                
                     library = "image";
                     source = poster;
-
+                
                 }else if(id == 'slideshow_upload'){
-
+                    
                     library = "image";
                     source = slideshow_images_field;
                     multiple = true;
@@ -5183,7 +5186,7 @@ jQuery(document).ready(function($) {
 
                     library = "";//allow anything
                     source = download;
-
+                
                 }else if(id == 'preview_seek_upload'){
 
                     library = "";
@@ -5202,13 +5205,13 @@ jQuery(document).ready(function($) {
                 }else if(id == 'vast_upload'){
 
                     library = "";
-                    source = vast;
+                    source = vast;    
 
                 }else if(id == 'pl_thumb_upload'){
-
+                
                     library = "image";
                     source = '#pl_thumb';
-
+                
                 }
 
                 custom_uploader = wp.media({
@@ -5221,7 +5224,7 @@ jQuery(document).ready(function($) {
 
                     if(multiple){
 
-                        var attachment_data = custom_uploader.state().get('selection').map(
+                        var attachment_data = custom_uploader.state().get('selection').map( 
                             function( attachment ) {
                                 attachment.toJSON();
                                 return attachment;
@@ -5240,7 +5243,7 @@ jQuery(document).ready(function($) {
 
                             updateSlideshowImages()
 
-                        }
+                        } 
 
                     }else{
 
@@ -5257,7 +5260,7 @@ jQuery(document).ready(function($) {
                         else if(source == poster){
                             poster_preview.attr('src', attachment.url);
                             poster_remove.show();
-                        }
+                        } 
                         else if(source == '#pl_thumb'){
                             pl_thumb_preview.attr('src', attachment.url);
                             pl_thumb_remove.show();
@@ -5271,10 +5274,10 @@ jQuery(document).ready(function($) {
                 playlistUploadManagerArr[data_id].manager = custom_uploader;//save for reuse
 
             });
-        }
+        }   
     }
 
-
+    
 
 
     /* domain-rename */
@@ -5305,7 +5308,7 @@ jQuery(document).ready(function($) {
                     url: mvp_data.ajax_url,
                     type: 'post',
                     data: postData,
-                    dataType: 'json',
+                    dataType: 'json',   
                 }).done(function(response){
 
                     var container, path
@@ -5328,8 +5331,8 @@ jQuery(document).ready(function($) {
                 }).fail(function(jqXHR, textStatus, errorThrown) {
                     console.log(jqXHR.responseText, textStatus, errorThrown);
                     preloader.hide();
-                });
-
+                });  
+                        
             }
 
         }
@@ -5342,10 +5345,9 @@ jQuery(document).ready(function($) {
     /* export / import */
 
 
-
+    
     //export playlist
 
-    // --- MODIFIED Export Handler ---
     $('.mvp-table').on('click','.mvp-export-playlist-btn', function(){
 
         preloader.show();
@@ -5353,160 +5355,243 @@ jQuery(document).ready(function($) {
         var playlist_id = $(this).attr('data-playlist-id'),
         playlist_title = $(this).closest('.mvp-playlist-row').find('.title-editable').val();
 
+        playlist_title = playlist_title.replace(/\W/g, '');//safe chars
+
         var postData = [
             {name: 'action', value: 'mvp_export_playlist'},
             {name: 'playlist_id', value: playlist_id},
-            {name: 'playlist_title', value: playlist_title}, // Send original title, PHP sanitizes for filename
+            {name: 'playlist_title', value: playlist_title},
             {name: 'security', value: mvp_data.security}
         ];
 
-        // Use a standard form submission approach to trigger the download reliably
-        // Create a temporary form
-        var tempForm = $('<form></form>');
-        tempForm.attr('method', 'post');
-        tempForm.attr('action', mvp_data.ajax_url); // Post to admin-ajax.php
-
-        // Add data as hidden inputs
-        $.each(postData, function(key, val) {
-            var input = $('<input></input>');
-            input.attr('type', 'hidden');
-            input.attr('name', val.name);
-            input.attr('value', val.value);
-            tempForm.append(input);
-        });
-
-        // Append form to body and submit
-        $('body').append(tempForm);
-        tempForm.submit();
-        tempForm.remove(); // Remove the temporary form
-
-        // Hide preloader after a short delay, assuming download started
-        setTimeout(function() {
-             preloader.hide();
-        }, 1500); // Adjust delay as needed
-
-
-        /* --- OLD AJAX Method (less reliable for file downloads) ---
         $.ajax({
             url: mvp_data.ajax_url,
             type: 'post',
             data: postData,
-            dataType: 'json', // Expect JSON *only* for errors now
+            dataType: 'json',
         }).done(function(response){
-            // This .done() might not fire reliably for file downloads.
-            // Assuming success if .fail() doesn't run.
+
             preloader.hide();
-            // console.log('Export initiated. Download should start.');
+
+            //console.log(response)
+            if(response.zip) {
+                location.href = response.zip;
+
+                var postData = [
+                    {name: 'action', value: 'mvp_clean_export'},
+                    {name: 'zipname', value: response.zip_clean},
+                    {name: 'security', value: mvp_data.security}
+                ];
+
+                $.ajax({
+                    url: mvp_data.ajax_url,
+                    type: 'post',
+                    data: postData,
+                }); 
+            }
 
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            // Handle errors returned as JSON from PHP
-            var errorMsg = mvp_translate.attr('data-error-importing'); // Generic default
-            if (jqXHR.responseJSON && jqXHR.responseJSON.data && jqXHR.responseJSON.data.message) {
-                errorMsg = jqXHR.responseJSON.data.message;
-            } else if (jqXHR.responseText) {
-                 console.log('Export Error Raw:', jqXHR.responseText); // Log raw error for debugging
-                 if (jqXHR.responseText.toLowerCase().includes('error')) {
-                     errorMsg = 'An unexpected server error occurred during export.';
-                 }
-            }
-            alert('Export Failed: ' + errorMsg); // Show error to user
-            console.log('Export Error:', jqXHR, textStatus, errorThrown);
+            console.log(jqXHR.responseText, textStatus, errorThrown);
             preloader.hide();
-        });
-        */
+        }); 
 
-        return false; // Prevent default link behavior
+        return false;
 
     });
-
 
     //import playlist
 
     var playlistFileInput = $('#mvp-playlist-file-input').on('change', preparePlaylistUpload);
 
     var import_playlist_btn = $('#mvp-import-playlist').click(function(){
-        playlistFileInput.trigger('click');
+        playlistFileInput.trigger('click'); 
         return false;
-    });
+    }); 
 
-    // Removed: var importPlaylistData; (No longer needed for multi-step process)
+    var importPlaylistData;
 
-    // --- MODIFIED Import Handler ---
-    function preparePlaylistUpload(event) {
+    function preparePlaylistUpload(event) { 
 
-        // Basic file check - check extension as well
+        //check if correct file uploaded
         if(event.target.files.length == 0) return;
-        var file = event.target.files[0];
-        var fileName = file.name;
-        var fileExt = fileName.split('.').pop().toLowerCase();
-
-        // Improved check for JSON file
-        if(fileExt !== 'json'){
-            alert('Invalid file type. Please upload a .json file exported from MVP.'); // More specific message
-            playlistFileInput.val(''); // Clear the file input
+        var fileName = event.target.files[0].name;
+        if(fileName.indexOf('mvp_playlist_id_') == -1){
+            alert(mvp_translate.attr('data-upload-previously-exported-playlist-zip'));
             return;
         }
 
         preloader.show();
-        import_playlist_btn.hide(); // Hide button during upload
+
+        import_playlist_btn.css('display','none');
+
+        var file = event.target.files;
 
         var data = new FormData();
-        data.append("mvp_file_upload", file); // Use the 'file' object directly
-        data.append("action", "mvp_import_playlist_json"); // <--- CHANGED ACTION
+        var nonce = $('#mvp-import-playlist-form').find("#_wpnonce").val();
+        $.each(file, function(key, value){
+            data.append("mvp_file_upload", value);
+        });
+        data.append("action", "mvp_import_playlist");
         data.append("security", mvp_data.security );
 
-        playlistFileInput.val(''); // Clear input after getting file data
+        playlistFileInput.val('');
 
         $.ajax({
             url: mvp_data.ajax_url,
             type: 'post',
             data: data,
             dataType: 'json',
-            processData: false,
-            contentType: false,
+            processData: false, 
+            contentType: false, 
         }).done(function(response){
-             // --- NEW Success Handling ---
-            console.log('Import Response:', response);
-            preloader.hide();
-            import_playlist_btn.show(); // Show button again
+            console.log(response)
 
-            if (response.success) {
-                 alert('Success: ' + response.data.message);
-                 // Reload the page to see the new playlist
-                 window.location.reload();
-                 // TODO (Optional): Dynamically add the new playlist row to the table here
-                 // This would involve creating the HTML row based on response.data.new_playlist_id
-                 // and response.data.new_playlist_title, similar to how PHP loops through playlists.
-            } else {
-                // Handle errors reported by wp_send_json_error
-                var errorMsg = (response.data && response.data.message) ? response.data.message : mvp_translate.attr('data-error-importing');
-                alert('Import Failed: ' + errorMsg);
+            if(response.playlist){
+
+                importPlaylistData = {};
+
+                importPlaylistData.playlist = {data:null, url:response.playlist};
+                if(response.media)importPlaylistData.media = {data:null, url:response.media};
+                if(response.path)importPlaylistData.path = {data:null, url:response.path};
+                if(response.subtitle)importPlaylistData.subtitle = {data:null, url:response.subtitle};
+                if(response.ad)importPlaylistData.ad = {data:null, url:response.ad};
+                if(response.annotation)importPlaylistData.annotation = {data:null, url:response.annotation};
+
+                getCSVPlaylist(importPlaylistData.playlist.url);
+
+            }else{
+                import_playlist_btn.css('display','inline-block');
+                preloader.hide();
+                alert(mvp_translate.attr('data-error-importing'));
             }
 
         }).fail(function(jqXHR, textStatus, errorThrown) {
-             // --- NEW Fail Handling ---
-            var errorMsg = mvp_translate.attr('data-error-importing'); // Generic default
-            if (jqXHR.responseJSON && jqXHR.responseJSON.data && jqXHR.responseJSON.data.message) {
-                errorMsg = jqXHR.responseJSON.data.message;
-            } else if (jqXHR.responseText) {
-                 // Try to show raw response if it's not JSON but might contain info
-                 console.log('Import Error Raw:', jqXHR.responseText);
-                 errorMsg = 'An unexpected server error occurred. Check the console for details.';
-            }
-            alert('Import Failed: ' + errorMsg);
-            console.log('Import AJAX Error:', jqXHR, textStatus, errorThrown);
-            import_playlist_btn.show(); // Show button again on failure
+            console.log(jqXHR.responseText, textStatus, errorThrown);
+            import_playlist_btn.css('display','inline-block');
             preloader.hide();
-        });
+
+            alert(mvp_translate.attr('data-error-importing'));
+        }); 
 
     }
 
-    // --- REMOVED FUNCTION (No longer needed) ---
-    // function getCSVPlaylist(url){ ... }
+    function getCSVPlaylist(url){
 
-    // --- REMOVED FUNCTION (No longer needed) ---
-    // function import_playlist_db(){ ... }
+        if(typeof $.csv === 'undefined'){
 
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = jquery_csv_js;
+            script.onload = script.onreadystatechange = function() {
+                if(!this.readyState || this.readyState == 'complete'){
+                    getCSVPlaylist(url);
+                }
+            };
+            script.onerror = function(){
+                console.log("Error loading " + this.src);
+            }
+            var tag = document.getElementsByTagName('script')[0];
+            tag.parentNode.insertBefore(script, tag);
+
+        }else{
+
+            $.ajax({
+                type: 'GET',
+                url: url,
+                dataType: "text"
+            }).done(function(response) {
+
+                if(importPlaylistData.playlist.data == null){
+
+                    var d = $.csv.toArray(response, {separator:'|', delimiter:'^'}, function(err, data){
+                        importPlaylistData.playlist.data = data;
+                        if(importPlaylistData.media)getCSVPlaylist(importPlaylistData.media.url);
+                        else import_playlist_db();//no media in playlist
+                    });
+
+                }else if(importPlaylistData.media.data == null){
+
+                    var d = $.csv.toArrays(response, {separator:'|', delimiter:'^'}, function(err, data){
+                        importPlaylistData.media.data = data;
+                        if(importPlaylistData.path)getCSVPlaylist(importPlaylistData.path.url);
+                        else import_playlist_db();
+                    });
+
+                }else if(importPlaylistData.path.data == null){
+
+                    var d = $.csv.toArrays(response, {separator:'|', delimiter:'^'}, function(err, data){
+                        importPlaylistData.path.data = data;
+                        if(importPlaylistData.subtitle)getCSVPlaylist(importPlaylistData.subtitle.url);
+                        else import_playlist_db();
+                    });
+                    
+                }else if(importPlaylistData.subtitle.data == null){
+
+                    var d = $.csv.toArrays(response, {separator:'|', delimiter:'^'}, function(err, data){
+                        importPlaylistData.subtitle.data = data;
+                        if(importPlaylistData.ad)getCSVPlaylist(importPlaylistData.ad.url);
+                        else import_playlist_db();
+                    });
+                    
+                }else if(importPlaylistData.ad.data == null){
+
+                    var d = $.csv.toArrays(response, {separator:'|', delimiter:'^'}, function(err, data){
+                        importPlaylistData.ad.data = data;
+                        if(importPlaylistData.annotation)getCSVPlaylist(importPlaylistData.annotation.url);
+                        else import_playlist_db();
+                    });
+                    
+                }else if(importPlaylistData.annotation.data == null){
+
+                    var d = $.csv.toArrays(response, {separator:'|', delimiter:'^'}, function(err, data){
+                        importPlaylistData.annotation.data = data;
+                        import_playlist_db();
+                    });    
+
+                }
+                              
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                console.log('Error process CSV: ' + jqXHR, textStatus, errorThrown);
+                preloader.hide();
+                import_playlist_btn.css('display','inline-block');
+                alert(mvp_translate.attr('data-error-importing'));
+                
+            });
+
+        }
+    }
+
+    function import_playlist_db(){
+
+        var postData = [
+            {name: 'action', value: 'mvp_import_playlist_db'},
+            {name: 'playlist', value: JSON.stringify(importPlaylistData.playlist.data)},
+            {name: 'security', value: mvp_data.security}
+        ];
+        if(importPlaylistData.media)postData.push({name: 'media', value: JSON.stringify(importPlaylistData.media.data)});
+        if(importPlaylistData.path)postData.push({name: 'path', value: JSON.stringify(importPlaylistData.path.data)});
+        if(importPlaylistData.subtitle)postData.push({name: 'subtitle', value: JSON.stringify(importPlaylistData.subtitle.data)});
+        if(importPlaylistData.ad)postData.push({name: 'ad', value: JSON.stringify(importPlaylistData.ad.data)});
+        if(importPlaylistData.annotation)postData.push({name: 'annotation', value: JSON.stringify(importPlaylistData.annotation.data)});
+
+        $.ajax({
+            url: mvp_data.ajax_url,
+            type: 'post',
+            data: postData,
+            dataType: 'json',
+        }).done(function(response){
+
+            window.location = playlistItemList.attr('data-admin-url') + '?page=mvp_playlist_manager&action=edit_playlist&mvp_msg=playlist_created&playlist_id=' + response
+
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR.responseText, textStatus, errorThrown);
+            preloader.hide();
+            import_playlist_btn.css('display','inline-block');
+            alert(mvp_translate.attr('data-error-importing'));
+        }); 
+
+    } 
+    
 
     /* duplicate */
 
@@ -5526,7 +5611,7 @@ jQuery(document).ready(function($) {
         }else{
 
             preloader.show()
-
+            
             var postData = [
                 {name: 'action', value: 'mvp_duplicate_playlist'},
                 {name: 'security', value: mvp_data.security},
@@ -5538,7 +5623,7 @@ jQuery(document).ready(function($) {
                 url: mvp_data.ajax_url,
                 type: 'post',
                 data: postData,
-                dataType: 'json',
+                dataType: 'json',   
             }).done(function(response){
 
                 //go to edit playlist page
@@ -5546,7 +5631,6 @@ jQuery(document).ready(function($) {
 
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText, textStatus, errorThrown);
-                 preloader.hide(); // Hide preloader on failure too
             });
 
             return false;
@@ -5567,7 +5651,7 @@ jQuery(document).ready(function($) {
             is_clear_percentage = true;
 
             preloader.show();
-
+           
             var postData = [
                 {name: 'action', value: 'mvp_clear_watched_percentage'},
                 {name: 'playlist_id', value: mediaTable.attr('data-playlist-id') },
@@ -5588,7 +5672,7 @@ jQuery(document).ready(function($) {
                 console.log(jqXHR.responseText, textStatus, errorThrown);
                 preloader.hide();
                 is_clear_percentage = false;
-            });
+            }); 
 
         }
 
@@ -5603,19 +5687,15 @@ jQuery(document).ready(function($) {
     //############################################//
 
     function isEmpty(str){
-        // Check if str is null or undefined first
-        if (str == null) return true;
-        // Ensure str is a string before calling replace
-        return String(str).replace(/^\s+|\s+$/g, '').length == 0;
+        return str.replace(/^\s+|\s+$/g, '').length == 0;
     }
-
 
     function sortNumber(a,b) {
         return a - b;
     }
 
     function hmsToSecondsOnly(str) {
-        var p = String(str).split(':'), // Ensure str is a string
+        var p = str.split(':'),
             s = 0, m = 1;
 
         while (p.length > 0) {
@@ -5632,7 +5712,7 @@ jQuery(document).ready(function($) {
             range.moveToElementText(element);
             range.select();
         } else if (window.getSelection) {
-            var selection = window.getSelection();
+            var selection = window.getSelection();        
             var range = document.createRange();
             range.selectNodeContents(element);
             selection.removeAllRanges();
@@ -5654,13 +5734,9 @@ jQuery(document).ready(function($) {
         if(reverse)sortOrder = -1;
         return arr.sort(function(a, b) {
             var x = parseInt(a.find(selector).html(),10); var y =  parseInt(b.find(selector).html(),10);
-            // Handle potential NaN values during parsing
-            x = isNaN(x) ? 0 : x;
-            y = isNaN(y) ? 0 : y;
             return sortOrder * ((x < y) ? -1 : ((x > y) ? 1 : 0));
         });
     }
-
 
     function isNumeric(value) {
         return /^-?\d+$/.test(value);
@@ -5669,7 +5745,7 @@ jQuery(document).ready(function($) {
     function setInputDate(dt){
       var hoy = new Date(dt),
           d = hoy.getDate(),
-          m = hoy.getMonth()+1,
+          m = hoy.getMonth()+1, 
           y = hoy.getFullYear(),
           data;
 
@@ -5686,14 +5762,20 @@ jQuery(document).ready(function($) {
 
     function getDate(){
          var now = new Date();
-        var month = (now.getMonth() + 1);
+        var month = (now.getMonth() + 1);               
         var day = now.getDate();
-        if (month < 10)
+        if (month < 10) 
             month = "0" + month;
-        if (day < 10)
+        if (day < 10) 
             day = "0" + day;
         var today = now.getFullYear() + '-' + month + '-' + day;
         return today;
     }
 
-}); // End jQuery(document).ready
+
+
+
+
+	
+
+});

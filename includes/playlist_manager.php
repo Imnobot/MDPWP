@@ -187,7 +187,7 @@ $userData = array('is_admin' => $is_admin, 'user_id' => $user->ID, 'limit' => $u
 
 	  		<form id="mvp-import-playlist-form" action="" method="POST" enctype="multipart/form-data">
 	  			<?php wp_nonce_field('mvp-import-playlist-nonce'); ?>
-		  		<input type="file" id="mvp-playlist-file-input" accept=".json,application/json">
+		  		<input type="file" id="mvp-playlist-file-input">
 		  		<a class='button-secondary' href='#' id="mvp-import-playlist" title="Import Playlist"><?php esc_html_e('Import Playlist', MVP_TEXTDOMAIN); ?></a> 
 		  	</form>
 
