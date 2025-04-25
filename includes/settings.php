@@ -1,8 +1,8 @@
 <?php
 
 $presets = array(
-	'aviva' => 'aviva', 
-    'sirius' => 'sirius', 
+	'aviva' => 'aviva',
+    'sirius' => 'sirius',
     'pollux' => 'pollux',
 );
 
@@ -29,19 +29,19 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 
 <div class="wrap">
 
-	<?php include("playeri.php"); ?>
+	<?php include("playeri.php"); // Keep this include, might be unrelated player info ?>
 
 	<div class="mvp-settings-wrap-panel aptenv-ready">
 	<div id="mvp-global-section">
 
-	<?php include("notice.php"); ?>
+	<?php /* REMOVED: include("notice.php"); */ ?>
 
 	<h2><?php esc_html_e('Global settings', MVP_TEXTDOMAIN); ?></h2>
 
 	<p></p>
 
 	<?php if(!extension_loaded('zip')) : ?>
-	  	<div class="notice notice-warning is-dismissible"> 
+	  	<div class="notice notice-warning is-dismissible">
 			<p><strong><?php esc_html_e('PHP zip extension not installed or enabled! Export player and playlist feature cannot be used.', MVP_TEXTDOMAIN); ?></strong></p>
 		</div>
 	<?php endif; ?>
@@ -59,7 +59,7 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 		            </div>
                 </div>
                 <div class="option-content">
-                    
+
                 	<table class="form-table">
 					    <tr valign="top">
 					        <th><?php esc_html_e('Youtube application ID', MVP_TEXTDOMAIN); ?></th>
@@ -117,7 +117,7 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 							<td>
 			                    <label><input name="useCloudfront" type="checkbox" value="1" <?php if(isset($settings['useCloudfront']) && $settings['useCloudfront'] == "1") echo 'checked' ?>> <?php esc_html_e('Use Cloudfront with Amazon S3 bucket.', MVP_TEXTDOMAIN); ?></label>
 							</td>
-						
+
 						</tr>
 
 					    <tr valign="top">
@@ -195,7 +195,7 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 		            </div>
                 </div>
                 <div class="option-content">
-                    
+
                     <table class="form-table">
 
                     	<tr valign="top">
@@ -221,7 +221,7 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 			                </td>
 			            </tr>
 
-                		
+
 					    <tr valign="top">
 					        <th><?php esc_html_e('Vimeo No Cookie', MVP_TEXTDOMAIN); ?></th>
 					        <td>
@@ -318,7 +318,8 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 			                </td>
 			            </tr>
 
-			            <tr valign="top">
+                        <?php /* REMOVED Deactivate License Row:
+						<tr valign="top">
 							<th><?php esc_html_e('Deactivate license', MVP_TEXTDOMAIN); ?></th>
 							<td>
 								<p class="info"><?php esc_html_e('Tokens used:', MVP_TEXTDOMAIN); ?></p>
@@ -327,6 +328,7 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 								<p class="info"><?php esc_html_e('This will deactivate license from this website.', MVP_TEXTDOMAIN); ?></p>
 							</td>
 						</tr>
+                        */ ?>
 
 					</table>
 
@@ -344,7 +346,7 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 		            </div>
                 </div>
                 <div class="option-content" id="mvp-user-limit-field">
-                    
+
                 	<table class="form-table">
 					    <tr valign="top">
 					        <th><?php esc_html_e('Playlist capability role', MVP_TEXTDOMAIN); ?></th>
@@ -367,16 +369,16 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 			                          <th align="left"><?php esc_html_e('User role', MVP_TEXTDOMAIN); ?></th>
 			                          <th align="left"><?php esc_html_e('Playlist limit', MVP_TEXTDOMAIN); ?></th>
 			                          <th align="left"><?php esc_html_e('Video limit', MVP_TEXTDOMAIN); ?></th>
-			                          <th>&nbsp;</th>
+			                          <th> </th>
 			                        </tr>
 			                      </thead>
-			                      
+
 			                      <tbody>
 			                        <tr class="mvp-user-limit">
 			                          <td>
 			                          	<select class="user-role" name="user-role[]">
 				                            <option value="default">Default</option>
-				                            <?php 
+				                            <?php
 					                          	$userRoles = mvp_get_editable_roles();
 
 							                    foreach ($userRoles as $key => $value) : ?>
@@ -403,7 +405,7 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
                     			<textarea id="userPlaylistLimitText"><?php echo(esc_textarea($settings['userPlaylistLimitText'])); ?></textarea>
                     			<p class="info"><?php esc_html_e('Display message shown to user when he reaches maximum number of allowed playlists.', MVP_TEXTDOMAIN); ?></p>
                     		</td>
-					    </tr>	
+					    </tr>
 
 					    <tr valign="top">
 					        <th><?php esc_html_e('User video Limit message', MVP_TEXTDOMAIN); ?></th>
@@ -411,7 +413,7 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
                     			<textarea id="userVideoLimitText"><?php echo(esc_textarea($settings['userVideoLimitText'])); ?></textarea>
                     			<p class="info"><?php esc_html_e('Display message shown to user when he reaches maximum number of allowed videos in playlist.', MVP_TEXTDOMAIN); ?></p>
                     		</td>
-					    </tr>	
+					    </tr>
 
 					    <tr valign="top">
 			                <th><?php esc_html_e('Track Playlist Edit', MVP_TEXTDOMAIN); ?></th>
@@ -454,15 +456,15 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 
         <div id="mvp-sticky-action" class="mvp-sticky">
             <div id="mvp-sticky-action-inner">
-               
-                <button id="mvp-edit-global-options-submit" type="button" class="button-primary" <?php disabled( !current_user_can(MVP_CAPABILITY) ); ?>><?php esc_html_e('Save Changes', MVP_TEXTDOMAIN); ?></button> 
+
+                <button id="mvp-edit-global-options-submit" type="button" class="button-primary" <?php disabled( !current_user_can(MVP_CAPABILITY) ); ?>><?php esc_html_e('Save Changes', MVP_TEXTDOMAIN); ?></button>
             </div>
         </div>
 
         <div id="mvp-save-holder"></div>
 
 	</form>
-	
+
 </div>
 </div>
 </div>
