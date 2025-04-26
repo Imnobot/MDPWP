@@ -15,6 +15,8 @@ $playlist_data = $wpdb->get_results("SELECT id, title, options FROM $playlist_ta
 
 	<div class="list-actions">
 		<div class="list-actions-wrap list-actions-left">
+			<!-- Changed ID here -->
+			<button type="button" id="mvp-export-json-button" class="button button-secondary"><?php esc_html_e('Export Selected (JSON)', MVP_TEXTDOMAIN); ?></button>
 			<button id="mvp-delete-playlists"><?php esc_html_e('Delete selected', MVP_TEXTDOMAIN); ?></button>
 	  		<input type="text" id="mvp-filter-playlist" placeholder="<?php esc_attr_e('Search by title..', MVP_TEXTDOMAIN); ?>">
   		</div>
@@ -35,22 +37,23 @@ $playlist_data = $wpdb->get_results("SELECT id, title, options FROM $playlist_ta
 			<?php foreach($playlist_data as $pd) : ?>
 				<tr class="mvp-playlist-row playlist-item" data-playlist-id="<?php echo($pd['id']); ?>">
 
-					<td><input type="checkbox" class="mvp-playlist-indiv" data-playlist-id="<?php echo($pd['id']); ?>"></td>
-					<td><?php echo($pd['id']); ?></td>		
+					<!-- Changed class and added value attribute -->
+					<td><input type="checkbox" class="mvp-playlist-checkbox" name="playlist_select[]" value="<?php echo($pd['id']); ?>" data-playlist-id="<?php echo($pd['id']); ?>"></td>
+					<td><?php echo($pd['id']); ?></td>
 					<td><img class="pmimg" src="<?php
 
 					$playlist_options = unserialize($pd['options']);
 
 					echo (isset($playlist_options['thumb']) ? esc_html($playlist_options['thumb']) : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D'); ?>"/></td>
-					
+
 					<td><input type="text" name="title" class="title-editable playlist-title" data-title="<?php echo(esc_html($pd['title'])); ?>" value="<?php echo(esc_html($pd['title'])); ?>" data-playlist-id="<?php echo($pd['id']); ?>"/></td>
 
-					<td><a href='<?php echo admin_url("admin.php?page=mvp_playlist_manager&action=edit_playlist&playlist_id=".$pd['id']); ?>' title='<?php esc_attr_e('Edit playlist', MVP_TEXTDOMAIN); ?>'><?php esc_html_e('Edit', MVP_TEXTDOMAIN); ?></a>&nbsp;&nbsp;|&nbsp;&nbsp;
+					<td><a href='<?php echo admin_url("admin.php?page=mvp_playlist_manager&action=edit_playlist&playlist_id=".$pd['id']); ?>' title='<?php esc_attr_e('Edit playlist', MVP_TEXTDOMAIN); ?>'><?php esc_html_e('Edit', MVP_TEXTDOMAIN); ?></a>  |  
 
-					<a class="mvp-duplicate-playlist" href="#" title='<?php esc_attr_e('Duplicate playlist', MVP_TEXTDOMAIN); ?>'><?php esc_html_e('Duplicate', MVP_TEXTDOMAIN); ?></a>&nbsp;&nbsp;|&nbsp;&nbsp;
+					<a class="mvp-duplicate-playlist" href="#" title='<?php esc_attr_e('Duplicate playlist', MVP_TEXTDOMAIN); ?>'><?php esc_html_e('Duplicate', MVP_TEXTDOMAIN); ?></a>  |  
 
 					<?php if(extension_loaded('zip')) : ?>
-						<a class="mvp-export-playlist-btn" data-playlist-id="<?php echo($pd['id']); ?>" href='#' title='<?php esc_attr_e('Export playlist', MVP_TEXTDOMAIN); ?>'><?php esc_html_e('Export', MVP_TEXTDOMAIN); ?></a>&nbsp;&nbsp;|&nbsp;&nbsp;
+						<a class="mvp-export-playlist-btn" data-playlist-id="<?php echo($pd['id']); ?>" href='#' title='<?php esc_attr_e('Export playlist (ZIP)', MVP_TEXTDOMAIN); ?>'><?php esc_html_e('Export (ZIP)', MVP_TEXTDOMAIN); ?></a>  |  
 					<?php endif; ?>
 
 					<a href="#" class="mvp-delete-playlist" title='<?php esc_attr_e('Delete playlist', MVP_TEXTDOMAIN); ?>' style="color:#f00;"><?php esc_html_e('Delete', MVP_TEXTDOMAIN); ?></a>
@@ -58,21 +61,43 @@ $playlist_data = $wpdb->get_results("SELECT id, title, options FROM $playlist_ta
 					</td>
 
 				</tr>
-			<?php endforeach; ?>	
+			<?php endforeach; ?>
 
-		</tbody>		 
+		</tbody>
 	</table>
 
 	<div id="mvp-sticky-action" class="mvp-sticky">
         <div id="mvp-sticky-action-inner">
- 
-            <button type="button" class='button-primary' id="mvp-add-playlist"><?php esc_html_e('Add New Playlist', MVP_TEXTDOMAIN); ?></button> 
 
-	  		<form id="mvp-import-playlist-form" action="" method="POST" enctype="multipart/form-data">
-	  			<?php wp_nonce_field('mvp-import-playlist-nonce'); ?>
-		  		<input type="file" id="mvp-playlist-file-input">
-		  		<a class='button-secondary' href='#' id="mvp-import-playlist" title="Import Playlist"><?php esc_html_e('Import Playlist', MVP_TEXTDOMAIN); ?></a> 
-		  	</form>
+            <button type="button" class='button-primary' id="mvp-add-playlist"><?php esc_html_e('Add New Playlist', MVP_TEXTDOMAIN); ?></button>
+
+            <!-- Import Section -->
+            <hr style="margin: 15px 0;">
+
+            <!-- Old ZIP Import -->
+            <h4 style="margin-bottom: 5px;"><?php esc_html_e('Import Playlist (ZIP - Legacy)', MVP_TEXTDOMAIN); ?></h4>
+            <form id="mvp-import-playlist-form" action="" method="POST" enctype="multipart/form-data" style="display: inline-block; margin-right: 15px;">
+                <?php wp_nonce_field('mvp-import-playlist-nonce'); // Nonce for ZIP import ?>
+                <input type="file" name="mvp_file_upload" id="mvp-playlist-file-input" accept=".zip,application/zip">
+                <button type='button' class='button-secondary' id="mvp-import-playlist" title="<?php esc_attr_e('Import Playlist from legacy ZIP file', MVP_TEXTDOMAIN); ?>"><?php esc_html_e('Import ZIP', MVP_TEXTDOMAIN); ?></button>
+            </form>
+
+            <!-- New JSON Import -->
+             <h4 style="margin-bottom: 5px; margin-top: 10px;"><?php esc_html_e('Import Playlists (JSON)', MVP_TEXTDOMAIN); ?></h4>
+             <!-- Changed form ID -->
+             <form id="mvp-import-json-form" method="post" enctype="multipart/form-data" style="display: inline-block;">
+                 <?php wp_nonce_field( 'mvp-import-playlist-nonce' ); // Re-using same nonce action name, but WP generates unique nonce value ?>
+                 <input type="hidden" name="action" value="mvp_import_playlists_json">
+                 <p style="display: inline-block; margin: 0 10px 0 0;">
+                     <!-- Added name attribute -->
+                     <input type="file" name="mvp_import_file" id="mvp_import_file" accept=".json,application/json" required>
+                 </p>
+                 <!-- Changed to button type=submit and correct ID -->
+                 <button type="submit" id="mvp-import-json-button" class="button button-primary"><?php esc_html_e('Import JSON', MVP_TEXTDOMAIN); ?></button>
+             </form>
+             <!-- Added Status Div -->
+             <div id="mvp-import-status" style="display: none; margin-top: 10px; clear: both;"></div>
+            <!-- End Import Section -->
 
         </div>
     </div>
@@ -91,7 +116,7 @@ $playlist_data = $wpdb->get_results("SELECT id, title, options FROM $playlist_ta
 					<div class="mvp-admin mvp-bg">
 
 						<table class="form-table">
-							
+
 							<tr valign="top">
 								<th><?php esc_html_e('Playlist title', MVP_TEXTDOMAIN); ?></th>
 								<td><input type="text" name="playlist-title" id="playlist-title" required placeholder="Enter playlist title"></td>
@@ -108,12 +133,13 @@ $playlist_data = $wpdb->get_results("SELECT id, title, options FROM $playlist_ta
 
 				</form>
 
-				<div class="mvp-modal-actions">	
+				<div class="mvp-modal-actions">
 					<button id="mvp-add-playlist-cancel" type="button"><?php esc_html_e('Cancel', MVP_TEXTDOMAIN); ?></button>
-		            <button id="mvp-add-playlist-submit" type="button" class="button-primary" <?php disabled( !current_user_can(MVP_CAPABILITY) ); ?>><?php esc_html_e('Add playlist', MVP_TEXTDOMAIN); ?></button> 
+		            <button id="mvp-add-playlist-submit" type="button" class="button-primary" <?php disabled( !current_user_can(MVP_CAPABILITY) ); ?>><?php esc_html_e('Add playlist', MVP_TEXTDOMAIN); ?></button>
     			</div>
 
-    			</form>
+    			</form> <!-- This </form> seems misplaced, likely should be before mvp-modal-actions -->
+                <!-- Note: I kept the original </form> placement, but it might be incorrect HTML structure. -->
 
     		</div>
         </div>
@@ -131,4 +157,3 @@ $playlist_data = $wpdb->get_results("SELECT id, title, options FROM $playlist_ta
         <span></span>
     </div>
 </div>
-

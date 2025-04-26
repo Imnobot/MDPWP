@@ -23,8 +23,8 @@ if(isset($_GET['player_id'])){
         $preset_options = mvp_player_options_preset()[$preset];
         $options = $player_options + $default_options + $preset_options;
         $title = $result['title'];
-        $custom_css = stripslashes($result['custom_css']);
-        $custom_js = stripslashes($result['custom_js']);
+        $custom_css = isset($result['custom_css']) ? stripslashes($result['custom_css']) : '';
+$custom_js = isset($result['custom_js']) ? stripslashes($result['custom_js']) : '';
         $media_end_action_html = isset($player_options['media_end_action_html']) ? stripslashes($player_options['media_end_action_html']) : "";
         $media_end_action_css = isset($player_options['media_end_action_css']) ? stripslashes($player_options['media_end_action_css']) : "";
 

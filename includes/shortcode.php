@@ -71,8 +71,8 @@ function mvp_add_player($atts, $content = null){
 
         $options = $player_options + $default_options + $preset_options[$preset];
 
-        $custom_css = stripslashes($result['custom_css']);
-        $custom_js = stripslashes($result['custom_js']);
+        $custom_css = stripslashes($result['custom_css'] ?? ''); // Provide '' if null
+        $custom_js = stripslashes($result['custom_js'] ?? '');   // Provide '' if null
 
     }else{
 
