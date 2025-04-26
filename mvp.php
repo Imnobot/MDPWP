@@ -35,7 +35,7 @@ Author URI: https://codecanyon.net/user/Tean/
 
 		add_action('admin_menu', 'mvp_admin_menu');
 		add_action('admin_enqueue_scripts', 'mvp_admin_enqueue_scripts');
-		add_action('plugins_loaded', 'mvp_plugins_loaded'); // Hook is here
+		add_action('plugins_loaded', 'mvp_plugins_loaded');
 
 		//global
 		add_action('wp_ajax_mvp_save_global_options', 'mvp_save_global_options');
@@ -50,7 +50,7 @@ Author URI: https://codecanyon.net/user/Tean/
 		//playlist
 		add_action('wp_ajax_mvp_create_playlist', 'mvp_create_playlist');
 		add_action('wp_ajax_mvp_edit_playlist_title', 'mvp_edit_playlist_title');
-		add_action('wp_ajax_mvp_delete_playlist', 'mvp_delete_playlist'); // Hook is here
+		add_action('wp_ajax_mvp_delete_playlist', 'mvp_delete_playlist');
 		add_action('wp_ajax_mvp_duplicate_playlist', 'mvp_duplicate_playlist');
 		add_action('wp_ajax_mvp_save_playlist_options', 'mvp_save_playlist_options');
 
@@ -80,25 +80,23 @@ Author URI: https://codecanyon.net/user/Tean/
 		//add_action('wp_ajax_mvp_set_disabled', 'mvp_set_disabled');
 		add_action('wp_ajax_mvp_set_disabled_all', 'mvp_set_disabled_all');
 
-		//export / import (OLD CSV/ZIP) --- REMOVED HOOKS ---
-		// add_action('wp_ajax_mvp_clean_export', 'mvp_clean_export');
-		// add_action('wp_ajax_mvp_export_playlist', 'mvp_export_playlist');
-		// add_action('wp_ajax_mvp_import_playlist', 'mvp_import_playlist');
-		// add_action('wp_ajax_mvp_import_playlist_db', 'mvp_import_playlist_db');
+		//export / import (OLD CSV/ZIP)
+		add_action('wp_ajax_mvp_clean_export', 'mvp_clean_export');
+		add_action('wp_ajax_mvp_export_playlist', 'mvp_export_playlist');
+		add_action('wp_ajax_mvp_import_playlist', 'mvp_import_playlist');
+		add_action('wp_ajax_mvp_import_playlist_db', 'mvp_import_playlist_db');
 
-		// Player ZIP export/import (Keep for now, or remove if desired)
 		add_action('wp_ajax_mvp_export_player', 'mvp_export_player');
 		add_action('wp_ajax_mvp_import_player', 'mvp_import_player');
 		add_action('wp_ajax_mvp_import_player_db', 'mvp_import_player_db');
 
-		// Ad ZIP export/import (Keep for now, or remove if desired)
 		add_action('wp_ajax_mvp_export_ad', 'mvp_export_ad');
 		add_action('wp_ajax_mvp_import_ad', 'mvp_import_ad');
 		add_action('wp_ajax_mvp_import_ad_db', 'mvp_import_ad_db');
 
-        // --- JSON Export/Import Hooks ---
-        add_action('wp_ajax_mvp_export_single_playlist_json', 'mvp_export_single_playlist_json'); // Single export
-        add_action('wp_ajax_mvp_import_playlists_json', 'mvp_import_playlists_json'); // Bulk import
+        // --- NEW JSON Export/Import Hooks ---
+        add_action('wp_ajax_mvp_export_playlists_json', 'mvp_export_playlists_json');
+        add_action('wp_ajax_mvp_import_playlists_json', 'mvp_import_playlists_json');
         // ------------------------------------
 
 		add_filter('upload_mimes', 'mvp_enable_custom_mime');
@@ -166,45 +164,32 @@ Author URI: https://codecanyon.net/user/Tean/
 
 		if(isset($_POST['player_id'])){
 
-			$player_id = (int) $_POST['player_id']; // Cast to int
+			$player_id = $_POST['player_id'];
 
 			global $wpdb;
-			// $wpdb->show_errors(); // Not needed for production
+			$wpdb->show_errors();
 
 		    $player_table = $wpdb->prefix . "mvp_players";
 			$stmt = $wpdb->prepare("SELECT preset, options FROM {$player_table} WHERE id = %d", $player_id);
 			$result = $wpdb->get_row($stmt, ARRAY_A);
 
-            if (!$result) {
-                wp_send_json_error('Player not found.'); // Handle player not found
-                wp_die();
-            }
-
 			$default_options = mvp_player_options();
     		$preset_options = mvp_player_options_preset();
 
-    		$player_options = maybe_unserialize($result['options']); // Safe unserialize
+    		$player_options = unserialize($result['options']);
 	        $preset = $result["preset"];
 
-	        $preset = mvp_checkPreset($preset); // Ensure preset is valid
+	        $preset = mvp_checkPreset($preset);
 
-            // Ensure player_options is an array before merging
-            if (!is_array($player_options)) {
-                $player_options = [];
-            }
+	        $options = $player_options + $default_options + $preset_options[$preset];
 
-            // Ensure preset_options[$preset] exists and is an array
-            $current_preset_options = isset($preset_options[$preset]) && is_array($preset_options[$preset]) ? $preset_options[$preset] : [];
+			if($stmt !== false){
+	    		echo json_encode($options);
+	    	}
 
-            // Correct merge order: Specific options -> Preset -> Defaults
-	        $options = array_merge($default_options, $current_preset_options, $player_options);
-
-			// No need to check $stmt !== false here, $wpdb->get_row returns null on failure which is handled above
-	    	wp_send_json($options); // Use wp_send_json for consistency
-            wp_die();
+	    	wp_die();
 
 		}else{
-            wp_send_json_error('Player ID not provided.');
 			wp_die();
 		}
 	}
@@ -247,18 +232,12 @@ Author URI: https://codecanyon.net/user/Tean/
 	function mvp_shortcode_metabox_data() {
 
 		global $wpdb;
-		// $wpdb->show_errors(); // Not needed for production
+		$wpdb->show_errors();
 		$player_table = $wpdb->prefix . "mvp_players";
 		$playlist_table = $wpdb->prefix . "mvp_playlists";
 		$global_ad_table = $wpdb->prefix . "mvp_global_ad";
 
-		// Ensure the include file exists
-        $include_file = dirname(__FILE__) . "/includes/shortcode_manager.php";
-        if (file_exists($include_file)) {
-		    include($include_file);
-        } else {
-            echo '<p>' . esc_html__('Error: Shortcode manager file not found.', MVP_TEXTDOMAIN) . '</p>';
-        }
+		include("includes/shortcode_manager.php");
 
 	}
 
@@ -278,52 +257,40 @@ Author URI: https://codecanyon.net/user/Tean/
 		    wp_die();
 		}
 
-        $data = []; // Initialize data array
-
 		if(isset($_POST['type'])){
 
-			$type = sanitize_text_field($_POST["type"]); // Sanitize type
+			$type = $_POST["type"];
 
 			if($type == 'player'){
 
-				$player_id = isset($_POST["type_id"]) ? intval($_POST["type_id"]) : 0;
-                // Potentially fetch player stats if needed in the future
-                // $data = ... fetch player stats ...
+				$player_id = $_POST["type_id"];
 
 			}else if($type == 'playlist'){
 
-				$playlist_id = isset($_POST["type_id"]) ? intval($_POST["type_id"]) : 0;
+				$playlist_id = $_POST["type_id"];
 
-                if ($playlist_id > 0) {
-                    $data = array(
-                        'results' => mvp_getAll($playlist_id, null, 'title'),
-                        'total' => mvp_getTotal($playlist_id),
-                        'top_day' => mvp_getTopPlayToday($playlist_id),
-                        'top_day_grand_total' => mvp_getTopPlayLastXDaysTotal(null, $playlist_id, 30),
-                        'top_week' => mvp_getTopPlayThisWeek($playlist_id),
-                        'top_month' => mvp_getTopPlayThisMonth($playlist_id),
-                        'top_plays' => mvp_getTopPlayAllTime($playlist_id),
-                        'top_downloads' => mvp_getTopDownloadAllTime($playlist_id),
-                        'top_finish' => mvp_getTopFinishAllTime($playlist_id),
-                        'top_plays_country' => mvp_getTopPlaysPerCountryAllTime($playlist_id),
-                        'top_plays_user' => mvp_getTopPlaysPerUserAllTime($playlist_id),
-                    );
-                } else {
-                     wp_send_json_error('Invalid playlist ID.');
-                     wp_die();
-                }
+				$data = array(
+					'results' => mvp_getAll($playlist_id, null, 'title'),
+				    'total' => mvp_getTotal($playlist_id),
+					'top_day' => mvp_getTopPlayToday($playlist_id),
+					'top_day_grand_total' => mvp_getTopPlayLastXDaysTotal(null, $playlist_id, 30),
+					'top_week' => mvp_getTopPlayThisWeek($playlist_id),
+					'top_month' => mvp_getTopPlayThisMonth($playlist_id),
+					'top_plays' => mvp_getTopPlayAllTime($playlist_id),
+					'top_downloads' => mvp_getTopDownloadAllTime($playlist_id),
+					'top_finish' => mvp_getTopFinishAllTime($playlist_id),
+					'top_plays_country' => mvp_getTopPlaysPerCountryAllTime($playlist_id),
+					'top_plays_user' => mvp_getTopPlaysPerUserAllTime($playlist_id),
+				);
 
-			} else {
-                 wp_send_json_error('Invalid statistics type.');
-                 wp_die();
-            }
+			}
 
-		    wp_send_json($data); // Use wp_send_json
-			wp_die();
+		    echo json_encode($data);
+
+			wp_die('');
 
 		}else {
-             wp_send_json_error('Statistics type not provided.');
-			 wp_die();
+			wp_die('');
 		}
 
 	}
@@ -337,68 +304,48 @@ Author URI: https://codecanyon.net/user/Tean/
 
 		if(isset($_POST['media_id'])){
 
-			$media_id = intval($_POST["media_id"]);
-			$title = stripslashes(sanitize_text_field($_POST['title'])); // Sanitize title
-			$return_days = intval($_POST["return_days"]);
-            // Ensure data_display is handled safely
-            $data_display_raw = isset($_POST['data_display']) ? stripcslashes($_POST['data_display']) : '[]';
-            $data_display = json_decode($data_display_raw, true);
-             if (json_last_error() !== JSON_ERROR_NONE || !is_array($data_display)) {
-                $data_display = []; // Default to empty array on decode error
-            }
+			$media_id = $_POST["media_id"];
+			$title = stripslashes($_POST['title']);
+			$return_days = $_POST["return_days"];
+			$data_display = json_decode(stripcslashes($_POST['data_display']), true);
 
 			global $wpdb;
-			// $wpdb->show_errors();
+			$wpdb->show_errors();
 		    $statistics_table = $wpdb->prefix . "mvp_statistics";
 
 		    $results = mvp_getTotalLastXDays($media_id, $title, $return_days, $data_display);
 
-		    wp_send_json($results); // Use wp_send_json
+		    echo json_encode($results);
 
-			wp_die();
+			wp_die('');
 
 		}else {
-             wp_send_json_error('Media ID not provided for graph.');
-			 wp_die();
+			wp_die('');
 		}
 
 	}
 
 	function mvp_play_count(){
 
-		// No nonce check here as it's called via nopriv too
-
 		if(isset($_POST['media_id']) && isset($_POST['playlist_id'])){
 
 			$media_id = (int)$_POST["media_id"];
 			$playlist_id = (int)$_POST["playlist_id"];
 			$date = date("Y-m-d");
-			$title = stripslashes(sanitize_text_field($_POST['title'])); // Sanitize
-			$thumb = stripslashes(esc_url_raw($_POST['thumb'])); // Sanitize as URL
+			$title = stripslashes($_POST['title']);
+			$thumb = stripslashes($_POST['thumb']);
 			$currentTime = (int)$_POST['currentTime'];
 			$duration = (int)$_POST['duration'];
-			$percentToCountAsPlay = isset($_POST['percentToCountAsPlay']) ? (int) $_POST['percentToCountAsPlay'] : 0; // Default to 0
+			$percentToCountAsPlay = $_POST['percentToCountAsPlay'];
 			$countryData = isset($_POST['countryData']) ? json_decode(stripcslashes($_POST['countryData']), true) : null;
-			$video_url = stripslashes(esc_url_raw($_POST['video_url'])); // Sanitize as URL
+			$video_url = stripslashes($_POST['video_url']);
 
-            $play_add = 0;
-            if ($duration > 0 && $percentToCountAsPlay > 0) {
-                // Prevent division by zero
-                if ($percentToCountAsPlay != 100) {
-                     $percent = $duration / (100 / $percentToCountAsPlay);
-                     if ($currentTime > $percent) {
-                         $play_add = 1;
-                     }
-                } else { // 100% case
-                    if ($currentTime >= $duration) { // Use >= for 100%
-                        $play_add = 1;
-                    }
-                }
-            } elseif ($currentTime > 0) { // Count play if any time passed and no percentage set? Maybe adjust logic
-                // Decide if any play time counts as a play if percentage isn't set or is 0
-                // $play_add = 1; // Uncomment if any play time counts
-            }
-
+			$percent = $duration / (100 / $percentToCountAsPlay);
+			if($currentTime > $percent){
+			    $play_add = 1;
+			} else {
+			    $play_add = 0;
+			}
 
 			global $wpdb;
 		    $statistics_table = $wpdb->prefix . "mvp_statistics";
@@ -408,223 +355,170 @@ Author URI: https://codecanyon.net/user/Tean/
 		    $statistics_user_play_table = $wpdb->prefix . "mvp_statistics_user_play";
 
 		    //check if exist
-		    $existing_stat_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM $statistics_table WHERE media_id=%d AND title=%s AND c_date=%s", $media_id, $title, $date));
+		    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_table WHERE media_id=%d AND title=%s AND c_date=%s", $media_id, $title, $date));
 
-		    if( $existing_stat_id === null ){//create entry
+		    if($wpdb->num_rows == 0){//create entry
 
-				$stmt = $wpdb->insert(
-                    $statistics_table,
-                    [
-                        'title' => $title,
-                        'c_play' => $play_add, // Use calculated play_add
-                        'c_time' => $currentTime,
-                        'c_download' => 0,
-                        'c_finish' => 0,
-                        'c_date' => $date,
-                        'media_id' => $media_id,
-                        'playlist_id' => $playlist_id
-                    ],
-                    ['%s', '%d', '%d', '%d', '%d', '%s', '%d', '%d']
-                );
+				$stmt = $wpdb->query("INSERT INTO $statistics_table (title, c_play, c_time, c_download, c_finish, c_date, media_id, playlist_id) VALUES ('$title', 1, '$currentTime', 0, 0, '$date', '$media_id', '$playlist_id')");
 
 		    }else{//update
 
-		    	$stmt = $wpdb->query($wpdb->prepare(
-                    "UPDATE $statistics_table SET c_play = c_play + %d, c_time = c_time + %d WHERE id = %d",
-                    $play_add, $currentTime, $existing_stat_id
-                 ));
+		    	$stmt = $wpdb->query($wpdb->prepare("UPDATE $statistics_table SET c_play=c_play+$play_add, c_time=c_time+%d WHERE media_id=%d AND title=%s AND c_date=%s LIMIT 1", $currentTime, $media_id, $title, $date));
 
 		    }
 
 
 		    //country
-		    if(is_array($countryData) && !empty($countryData['country_code'])){
-                // Sanitize country data
-                $country = sanitize_text_field($countryData['country']);
-                $country_code = sanitize_text_field($countryData['country_code']);
-                $continent = sanitize_text_field($countryData['continent']);
+		    if(isset($countryData) && !empty($countryData)){
 
-			    $country_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM $statistics_country_table WHERE country_code=%s", $country_code));
+			    $stmt = $wpdb->get_var($wpdb->prepare("SELECT id FROM $statistics_country_table WHERE country_code=%s", $countryData['country_code']));
 
-			  	if($country_id === null){
-					$wpdb->insert(
-                        $statistics_country_table,
-                        ['country' => $country, 'country_code' => $country_code, 'continent' => $continent],
-                        ['%s', '%s', '%s']
-                    );
+			  	if($wpdb->num_rows == 0){
+
+			  		$country = $countryData['country'];
+			  		$country_code = $countryData['country_code'];
+			  		$continent = $countryData['continent'];
+
+					$wpdb->query("INSERT INTO $statistics_country_table (country, country_code, continent) VALUES ('$country', '$country_code', '$continent')");
 					$country_id = $wpdb->insert_id;
+			    }else{
+			    	$country_id = $stmt;
 			    }
 
-                if ($country_id) {
-                    $existing_country_play_id = $wpdb->get_var($wpdb->prepare(
-                        "SELECT id FROM $statistics_country_play_table WHERE media_id=%d AND title=%s AND c_date=%s AND country_id=%d",
-                         $media_id, $title, $date, $country_id
-                    ));
+			    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_country_play_table WHERE media_id=%d AND title=%s AND c_date=%s AND country_id=%d", $media_id, $title, $date, $country_id));
 
-                    if ($existing_country_play_id === null) {
-                        $wpdb->insert(
-                            $statistics_country_play_table,
-                            [
-                                'title' => $title, 'thumb' => $thumb, 'video_url' => $video_url, 'c_play' => $play_add,
-                                'c_time' => $currentTime, 'c_date' => $date, 'media_id' => $media_id,
-                                'playlist_id' => $playlist_id, 'country_id' => $country_id
-                            ],
-                            ['%s', '%s', '%s', '%d', '%d', '%s', '%d', '%d', '%d']
-                        );
-                    } else {
-                        $wpdb->query($wpdb->prepare(
-                            "UPDATE $statistics_country_play_table SET c_play = c_play + %d, c_time = c_time + %d WHERE id = %d",
-                            $play_add, $currentTime, $existing_country_play_id
-                        ));
-                    }
-                }
+			    if($wpdb->num_rows == 0){
+
+					$wpdb->query("INSERT INTO $statistics_country_play_table (title, thumb, video_url, c_play, c_time, c_date, media_id, playlist_id, country_id) VALUES ('$title', '$thumb', '$video_url', 1, '$currentTime', '$date', '$media_id', '$playlist_id', '$country_id')");
+
+			    }else{//update
+
+			    	$wpdb->query($wpdb->prepare("UPDATE $statistics_country_play_table SET c_play=c_play+$play_add, c_time=c_time+%d WHERE media_id=%d AND title=%s AND c_date=%s AND country_id=%d LIMIT 1", $currentTime, $media_id, $title, $date, $country_id));
+
+			    }
+
+
 		    }
 
 
 		    //user
+
 			if(is_user_logged_in()){
 			    $current_user = wp_get_current_user();
-			    $uid = $current_user->ID;
 
-			    $user_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM $statistics_user_table WHERE user_id=%d", $uid));
+			    $stmt = $wpdb->get_var($wpdb->prepare("SELECT id FROM $statistics_user_table WHERE user_id=%s", $current_user->ID));
 
-			  	if($user_id === null){
+			  	if($wpdb->num_rows == 0){
+
+			  		$uid = $current_user->ID;
 			  		$user_display_name = $current_user->display_name;
 			  		$user_role = implode(",", $current_user->roles);
 
-					$wpdb->insert(
-                        $statistics_user_table,
-                        ['user_id' => $uid, 'user_display_name' => $user_display_name, 'user_role' => $user_role],
-                        ['%d', '%s', '%s']
-                    );
+					$wpdb->query("INSERT INTO $statistics_user_table (user_id, user_display_name, user_role) VALUES ('$uid', '$user_display_name', '$user_role')");
 					$user_id = $wpdb->insert_id;
+			    }else{
+			    	$user_id = $stmt;
 			    }
 
-                if ($user_id) {
-                    $existing_user_play_id = $wpdb->get_var($wpdb->prepare(
-                        "SELECT id FROM $statistics_user_play_table WHERE media_id=%d AND title=%s AND c_date=%s AND user_id=%d",
-                        $media_id, $title, $date, $user_id
-                    ));
+			    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_user_play_table WHERE media_id=%d AND title=%s AND c_date=%s AND user_id=%d", $media_id, $title, $date, $user_id));
 
-                    if($existing_user_play_id === null){
-                        $wpdb->insert(
-                            $statistics_user_play_table,
-                             [
-                                'title' => $title, 'thumb' => $thumb, 'video_url' => $video_url, 'c_play' => $play_add,
-                                'c_time' => $currentTime, 'c_date' => $date, 'media_id' => $media_id,
-                                'playlist_id' => $playlist_id, 'user_id' => $user_id
-                             ],
-                            ['%s', '%s', '%s', '%d', '%d', '%s', '%d', '%d', '%d']
-                        );
-                    }else{
-                        $wpdb->query($wpdb->prepare(
-                            "UPDATE $statistics_user_play_table SET c_play = c_play + %d, c_time = c_time + %d WHERE id = %d",
-                             $play_add, $currentTime, $existing_user_play_id
-                         ));
-                    }
-                }
+			    if($wpdb->num_rows == 0){
+
+					$wpdb->query("INSERT INTO $statistics_user_play_table (title, thumb, video_url, c_play, c_time, c_date, media_id, playlist_id, user_id) VALUES ('$title',  '$thumb', '$video_url', 1, '$currentTime', '$date', '$media_id', '$playlist_id', '$user_id')");
+
+			    }else{//update
+
+			    	$wpdb->query($wpdb->prepare("UPDATE $statistics_user_play_table SET c_play=c_play+$play_add, c_time=c_time+%d WHERE media_id=%d AND title=%s AND c_date=%s AND user_id=%d LIMIT 1", $currentTime, $media_id, $title, $date, $user_id));
+
+			    }
+
 			}
 
-		    // Return simple success or potentially the last statement result ($stmt)
-	    	wp_send_json_success(['status' => 'counted']);
+
+		    if($stmt !== false){
+	    		echo json_encode($stmt);
+	    	}
+
 			wp_die();
 
 		}else {
-             wp_send_json_error('Required parameters missing for play count.');
-			 wp_die();
+			wp_die();
 		}
 	}
 
 	function mvp_download_count(){
-        // No nonce check here as it's called via nopriv too
 
 		if(isset($_POST['media_id']) && isset($_POST['playlist_id'])){
 
 			$media_id = (int)$_POST["media_id"];
 			$playlist_id = (int)$_POST["playlist_id"];
 			$date = date("Y-m-d");
-			$title = stripslashes(sanitize_text_field($_POST['title'])); // Sanitize
+			$title = stripslashes($_POST['title']);
 
 			global $wpdb;
-			// $wpdb->show_errors();
+			$wpdb->show_errors();
 		    $statistics_table = $wpdb->prefix . "mvp_statistics";
 
 		    //check if exist
-		    $existing_stat_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM $statistics_table WHERE media_id=%d AND title=%s AND c_date=%s", $media_id, $title, $date));
+		    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_table WHERE media_id=%d AND title=%s AND c_date=%s", $media_id, $title, $date));
 
-		    if($existing_stat_id === null){//create entry
-				$stmt = $wpdb->insert(
-                     $statistics_table,
-                     [
-                         'title' => $title, 'c_play' => 0, 'c_time' => 0, 'c_download' => 1,
-                         'c_finish' => 0, 'c_date' => $date, 'media_id' => $media_id, 'playlist_id' => $playlist_id
-                     ],
-                     ['%s', '%d', '%d', '%d', '%d', '%s', '%d', '%d']
-                 );
+		    if($wpdb->num_rows == 0){//create entry
+
+				$stmt = $wpdb->query("INSERT INTO $statistics_table (title, c_play, c_time, c_download, c_finish, c_date, media_id, playlist_id) VALUES ('$title', 0, 0, 1, 0, '$date', '$media_id', '$playlist_id')");
+
 		    }else{//update
-		    	$stmt = $wpdb->query($wpdb->prepare(
-                    "UPDATE $statistics_table SET c_download = c_download + 1 WHERE id = %d",
-                    $existing_stat_id
-                 ));
+
+		    	$stmt = $wpdb->query($wpdb->prepare("UPDATE $statistics_table SET c_download=c_download+1 WHERE media_id=%d AND title=%s AND c_date=%s LIMIT 1", $media_id, $title, $date));
+
 		    }
 
 		    if($stmt !== false){
-	    		wp_send_json_success(['status' => 'counted']);
-	    	} else {
-                wp_send_json_error(['status' => 'failed', 'error' => $wpdb->last_error]);
-            }
+	    		echo json_encode($stmt);
+	    	}
+
 			wp_die();
 
 		}else {
-            wp_send_json_error('Required parameters missing for download count.');
 			wp_die();
 		}
 
 	}
 
 	function mvp_finish_count(){
-        // No nonce check here as it's called via nopriv too
 
 		if(isset($_POST['media_id']) && isset($_POST['playlist_id'])){
 
 			$media_id = (int)$_POST["media_id"];
 			$playlist_id = (int)$_POST["playlist_id"];
 			$date = date("Y-m-d");
-			$title = stripslashes(sanitize_text_field($_POST['title'])); // Sanitize
+			$title = stripslashes($_POST['title']);
 
 			global $wpdb;
-			// $wpdb->show_errors();
+			$wpdb->show_errors();
+
 		    $statistics_table = $wpdb->prefix . "mvp_statistics";
 
 		    //check if exist
-            $existing_stat_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM $statistics_table WHERE media_id=%d AND title=%s AND c_date=%s", $media_id, $title, $date));
+		    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_table WHERE media_id=%d AND title=%s AND c_date=%s", $media_id, $title, $date));
 
-		    if($existing_stat_id === null){//create entry
-				$stmt = $wpdb->insert(
-                     $statistics_table,
-                     [
-                         'title' => $title, 'c_play' => 0, 'c_time' => 0, 'c_download' => 0,
-                         'c_finish' => 1, 'c_date' => $date, 'media_id' => $media_id, 'playlist_id' => $playlist_id
-                     ],
-                     ['%s', '%d', '%d', '%d', '%d', '%s', '%d', '%d']
-                 );
+		    if($wpdb->num_rows == 0){//create entry
+
+				$stmt = $wpdb->query("INSERT INTO $statistics_table (title, c_play, c_time, c_download, c_finish, c_date, media_id, playlist_id) VALUES ('$title', 0, 0, 0, 1, '$date', '$media_id', '$playlist_id')");
+
 		    }else{//update
-		    	$stmt = $wpdb->query($wpdb->prepare(
-                    "UPDATE $statistics_table SET c_finish = c_finish + 1 WHERE id = %d",
-                    $existing_stat_id
-                 ));
+
+		    	$stmt = $wpdb->query($wpdb->prepare("UPDATE $statistics_table SET c_finish=c_finish+1 WHERE media_id=%d AND title=%s AND c_date=%s LIMIT 1", $media_id, $title, $date));
+
 		    }
 
 		    if($stmt !== false){
-	    		wp_send_json_success(['status' => 'counted']);
-	    	} else {
-                wp_send_json_error(['status' => 'failed', 'error' => $wpdb->last_error]);
-            }
+	    		echo json_encode($stmt);
+	    	}
+
 			wp_die();
 
 		}else {
-             wp_send_json_error('Required parameters missing for finish count.');
-			 wp_die();
+			wp_die();
 		}
 
 	}
@@ -634,97 +528,69 @@ Author URI: https://codecanyon.net/user/Tean/
 		if(!isset($atts['action']))return "Action parameter missing!";
 
 		$action = $atts['action'];
-		$playlist_id = isset($atts['playlist_id']) ? $atts["playlist_id"] : -1; // Keep allowing -1 for "all playlists" maybe? Or sanitize to 0/null
-        $days = isset($atts['days']) ? intval($atts['days']) : 7;
-        $limit = isset($atts['limit']) ? intval($atts['limit']) : 10;
-        $dir = isset($atts['dir']) && in_array(strtoupper($atts['dir']), ['ASC', 'DESC']) ? strtoupper($atts['dir']) : 'DESC'; // Validate direction
-        $title = isset($atts['title']) ? sanitize_text_field($atts['title']) : '';
-        $hiperlink_video = isset($atts['hiperlink_video']) && $atts['hiperlink_video'] === '1' ? '1' : '0'; // Ensure 0 or 1
+		$playlist_id = isset($atts['playlist_id']) ? $atts["playlist_id"] : -1;
+        $days = isset($atts['days']) ? $atts['days'] : 7;
+        $limit = isset($atts['limit']) ? $atts['limit'] : 10;
+        $dir = isset($atts['dir']) ? strtoupper($atts['dir']) : 'DESC';
+        $title = isset($atts['title']) ? $atts['title'] : '';
+        $hiperlink_video = isset($atts['hiperlink_video']) ? $atts['hiperlink_video'] : '0';
 
-        $results = []; // Initialize results
+        if($action == 'top_play_today')$results = mvp_getTopPlayToday($playlist_id, $limit, $dir);
+        else if($action == 'top_play_last_x_days')$results = mvp_getTopPlayLastXDays($playlist_id, $days, $limit, $dir);
+        else if($action == 'top_play_this_week')$results = mvp_getTopPlayThisWeek($playlist_id, $limit, $dir);
+        else if($action == 'top_play_this_month')$results = mvp_getTopPlayThisMonth($playlist_id, $limit, $dir);
+        else if($action == 'top_play_all_time')$results = mvp_getTopPlayAllTime($playlist_id, $limit, $dir);
+        else if($action == 'top_download_all_time')$results = mvp_getTopDownloadAllTime($playlist_id, $limit, $dir);
+        else if($action == 'top_finish_all_time')$results = mvp_getTopFinishAllTime($playlist_id, $limit, $dir);
+		else return "Action parameter incorrect!";
 
-        // Add more input validation if necessary (e.g., playlist_id format)
+		if(count($results) > 0){
 
-        if ($action == 'top_play_today') {
-            $results = mvp_getTopPlayToday($playlist_id, $limit, $dir);
-        } elseif ($action == 'top_play_last_x_days') {
-            $results = mvp_getTopPlayLastXDays($playlist_id, $days, $limit, $dir);
-        } elseif ($action == 'top_play_this_week') {
-            $results = mvp_getTopPlayThisWeek($playlist_id, $limit, $dir);
-        } elseif ($action == 'top_play_this_month') {
-            $results = mvp_getTopPlayThisMonth($playlist_id, $limit, $dir);
-        } elseif ($action == 'top_play_all_time') {
-            $results = mvp_getTopPlayAllTime($playlist_id, $limit, $dir);
-        } elseif ($action == 'top_download_all_time') {
-            $results = mvp_getTopDownloadAllTime($playlist_id, $limit, $dir);
-        } elseif ($action == 'top_finish_all_time') {
-            $results = mvp_getTopFinishAllTime($playlist_id, $limit, $dir);
-        } else {
-            return "Action parameter incorrect!";
-        }
+			$id = 'mvp-stat-wrap'.mt_rand();//to limit selector for click
 
+		  	$markup = '<div class="mvp-stat-wrap" id="'.$id.'">
+					<div class="mvp-stat-wrap-header">
+						<span>'.esc_html($title).'</span>
+					</div>
+					<ol>';
+					foreach($results as $key) :
 
-		if(is_array($results) && count($results) > 0){ // Check if $results is a non-empty array
+						if($hiperlink_video == '1'){
 
-			$id = 'mvp-stat-wrap'.mt_rand();
-            $player_id = isset($atts['player_id']) ? intval($atts['player_id']) : 0; // Get player ID for JS linking
+							$markup .= '<li class="mvp-stat-item" data-media-id="'.esc_attr($key['media_id']).'" title="'.esc_attr(trim($key['title'])).'">';//we need title and artist and special song selection if songs come from grouped source (and media-id is the same)
+							$markup .= '<a href="#">'.esc_html($key['title']).'</a>';
 
-		  	$markup = '<div class="mvp-stat-wrap" id="'.esc_attr($id).'">'; // Escape ID
-            if (!empty($title)) {
-                $markup .= '<div class="mvp-stat-wrap-header">
-                                <span>'.esc_html($title).'</span>
-                            </div>';
-            }
-            $markup .= '<ol>';
-            foreach($results as $key) :
-                $item_title = isset($key['title']) ? trim($key['title']) : '';
-                $item_media_id = isset($key['media_id']) ? esc_attr($key['media_id']) : '';
-                $item_count = isset($key['total_count']) ? (int) $key['total_count'] : 0;
+						}else{
 
-                if($hiperlink_video == '1' && $player_id > 0 && !empty($item_media_id)){
-                    $markup .= '<li class="mvp-stat-item" data-media-id="'. $item_media_id .'" title="'.esc_attr($item_title).'">';
-                    $markup .= '<a href="#">'.esc_html($item_title).'</a>';
-                }else{
-                    $markup .= '<li class="mvp-stat-item">';
-                    $markup .= esc_html($item_title);
-                }
+							$markup .= '<li class="mvp-stat-item">';
 
-                $markup .= '<span class="mvp-stat-info"> ('. $item_count .')</span></li>';
-            endforeach;
-            $markup .= '</ol>
+							$markup .= esc_html(trim($key['title']));
+						}
+
+						$markup .= '<span class="mvp-stat-info">('.$key['total_count'].')</span></li>';
+					endforeach;
+					$markup .= '</ol>
 			</div>';
 
-			if($player_id > 0 && $hiperlink_video == '1'){
-        		// Generate JS safely
-        		$markup .= "<script type=\"text/javascript\">
-                    (function() {
-                        var elem = document.getElementById('".esc_js($id)."');
-                        if (!elem) return;
-                        var items = elem.querySelectorAll('.mvp-stat-item[data-media-id]'); // Select only items with media ID
-                        var i, len = items.length;
-                        function playMedia(e) {
-                            e.preventDefault();
-                            var mediaId = this.getAttribute('data-media-id');
-                            var mediaTitle = this.getAttribute('title');
-                            if (typeof window.mvp_player".esc_js($player_id)." !== 'undefined' && window.mvp_player".esc_js($player_id).".loadMedia) {
-                                window.mvp_player".esc_js($player_id).".loadMedia('id-title', mediaId, mediaTitle);
-                            } else {
-                                console.error('MVP Player ".esc_js($player_id)." not found or loadMedia not available.');
-                            }
-                            return false;
-                        }
-                        for (i = 0; i < len; i++) {
-                            items[i].removeEventListener('click', playMedia); // Remove listener first to prevent duplicates
-                            items[i].addEventListener('click', playMedia, false);
-                        }
-                    })();
-				</script>";
+			if(isset($atts['player_id']) && $hiperlink_video == '1'){
+        		$player_id = $atts['player_id'];
+        		//click to play in player (note: we must use the same playlist_id that is loaded in the player)
+        		$markup .= '<script type="text/javascript">
+					var elem = document.getElementById("'.$id.'"),
+					items = elem.querySelectorAll(".mvp-stat-item"), i, len = items.length;
+					for (i = 0; i < len; i++) {
+					    items[i].addEventListener("click", function(e) {
+					    	e.preventDefault();
+					    	mvp_player'.$player_id.'.loadMedia("id-title", this.getAttribute("data-media-id"), this.getAttribute("title")); return false;
+						}, false);
+					}
+				</script>';
 			}
 
 			return $markup;
 
 		}else{
-			return ''; // Return empty string if no results
+			return '';
 		}
 
 	}
@@ -735,39 +601,27 @@ Author URI: https://codecanyon.net/user/Tean/
 		    wp_send_json_error( 'Invalid security token sent.' );
 		    wp_die();
 		}
-        if (!current_user_can(MVP_CAPABILITY)) {
-            wp_send_json_error( 'Permission denied.' , 403);
-            wp_die();
-        }
 
 		if(isset($_POST['playlist_id'])){
 
-			$playlist_id = intval($_POST["playlist_id"]); // Sanitize
+			$playlist_id = $_POST["playlist_id"];
 
 			global $wpdb;
 		    $statistics_table = $wpdb->prefix . "mvp_statistics";
-            $stmt = false; // Initialize stmt
 
-	    	if($playlist_id > 0){ // Clear specific playlist
+	    	if($playlist_id != -1){
 	    		$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$statistics_table} WHERE playlist_id=%d", $playlist_id));
-	    	}elseif ($playlist_id === -1) { // Clear all playlists (use === to be explicit)
+	    	}else{
 	    		$stmt = $wpdb->query("DELETE FROM {$statistics_table}");
-	    	} else {
-                 wp_send_json_error('Invalid playlist ID for clearing stats.');
-                 wp_die();
-            }
-
+	    	}
 
 	    	if($stmt !== false){
-	    		wp_send_json_success("Statistics cleared successfully.");
-	    	} else {
-                wp_send_json_error('Failed to clear statistics. ' . $wpdb->last_error);
-            }
+	    		echo json_encode("SUCCESS");
+	    	}
 
 		    wp_die();
 
 		}else{
-            wp_send_json_error('Playlist ID not provided for clearing stats.');
 			wp_die();
 		}
 	}
@@ -778,29 +632,19 @@ Author URI: https://codecanyon.net/user/Tean/
 		    wp_send_json_error( 'Invalid security token sent.' );
 		    wp_die();
 		}
-        if (!current_user_can(MVP_CAPABILITY)) {
-            wp_send_json_error( 'Permission denied.' , 403);
-            wp_die();
-        }
 
 		if(isset($_POST['user_id'])){
 
-			$user_id = intval($_POST["user_id"]);
-
-            if ($user_id <= 0) {
-                wp_send_json_error('Invalid user ID provided.');
-                wp_die();
-            }
+			$user_id = $_POST["user_id"];
 
 			$results = mvp_getTopPlaysPerUserVideosAllTime($user_id);
 
-		    wp_send_json($results); // Send as JSON
+		    echo json_encode($results);
 
-			wp_die();
+			wp_die('');
 
 		}else {
-            wp_send_json_error('User ID not provided for user stats.');
-			wp_die();
+			wp_die('');
 		}
 
 	}
@@ -810,85 +654,96 @@ Author URI: https://codecanyon.net/user/Tean/
 	//############################################//
 
 	function mvp_set_watched_percentage(){
-         // No nonce check - called via nopriv
 
-		if(isset($_POST['media_id']) || isset($_POST['url'])){ // Require at least one identifier
+		if(isset($_POST['media_id'])){
 
-            // Sanitize inputs
-			$playlist_id = isset($_POST["playlist_id"]) && !mvp_nullOrEmpty($_POST["playlist_id"]) ? intval($_POST["playlist_id"]) : NULL;
-			$watched = isset($_POST['watched']) ? (int)$_POST['watched'] : 0;
-			$duration = isset($_POST['duration']) ? (int)$_POST['duration'] : 0;
-			$media_id = isset($_POST["media_id"]) && !mvp_nullOrEmpty($_POST["media_id"]) ? intval($_POST["media_id"]) : NULL;
-			$url = isset($_POST["url"]) && !mvp_nullOrEmpty($_POST["url"]) ? esc_url_raw($_POST["url"]) : NULL; // Sanitize URL
+			$playlist_id = !mvp_nullOrEmpty($_POST["playlist_id"]) ? $_POST["playlist_id"] : NULL;
+			$watched = (int)$_POST['watched'];
+			$duration = (int)$_POST['duration'];
+			$media_id = !mvp_nullOrEmpty($_POST["media_id"]) ? $_POST["media_id"] : NULL;
+			$url = !mvp_nullOrEmpty($_POST["url"]) ? $_POST["url"] : NULL;
 
+			$arr = array(
+				'title' => $url,
+				'watched' => $watched,
+				'duration' => $duration,
+				'media_id' => $media_id,
+				'playlist_id' => $playlist_id
+			);
 
 			global $wpdb;
 		    $watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
 
-            $stmt = false;
-            $response_arr = [];
+		    if($media_id && $url){
 
-            // Prepare data array only with non-null values needed for insert/update
-            $data_to_insert = [];
-            if ($url !== null) $data_to_insert['title'] = $url; // Use 'title' column for URL
-            if ($watched !== null) $data_to_insert['watched'] = $watched;
-            if ($duration !== null) $data_to_insert['duration'] = $duration;
-            if ($media_id !== null) $data_to_insert['media_id'] = $media_id;
-            if ($playlist_id !== null) $data_to_insert['playlist_id'] = $playlist_id;
+		    	//check if exist
+			    $stmt = $wpdb->get_row($wpdb->prepare("SELECT id FROM $watched_percentage_table WHERE media_id=%d AND title=%s", $media_id, $url));
 
-            // Prepare format array dynamically based on keys present
-            $format = [];
-            if (isset($data_to_insert['title'])) $format[] = '%s';
-            if (isset($data_to_insert['watched'])) $format[] = '%d';
-            if (isset($data_to_insert['duration'])) $format[] = '%d';
-            if (isset($data_to_insert['media_id'])) $format[] = '%d';
-            if (isset($data_to_insert['playlist_id'])) $format[] = '%d';
+			    if($wpdb->num_rows == 0){//create entry
 
-            if (empty($data_to_insert)) {
-                wp_send_json_error('No valid data provided to set watched percentage.');
-                wp_die();
-            }
+			    	$stmt = $wpdb->insert(
+				    	$watched_percentage_table,
+						$arr,
+						array(
+							'%s','%d','%d','%d','%d'
+						)
+				    );
 
-            // Determine existing record based on identifiers provided
-            $existing_id = null;
-		    if ($media_id && $url) {
-		        $existing_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM $watched_percentage_table WHERE media_id=%d AND title=%s", $media_id, $url));
-		    } else if ($url) { // Only URL provided
-		        $existing_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM $watched_percentage_table WHERE title=%s AND media_id IS NULL", $url));
-            } else if ($media_id) { // Only media_id provided (no URL) - less common case?
-                $existing_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM $watched_percentage_table WHERE media_id=%d AND title IS NULL", $media_id));
-            }
+			    }else{//update only if larger
 
+					$query = "UPDATE $watched_percentage_table
+					SET watched = GREATEST($watched, watched)
+					WHERE media_id = %d AND title = %s";
 
-		    if($existing_id === null){//create entry
-		    	$stmt = $wpdb->insert( $watched_percentage_table, $data_to_insert, $format );
-		    }else{//update only if larger
-                // Only update 'watched' and potentially 'duration' if needed
-                $stmt = $wpdb->query($wpdb->prepare(
-                    "UPDATE $watched_percentage_table SET watched = GREATEST(%d, watched), duration = %d WHERE id = %d",
-                    $watched, $duration, $existing_id
-                ));
-		    }
+					$values = array($media_id, $url);
 
-            // Build response based on what was processed
-             if ($media_id !== null) $response_arr['media_id'] = $media_id;
-             if ($url !== null) $response_arr['title'] = $url;
-             $response_arr['watched'] = $watched;
-             $response_arr['duration'] = $duration;
-             $response_arr['update_status'] = ($stmt !== false);
+					$stmt = $wpdb->query( $wpdb->prepare( "$query ", $values ) );
 
+			    }
 
-			wp_send_json($response_arr);
+			    $response_arr = array('update' => $stmt,
+			    					  'media_id' => $media_id,
+			    					  'title' => $url,
+			    					  'watched' => $watched,
+			    					  'duration' => $duration);
+
+		    }else if($url){//use title for url so we dont change column
+
+		    	//check if exist
+			    $stmt = $wpdb->get_row($wpdb->prepare("SELECT id FROM $watched_percentage_table WHERE title=%s", $url));
+
+			    if($wpdb->num_rows == 0){//create entry
+
+			    	$stmt = $wpdb->insert(
+				    	$watched_percentage_table,
+						$arr,
+						array(
+							'%s','%d','%d','%d','%d'
+						)
+				    );
+
+			    }else{//update only if larger
+
+					$stmt = $wpdb->query( $wpdb->prepare("UPDATE $watched_percentage_table SET watched = GREATEST($watched, watched) WHERE title = %s", $url ) );
+
+			    }
+
+			    $response_arr = array('title' => $url,
+			    					  'watched' => $watched,
+			    					  'duration' => $duration);
+
+			}
+
+			echo json_encode($response_arr);
+
 			wp_die();
 
 		}else {
-            wp_send_json_error('Required identifiers (media_id or url) missing.');
 			wp_die();
 		}
 	}
 
 	function mvp_get_watched_percentage(){
-        // No nonce check - called via nopriv
 
 		if(isset($_POST['data'])){
 
@@ -897,56 +752,32 @@ Author URI: https://codecanyon.net/user/Tean/
 
 			//https://stackoverflow.com/questions/44706196/mysql-multiple-columns-in-in-clause
 
-            $data_raw = stripcslashes($_POST['data']);
-			$data = json_decode($data_raw, true);
+			$data = json_decode(stripcslashes($_POST['data']), true);
+			$len = count($data);
+			$i = 0;
+			$str = '(';
+				foreach ($data as $d) {
+					$title = $d['url'];
+					if($d['media_id'] == null){
+						$str .= '( media_id IS NULL AND title = \''.$title.'\' )';
+					}else{
+						$str .= '( media_id = \''.$d['media_id'].'\' AND title = \''.$title.'\' )';
+					}
+					if($i < $len-1)$str .= ' OR ';
+					$i++;
+				}
+			$str .= ')';
 
-            if (json_last_error() !== JSON_ERROR_NONE || !is_array($data) || empty($data)) {
-                wp_send_json_error('Invalid or empty data provided.');
-                wp_die();
-            }
-
-			$where_clauses = [];
-            $where_values = [];
-
-            foreach ($data as $item) {
-                $item_url = isset($item['url']) ? esc_url_raw($item['url']) : null;
-                $item_media_id = isset($item['media_id']) ? intval($item['media_id']) : null;
-
-                if ($item_url !== null && $item_media_id !== null) {
-                    $where_clauses[] = "(media_id = %d AND title = %s)";
-                    $where_values[] = $item_media_id;
-                    $where_values[] = $item_url;
-                } elseif ($item_url !== null) {
-                     $where_clauses[] = "(media_id IS NULL AND title = %s)";
-                     $where_values[] = $item_url;
-                } elseif ($item_media_id !== null) {
-                    $where_clauses[] = "(media_id = %d AND title IS NULL)";
-                    $where_values[] = $item_media_id;
-                }
-                 // Skip item if both are null
-            }
-
-            if (empty($where_clauses)) {
-                 wp_send_json([]); // Return empty array if no valid conditions generated
-                 wp_die();
-            }
-
-            $where_sql = implode(' OR ', $where_clauses);
-			$query = "SELECT media_id, title, watched, duration FROM $watched_percentage_table WHERE " . $where_sql;
-
-			$stmt = $wpdb->get_results($wpdb->prepare($query, $where_values), ARRAY_A);
+			$stmt = $wpdb->get_results("SELECT media_id, title, watched, duration FROM $watched_percentage_table WHERE {$str}", ARRAY_A);
 
 			if($stmt !== false){
-	    		wp_send_json($stmt); // Send result (might be empty array)
-	    	} else {
-                wp_send_json_error('Database error retrieving watched percentage. ' . $wpdb->last_error);
-            }
+	    		echo json_encode($stmt);
+	    	}
 
 			wp_die();
 
 		}else {
-             wp_send_json_error('Required data not provided.');
-			 wp_die();
+			wp_die();
 		}
 	}
 
@@ -956,39 +787,24 @@ Author URI: https://codecanyon.net/user/Tean/
 		    wp_send_json_error( 'Invalid security token sent.' );
 		    wp_die();
 		}
-        if (!current_user_can(MVP_CAPABILITY)) {
-             wp_send_json_error( 'Permission denied.' , 403);
-             wp_die();
-        }
 
 		if(isset($_POST['playlist_id'])){
 
 			$playlist_id = (int)$_POST["playlist_id"];
 
-            if ($playlist_id <= 0) {
-                 wp_send_json_error( 'Invalid playlist ID provided.' );
-                 wp_die();
-            }
-
 			global $wpdb;
 		    $watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
 
-			$stmt = $wpdb->query($wpdb->prepare(
-                "UPDATE $watched_percentage_table SET watched='0' WHERE playlist_id=%d",
-                 $playlist_id
-             ));
+			$stmt = $wpdb->query($wpdb->prepare("UPDATE $watched_percentage_table SET watched='0' WHERE playlist_id=%d", $playlist_id));
 
 			if($stmt !== false){
-	    		wp_send_json_success(['cleared_count' => $stmt]); // Return number of rows affected
-	    	} else {
-                wp_send_json_error('Failed to clear watched percentage. ' . $wpdb->last_error);
-            }
+	    		echo json_encode($stmt);
+	    	}
 
 			wp_die();
 
 		}else {
-             wp_send_json_error( 'Playlist ID not provided.' );
-			 wp_die();
+			wp_die();
 		}
 	}
 
@@ -998,60 +814,39 @@ Author URI: https://codecanyon.net/user/Tean/
 		    wp_send_json_error( 'Invalid security token sent.' );
 		    wp_die();
 		}
-         if (!current_user_can(MVP_CAPABILITY)) { // Add capability check
-             wp_send_json_error( 'Permission denied.' , 403);
-             wp_die();
-         }
 
 		global $wpdb;
 	    $watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
 
-		$stmt = $wpdb->query("TRUNCATE TABLE $watched_percentage_table"); // TRUNCATE is faster if permissions allow
+		$stmt = $wpdb->query("TRUNCATE $watched_percentage_table");
 
 		if($stmt !== false){
-    		wp_send_json_success(['status' => 'All watched percentages cleared.']);
-    	} else {
-             // If TRUNCATE fails (e.g., permissions), try DELETE
-            $stmt_delete = $wpdb->query("DELETE FROM $watched_percentage_table");
-             if ($stmt_delete !== false) {
-                  wp_send_json_success(['status' => 'All watched percentages cleared (using DELETE).']);
-             } else {
-                wp_send_json_error('Failed to clear all watched percentages. ' . $wpdb->last_error);
-             }
-        }
+    		echo json_encode($stmt);
+    	}
 
 		wp_die();
 
 	}
 
 	//############################################//
-	/* Annotation Shortcode */
+	/*  */
 	//############################################//
 
 	function mvp_annotation_shortcode(){
-        // No nonce check - called via nopriv
 
 		if(isset($_POST['shortcode'])){
 
-			$shortcode_raw = isset($_POST['shortcode']) ? stripcslashes($_POST['shortcode']) : '';
-			$shortcode = json_decode($shortcode_raw, true); // Assume shortcode comes as a JSON string like "[shortcode atts=val]"
-			$annotation_id = isset($_POST['annotation_id']) ? sanitize_text_field($_POST['annotation_id']) : ''; // Sanitize ID
+			$shortcode = json_decode(stripcslashes($_POST['shortcode']), true);
+			$annotation_id = $_POST['annotation_id'];
 
-            // Basic validation of the shortcode format expected
-            if (json_last_error() !== JSON_ERROR_NONE || !is_string($shortcode) || substr(trim($shortcode), 0, 1) !== '[' || substr(trim($shortcode), -1) !== ']') {
-                 wp_send_json_error('Invalid shortcode format received.');
-                 wp_die();
-            }
+			$output = do_shortcode($shortcode);
 
+			echo json_encode(array("annotation_id"=>$annotation_id, "output"=> $output));
 
-			$output = do_shortcode($shortcode); // Execute the shortcode
-
-			wp_send_json(["annotation_id" => $annotation_id, "output" => $output]);
 			wp_die();
 
 		}else {
-             wp_send_json_error('Shortcode data not provided.');
-			 wp_die();
+			wp_die();
 		}
 	}
 
@@ -1060,12 +855,10 @@ Author URI: https://codecanyon.net/user/Tean/
 	//############################################//
 
 	function mvp_enable_custom_mime ( $mime_types = array() ) {
-        // Ensure input is an array
-        if (!is_array($mime_types)) $mime_types = [];
 
-	   $mime_types['m3u8'] = 'application/x-mpegURL'; // Keep it simple
+	   $mime_types['m3u8'] = 'application/x-mpegURL,application/vnd.apple.mpegurl';
 	   $mime_types['ts'] = 'video/MP2T';
-	   $mime_types['xml'] = 'application/xml'; // Standard XML mime type
+	   $mime_types['xml'] = 'application/xml';
 	   $mime_types['json'] = 'application/json';
 
 	   return $mime_types;
@@ -1076,15 +869,17 @@ Author URI: https://codecanyon.net/user/Tean/
 		if (function_exists('register_block_type')) {
             register_block_type('ultimate-media-gallery/block', array(
                 'attributes' => array(
-                    'player_id' => array( 'type' => 'string' ),
-                    'playlist_id' => array( 'type' => 'string' ),
-                    'ad_id' => array( 'type' => 'string' )
-                ),
-                 // Consider adding render_callback if needed for dynamic blocks
-                // 'render_callback' => 'mvp_render_gutenberg_block',
-                 'editor_script' => 'apmvp-block', // Associate script with block
-                 'editor_style' => 'mvp-block-editor-css', // Associate style with block
-            ));
+                    'player_id' => array(
+                        'type' => 'string'
+                    ),
+                    'playlist_id' => array(
+                        'type' => 'string'
+                    ),
+                    'ad_id' => array(
+                        'type' => 'string'
+                    )
+                ))
+            );
         }
 
 	}
@@ -1100,18 +895,15 @@ Author URI: https://codecanyon.net/user/Tean/
 	    $result = $wpdb->get_row("SELECT options FROM {$settings_table} WHERE id = '0'", ARRAY_A);
 
 	    if($result){
-	    	$settings = maybe_unserialize($result['options']); // Safe unserialize
-             if (!is_array($settings)) $settings = [];
+	    	$settings = unserialize($result['options']);
 
 		    $overide_wp_video = isset($settings["overide_wp_video"]) ? (bool)($settings["overide_wp_video"]) : false;
 
 		    if($overide_wp_video){
 		    	add_filter('wp_video_shortcode_override', 'mvp_video_shortcode_override', 10, 2);
-		    	// Careful with removing autop globally, might affect other content.
-                // Consider applying only where the shortcode exists? Or use CSS to counteract.
-		    	// add_filter('the_content', 'mvp_disable_wp_auto_p', 0 );
+		    	add_filter('the_content', 'mvp_disable_wp_auto_p', 0 );
 		    	add_filter('embed_oembed_html', 'mvp_embed_oembed_html', 99, 4);
-		    	add_filter('video_embed_html', 'mvp_embed_oembed_html'); // Hook for self-hosted video embeds
+		    	add_filter('video_embed_html', 'mvp_embed_oembed_html');
 		    }
 
 	    }
@@ -1119,22 +911,10 @@ Author URI: https://codecanyon.net/user/Tean/
 	}
 
 	function mvp_enqueue_block_assets() {
-        // Only enqueue block assets for the editor screen
-        if (is_admin() && function_exists('register_block_type')) {
-			wp_enqueue_script(
-                'apmvp-block',
-                plugins_url('js/block.js', __FILE__),
-                ['wp-blocks', 'wp-i18n', 'wp-element', 'wp-components', 'wp-editor'], // Add dependencies
-                 filemtime(plugin_dir_path(__FILE__) . 'js/block.js'), // Versioning
-                 true // In footer
-             );
+        if (function_exists('register_block_type')) {
+			wp_enqueue_script('apmvp-block', plugins_url('js/block.js', __FILE__), array( 'wp-blocks', 'wp-i18n', 'wp-element' ));
 
-			wp_enqueue_style(
-                'mvp-block-editor-css',
-                plugins_url('/css/block.css', __FILE__),
-                ['wp-edit-blocks'],
-                filemtime(plugin_dir_path(__FILE__) . 'css/block.css') // Versioning
-            );
+			wp_enqueue_style('mvp-block-editor-css', plugins_url('/css/block.css', __FILE__), array('wp-edit-blocks'));
 
 			global $wpdb;
             $player_table = $wpdb->prefix . "mvp_players";
@@ -1148,44 +928,21 @@ Author URI: https://codecanyon.net/user/Tean/
             //load ads
             $ads = $wpdb->get_results("SELECT id, title FROM {$global_ad_table} ORDER BY title ASC", ARRAY_A);
 
-            // Prepare data for localization - ensure it's structured for easy use in JS
-            $block_data = [
-                'players' => !empty($players) ? $players : [],
-                'playlists' => !empty($playlists) ? $playlists : [],
-                'ads' => !empty($ads) ? $ads : [],
-                 // Add other necessary data like AJAX URL or nonces if the block needs them
-                'ajax_url' => admin_url('admin-ajax.php'),
-            ];
-
-			wp_localize_script( 'apmvp-block', 'mvp_block_data', $block_data);
+			wp_localize_script( 'apmvp-block', 'mvp_block_data', array('players' => json_encode($players, JSON_HEX_TAG),
+																       'playlists' => json_encode($playlists, JSON_HEX_TAG),
+																       'ads' => json_encode($ads, JSON_HEX_TAG)));
 
         }
 
     }
 
 	function mvp_disable_wp_auto_p( $content ) {
-        // This function is commented out in the init hook, but kept here for reference
-        // Only remove autop if the shortcode is present? This is more complex.
-        // if ( has_shortcode( $content, 'apmvp' ) || has_shortcode( $content, 'apmvp_video' ) ) {
-	    //    remove_filter( 'the_content', 'wpautop' );
-	    //    remove_filter( 'the_excerpt', 'wpautop' );
-        // }
+	    remove_filter( 'the_content', 'wpautop' );
+	    remove_filter( 'the_excerpt', 'wpautop' );
 	    return $content;
 	}
 
-	function mvp_embed_oembed_html( $cache, $url = null, $attr = null, $post_ID = null ) {
-        // This filter can be called with different arguments (e.g., video_embed_html only passes $cache)
-        // We need the URL to decide what to do.
-        if ($url === null && is_string($cache) && preg_match('/src=[\'"]([^\'"]+)[\'"]/', $cache, $matches)) {
-            // Attempt to extract URL from cache if called via video_embed_html or similar
-            $url = $matches[1];
-        }
-
-        if ($url === null) return $cache; // Cannot proceed without URL
-
-        // Ensure $attr is an array
-        if ($attr === null) $attr = [];
-
+	function mvp_embed_oembed_html( $cache, $url, $attr, $post_ID ) {
 
 		if ( false !== strpos( $url, 'vimeo' ) ) {
 
@@ -1194,75 +951,64 @@ Author URI: https://codecanyon.net/user/Tean/
 				$attr['path'] = $matches[3];
 				if(isset($attr['width']))$attr['wrapper_max_width'] = $attr['width'];
 				$attr['type'] = 'vimeo_single';
-				$attr['playlist_position'] = 'no-playlist'; // Force no playlist for overrides
+				$attr['playlist_position'] = 'no-playlist';
 				$attr['use_previous'] = '0';
 				$attr['use_next'] = '0';
-				$attr['noapi'] = '1'; // Assume no API needed for simple embed override
-				$attr['vimeo_player_type'] = 'chromeless'; // Default player type
+				$attr['noapi'] = '1';
+				$attr['vimeo_player_type'] = 'chromeless';
 				return mvp_add_player($attr);
 
 			}else{
-				return $cache; // Return original WP embed if URL doesn't match pattern
+				return $cache;
 			}
 
 		}
 
-		else if ( false !== strpos( $url, 'youtube' ) || false !== strpos( $url, 'youtu.be' ) ) {
+		else if ( false !== strpos( $url, 'youtube' ) ) {
 
-			if ( preg_match("#(?<=v=)[a-zA-Z0-9\-_]+(?=&)|(?<=v\/)[^&\n\?]+|(?<=v=)[^&\n\?]+|(?<=youtu.be/)[^&\n\?]+#", $url, $matches)) { // Improved regex
+			if ( preg_match("#(?<=v=)[a-zA-Z0-9-]+(?=&)|(?<=v\/)[^&\n]+(?=\?)|(?<=v=)[^&\n]+|(?<=youtu.be/)[^&\n]+#", $url, $matches)) {
 
 				$attr['path'] = $matches[0];
 				if(isset($attr['width']))$attr['wrapper_max_width'] = $attr['width'];
 				$attr['type'] = 'youtube_single';
-				$attr['playlist_position'] = 'no-playlist'; // Force no playlist
+				$attr['playlist_position'] = 'no-playlist';
 				$attr['use_previous'] = '0';
 				$attr['use_next'] = '0';
-				$attr['noapi'] = '1'; // Assume no API
+				$attr['noapi'] = '1';
 				return mvp_add_player($attr);
 
 			}else{
-                // Check for YouTube playlist URL
+
 				parse_str( parse_url( $url, PHP_URL_QUERY ), $vars );
 				if(!empty($vars['list'])){
 
 					$attr['path'] = $vars['list'];
 					if(isset($attr['width']))$attr['wrapper_max_width'] = $attr['width'];
 					$attr['type'] = 'youtube_playlist';
-					// $attr['playlist_position'] = 'vrb'; // Let player defaults handle playlist position unless specified
+					//$attr['playlist_position'] = 'vrb';
 					return mvp_add_player($attr);
 
 				}else{
-					return $cache; // Return original WP embed if not single video or playlist
+					return $cache;
 				}
 			}
 		}
-		// Add handling for self-hosted video embeds if needed (might conflict with wp_video_shortcode_override)
-        // else if ( preg_match('/\.(mp4|webm|ogv)(\?.*)?$/i', $url) ) { ... }
-
-		else return $cache; // Return original WP embed for other URLs
+		else return $cache;
 
 	}
 
-	function mvp_video_shortcode_override( $html, $attr, $content = null ) { // Added $content default null
+	function mvp_video_shortcode_override( $html, $attr, $content ) {
 
-		// Check for common video file extensions in attributes
-        $video_src = '';
-        if (isset($attr['src'])) $video_src = $attr['src'];
-        elseif (isset($attr['mp4'])) $video_src = $attr['mp4'];
-        elseif (isset($attr['webm'])) $video_src = $attr['webm'];
-        elseif (isset($attr['ogv'])) $video_src = $attr['ogv'];
-
-		if(!empty($video_src)){
-			$attr['path'] = $video_src; // Use the detected source
+		if(isset($attr['mp4'])){
+			$attr['path'] = $attr['mp4'];
 			if(isset($attr['width']))$attr['wrapper_max_width'] = $attr['width'];
-            if(isset($attr['poster']))$attr['poster'] = $attr['poster']; // Pass poster if available
-			$attr['type'] = 'video'; // Assume 'video' type
-			$attr['playlist_position'] = 'no-playlist'; // Force no playlist
+			$attr['type'] = 'video';
+			$attr['playlist_position'] = 'no-playlist';
 			$attr['use_previous'] = '0';
 			$attr['use_next'] = '0';
 			return mvp_add_player($attr);
 		}else{
-			return $html; // Return default WP video shortcode HTML if no source found
+			return "";
 		}
 
 	};
@@ -1284,52 +1030,44 @@ Author URI: https://codecanyon.net/user/Tean/
 	function mvp_settings_page(){
 
 		global $wpdb;
-		// $wpdb->show_errors();
+		$wpdb->show_errors();
 		$settings_table = $wpdb->prefix . "mvp_settings";
 
-        $include_file = dirname(__FILE__) . "/includes/settings.php";
-        if (file_exists($include_file)) {
-		    include($include_file);
-        } else {
-             echo '<div class="wrap"><h2>Error</h2><p>' . esc_html__('Settings page file not found.', MVP_TEXTDOMAIN) . '</p></div>';
-        }
+		include("includes/settings.php");
 	}
 
 	function mvp_player_manager_page(){
 
 		global $wpdb;
-		// $wpdb->show_errors();
+		$wpdb->show_errors();
 		$player_table = $wpdb->prefix . "mvp_players";
-		$playlist_table = $wpdb->prefix . "mvp_playlists"; // Needed? Maybe not directly on manager page.
+		$playlist_table = $wpdb->prefix . "mvp_playlists";
 
 		$action = "";
 		if(isset($_GET['action'])){
-			$action = sanitize_key($_GET['action']); // Sanitize action
+			$action = $_GET['action'];
 		}
 
-        $base_path = dirname(__FILE__) . "/includes/";
-
 		switch($action) {
+
 			case 'edit_player':
-                 $include_file = $base_path . "edit_player.php";
-                 if (file_exists($include_file)) include($include_file); else echo "Error: edit_player.php not found";
-				 break;
-            // Removed redundant cases
-			// case 'save_options': // Handled via AJAX
-			// case 'delete_player': // Handled via AJAX
+				include("includes/edit_player.php");
+				break;
+
+			case 'save_options':
+			case 'delete_player':
 			default:
-                 $include_file = $base_path . "player_manager.php";
-                 if (file_exists($include_file)) include($include_file); else echo "Error: player_manager.php not found";
-				 break;
+				include("includes/player_manager.php");
+				break;
+
 		}
 
 	}
 
 	function mvp_playlist_manager_page(){
 
-		global $wpdb; // $wpdb defined here
-		// $wpdb->show_errors();
-        // Table names are defined here and used within the included file
+		global $wpdb;
+		$wpdb->show_errors();
 		$playlist_table = $wpdb->prefix . "mvp_playlists";
 		$media_table = $wpdb->prefix . "mvp_media";
 		$ad_table = $wpdb->prefix . "mvp_ad";
@@ -1342,25 +1080,24 @@ Author URI: https://codecanyon.net/user/Tean/
 
 		$action = "";
 		if(isset($_GET['action'])){
-			$action = sanitize_key($_GET['action']); // Sanitize
+			$action = $_GET['action'];
 		}
-
-        $base_path = dirname(__FILE__) . "/includes/";
 
 		switch($action) {
 
 			case 'edit_playlist':
-			case 'add_media_form': // Keep this if it's a valid action for edit_playlist screen
-                 $include_file = $base_path . "edit_playlist.php";
-                 if (file_exists($include_file)) include($include_file); else echo "Error: edit_playlist.php not found";
-				 break;
-			// case 'delete_playlist': // Handled via AJAX
-			// 	 include("includes/playlist_manager.php");
-			// 	 break;
+			case 'add_media_form':
+				include("includes/edit_playlist.php");
+				break;
+
+			case 'delete_playlist':
+				include("includes/playlist_manager.php");
+				break;
+
 			default:
-                 $include_file = $base_path . "playlist_manager.php";
-                 if (file_exists($include_file)) include($include_file); else echo "Error: playlist_manager.php not found";
-				 break;
+				include("includes/playlist_manager.php");
+				break;
+
 		}
 
 	}
@@ -1368,29 +1105,28 @@ Author URI: https://codecanyon.net/user/Tean/
 	function mvp_ad_manager_page(){
 
 		global $wpdb;
-		// $wpdb->show_errors();
+		$wpdb->show_errors();
 		$ad_table = $wpdb->prefix . "mvp_ad";
 		$annotation_table = $wpdb->prefix . "mvp_annotation";
 		$global_ad_table = $wpdb->prefix . "mvp_global_ad";
 
 		$action = "";
 		if(isset($_GET['action'])){
-			$action = sanitize_key($_GET['action']); // Sanitize
+			$action = $_GET['action'];
 		}
 
-        $base_path = dirname(__FILE__) . "/includes/";
-
 		switch($action) {
+
 			case 'edit_ad':
-                 $include_file = $base_path . "edit_ad.php";
-                 if (file_exists($include_file)) include($include_file); else echo "Error: edit_ad.php not found";
-				 break;
-			// case 'save_options': // Handled via AJAX
-			// case 'delete_ad': // Handled via AJAX
+				include("includes/edit_ad.php");
+				break;
+
+			case 'save_options':
+			case 'delete_ad':
 			default:
-                 $include_file = $base_path . "ad_manager.php";
-                 if (file_exists($include_file)) include($include_file); else echo "Error: ad_manager.php not found";
-				 break;
+				include("includes/ad_manager.php");
+				break;
+
 		}
 
 	}
@@ -1398,46 +1134,31 @@ Author URI: https://codecanyon.net/user/Tean/
 	function mvp_shortcodes_page(){
 
 		global $wpdb;
-		// $wpdb->show_errors();
+		$wpdb->show_errors();
 		$player_table = $wpdb->prefix . "mvp_players";
 		$playlist_table = $wpdb->prefix . "mvp_playlists";
 		$global_ad_table = $wpdb->prefix . "mvp_global_ad";
 
-        $include_file = dirname(__FILE__) . "/includes/shortcode_manager.php";
-        if (file_exists($include_file)) {
-		    include($include_file);
-        } else {
-             echo '<div class="wrap"><h2>Error</h2><p>' . esc_html__('Shortcode manager page file not found.', MVP_TEXTDOMAIN) . '</p></div>';
-        }
+		include("includes/shortcode_manager.php");
 	}
 
 	function mvp_statistics_page(){
 
 		global $wpdb;
-		// $wpdb->show_errors();
+		$wpdb->show_errors();
 		$statistics_table = $wpdb->prefix . "mvp_statistics";
 		$playlist_table = $wpdb->prefix . "mvp_playlists";
 
-        $include_file = dirname(__FILE__) . "/includes/statistics_display.php";
-        if (file_exists($include_file)) {
-		    include($include_file);
-        } else {
-             echo '<div class="wrap"><h2>Error</h2><p>' . esc_html__('Statistics display page file not found.', MVP_TEXTDOMAIN) . '</p></div>';
-        }
+		include("includes/statistics_display.php");
 
 	}
 
 	function mvp_demo_page(){
 
 		global $wpdb;
-		// $wpdb->show_errors();
+		$wpdb->show_errors();
 
-        $include_file = dirname(__FILE__) . "/includes/demo.php";
-        if (file_exists($include_file)) {
-		    include($include_file);
-        } else {
-             echo '<div class="wrap"><h2>Error</h2><p>' . esc_html__('Demo page file not found.', MVP_TEXTDOMAIN) . '</p></div>';
-        }
+		include("includes/demo.php");
 	}
 
 
@@ -1452,9 +1173,8 @@ Author URI: https://codecanyon.net/user/Tean/
 		$default_settings = mvp_get_settings();
 
 		if($stmt){
-			$result = maybe_unserialize($stmt['options']); // Safe unserialize
-             if (!is_array($result)) $result = [];
-			 $settings = array_merge($default_settings, $result); // Merge ensures defaults are present
+			$result = unserialize($stmt['options']);
+			$settings = $result + $default_settings;
 		}else{
 			$settings = $default_settings;
 		}
@@ -1463,79 +1183,110 @@ Author URI: https://codecanyon.net/user/Tean/
 
 		wp_enqueue_script('jquery');
 		wp_enqueue_script('jquery-ui-sortable');
-		wp_enqueue_media(); // For WP Media library integration
+		wp_enqueue_media();
 
-		wp_enqueue_style('mvp-admin-css', plugins_url('/css/admin.css', __FILE__), [], filemtime(plugin_dir_path(__FILE__) . 'css/admin.css'));
-
-
-		wp_enqueue_style("spectrum", plugins_url('/css/spectrum.css', __FILE__), [], '1.8.1'); // Add version
-		wp_enqueue_script("spectrum", plugins_url('/js/spectrum.js', __FILE__), array('jquery'), '1.8.1', true); // Add version, load in footer
-
-		wp_enqueue_script("mvp-general", plugins_url('/js/admin_global.js', __FILE__), array('jquery', 'jquery-ui-sortable'), filemtime(plugin_dir_path(__FILE__) . 'js/admin_global.js'), true); // Add version, load in footer
-
-        // Determine current admin page base
-        $current_screen = get_current_screen();
-        $page_base = $current_screen ? $current_screen->base : '';
-
-		// Load assets based on specific admin pages
-		if ($page_base === 'toplevel_page_mvp_settings') { // Adjusted base for main settings page
-             if (!empty($settings['fontAwesomeCssUrl'])) wp_enqueue_style("fa", esc_url($settings['fontAwesomeCssUrl']));//pi icons - Ensure URL is safe
-        }
-        elseif ($page_base === 'ultimate-media-gallery_page_mvp_player_manager') {
-            // Player Manager specific assets
-            wp_enqueue_style("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css", [], '4.0.13');
-            wp_enqueue_script("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js", array('jquery'), '4.0.13', true);
-
-            wp_enqueue_style("codemirror", plugins_url('/css/codemirror.min.css', __FILE__), [], '5.65.2'); // Example version
-            wp_enqueue_script("codemirror", plugins_url('/js/codemirror.min.js', __FILE__), [], '5.65.2', true); // Example version
-            // Potentially load JS modes for CSS/JS: wp_enqueue_script("codemirror-css", plugins_url('/js/mode/css/css.js', __FILE__), ['codemirror'], '5.65.2', true);
-            // Potentially load admin_player_manager.js if needed
-        }
-        elseif ($page_base === 'ultimate-media-gallery_page_mvp_playlist_manager') {
-             // Playlist Manager specific assets
-             wp_enqueue_style("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css", [], '4.0.13');
-             wp_enqueue_script("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js", array('jquery'), '4.0.13', true);
-
-             // Enqueue Import/Export JS
-             wp_enqueue_script("mvp-admin-import-export", plugins_url('/js/admin_import_export.js', __FILE__), array('jquery'), filemtime(plugin_dir_path(__FILE__) . 'js/admin_import_export.js'), true); // Versioning
-             // Localize data for the import/export script
-             wp_localize_script('mvp-admin-import-export', 'mvp_import_export_data', array(
-                 'ajax_url' => admin_url('admin-ajax.php'),
-                 'security' => wp_create_nonce('mvp-security-nonce') // Nonce for export/delete button action
-             ));
-             // Potentially load admin_playlist_manager.js if needed
-        }
-        elseif ($page_base === 'ultimate-media-gallery_page_mvp_ad_manager') {
-            // Ad Manager specific assets (if any)
-            // Potentially load admin_admanager.js if needed
-        }
-        elseif ($page_base === 'ultimate-media-gallery_page_mvp_statistics') {
-            // Statistics specific assets
-            wp_enqueue_script("selectize", "//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js", ['jquery'], '0.12.6', true);
-	        wp_enqueue_style("selectize", "//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css", [], '0.12.6');
-	        wp_enqueue_script("momentjs", "//cdn.jsdelivr.net/momentjs/latest/moment.min.js", [], null, true); // Use null version for CDN
-	        wp_enqueue_script("chart", "//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js", ['momentjs'], '2.9.3', true);
-	        wp_enqueue_script("mvp-admin-stat", plugins_url('/js/admin_stat.js', __FILE__), array('jquery', 'chart'), filemtime(plugin_dir_path(__FILE__) . 'js/admin_stat.js'), true); // Versioning
-        }
-        elseif ($page_base === 'ultimate-media-gallery_page_mvp_shortcodes') {
-            if (!empty($settings['fontAwesomeCssUrl'])) wp_enqueue_style("fa", esc_url($settings['fontAwesomeCssUrl'])); // Ensure URL is safe
-	        wp_enqueue_script("mvp-admin-shortcode", plugins_url('/js/admin_shortcode.js', __FILE__), array('jquery'), filemtime(plugin_dir_path(__FILE__) . 'js/admin_shortcode.js'), true); // Versioning
-        }
-        elseif ($page_base === 'ultimate-media-gallery_page_mvp_demo') {
-            // Demo page assets (if any)
-            // wp_enqueue_script("mvp-admin-demo", plugins_url('/js/admin_demo.js', __FILE__), array('jquery'), filemtime(plugin_dir_path(__FILE__) . 'js/admin_demo.js'), true);
-        }
+		wp_enqueue_style('mvp-admin-css', plugins_url('/css/admin.css', __FILE__));
 
 
-		// Localize general data available on most plugin pages
-		wp_localize_script('mvp-general', 'mvp_data', array(
-            'plugins_url' => plugins_url('', __FILE__),
-			'fontAwesomeUrl' => isset($settings['fontAwesomeCssUrl']) ? esc_url($settings['fontAwesomeCssUrl']) : '', // Escape URL safely
-			'ajax_url' => admin_url( 'admin-ajax.php'),
-			'options' => $settings, // Pass merged settings
-			'security'  => wp_create_nonce( 'mvp-security-nonce' ) // General nonce
+		wp_enqueue_style("spectrum", plugins_url('/css/spectrum.css', __FILE__));
+		wp_enqueue_script("spectrum", plugins_url('/js/spectrum.js', __FILE__), array('jquery'));
+
+		wp_enqueue_script("mvp-general", plugins_url('/js/admin_global.js', __FILE__), array('jquery'));
+
+		switch ( $hook_suffix ) {
+
+			case get_plugin_page_hookname( 'mvp_settings', 'mvp_settings' ):
+
+				wp_enqueue_style("fa", $settings['fontAwesomeCssUrl']);//pi icons
+
+				//wp_enqueue_script("mvp-admin", plugins_url('/js/admin_global.js', __FILE__), array('jquery'));
+
+	        case get_plugin_page_hookname( 'mvp_player_manager', 'mvp_settings' ):
+
+	        	//multi select
+				wp_enqueue_style("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css");
+				wp_enqueue_script("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js", array('jquery'));
+
+		        wp_enqueue_style("codemirror", plugins_url('/css/codemirror.min.css', __FILE__));
+		        wp_enqueue_script("codemirror", plugins_url('/js/codemirror.min.js', __FILE__));
+
+				//wp_enqueue_script("mvp-admin", plugins_url('/js/admin_player_manager.js', __FILE__), array('jquery'));
+
+	        break;
+
+	        case get_plugin_page_hookname( 'mvp_playlist_manager', 'mvp_settings' ):
+
+				//wp_enqueue_script("mvp-admin", plugins_url('/js/admin_playlist_manager.js', __FILE__), array('jquery'));
+				//wp_enqueue_script("mvp-ads", plugins_url('/js/admin_adcontent.js', __FILE__), array('jquery'));
+
+				//multi select
+				wp_enqueue_style("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css");
+				wp_enqueue_script("select2", "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js", array('jquery'));
+
+				// --- Enqueue NEW JS for JSON Import/Export ---
+                // (Create this file and add the JS code provided previously)
+                wp_enqueue_script("mvp-admin-import-export", plugins_url('/js/admin_import_export.js', __FILE__), array('jquery'), '1.0', true);
+                // ---------------------------------------------
+
+	        break;
+
+	        case get_plugin_page_hookname( 'mvp_ad_manager', 'mvp_settings' ):
+
+				//wp_enqueue_script("mvp-admin", plugins_url('/js/admin_admanager.js', __FILE__), array('jquery'));
+				//wp_enqueue_script("mvp-ads", plugins_url('/js/admin_adcontent.js', __FILE__), array('jquery'));
+
+	        break;
+
+	        case get_plugin_page_hookname( 'mvp_statistics', 'mvp_settings' ):
+
+	        	wp_enqueue_script("selectize", "//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js");
+
+	        	wp_enqueue_style("selectize", "//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css");
+
+	        	wp_enqueue_script("momentjs", "//cdn.jsdelivr.net/momentjs/latest/moment.min.js");
+
+	        	wp_enqueue_script("chart", "//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js");
+
+	        	wp_enqueue_script("mvp-admin", plugins_url('/js/admin_stat.js', __FILE__), array('jquery'));
+
+	        break;
+
+	        case get_plugin_page_hookname( 'mvp_shortcodes', 'mvp_settings' ):
+
+	        	wp_enqueue_style("fa", $settings['fontAwesomeCssUrl']);//pi icons
+
+	        	//wp_enqueue_script("mvp-admin", plugins_url('/js/admin_playlist_manager.js', __FILE__), array('jquery'));
+
+	        	//wp_enqueue_script("mvp-ads", plugins_url('/js/admin_adcontent.js', __FILE__), array('jquery'));
+
+	        	wp_enqueue_script("mvp-admin-shortcode", plugins_url('/js/admin_shortcode.js', __FILE__), array('jquery'));
+
+	        break;
+
+	        case get_plugin_page_hookname( 'mvp_demo', 'mvp_settings' ):
+
+	        	wp_enqueue_script("mvp-admin", plugins_url('/js/admin_demo.js', __FILE__), array('jquery'));
+
+	        break;
+	    }
+
+
+
+		wp_localize_script('mvp-general', 'mvp_data', array('plugins_url' => plugins_url('', __FILE__),
+																 'fontAwesomeUrl' => $settings['fontAwesomeCssUrl'],
+														         'ajax_url' => admin_url( 'admin-ajax.php'),
+														         'options' => $settings,
+														         'security'  => wp_create_nonce( 'mvp-security-nonce' )));
+
+        // --- Localize data for the NEW import/export script ---
+        // We reuse the same nonce ('mvp-security-nonce') for export JS trigger
+        // The import nonce is handled by wp_nonce_field in the form
+        wp_localize_script('mvp-admin-import-export', 'mvp_import_export_data', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'security' => wp_create_nonce('mvp-security-nonce') // Nonce for export button action
+             // Add any other specific data needed by the new JS here
         ));
-
+        // -------------------------------------------------------
 	}
 
 	function mvp_enqueue_scripts() {
@@ -1547,9 +1298,7 @@ Author URI: https://codecanyon.net/user/Tean/
 	    $default_settings = mvp_get_settings();
 
 	    if($result){
-            $db_settings = maybe_unserialize($result['options']);
-            if (!is_array($db_settings)) $db_settings = [];
-	    	$settings = array_merge($default_settings, $db_settings); // Merge
+	    	$settings = unserialize($result['options']) + $default_settings;
 	    	$js_to_footer = isset($settings["js_to_footer"]) ? (bool)($settings["js_to_footer"]) : false;
 	    }else{
 	    	$settings = $default_settings;
@@ -1558,30 +1307,4506 @@ Author URI: https://codecanyon.net/user/Tean/
 
 	    wp_enqueue_script('jquery');
 
-	    // Load Font Awesome conditionally based on settings
-    	if (isset($settings['add_font_awesome_css']) && $settings['add_font_awesome_css'] == '1' && !empty($settings['fontAwesomeCssUrl'])) {
-            wp_enqueue_style('fontawesome', esc_url($settings['fontAwesomeCssUrl']));
-        }
+	    //playlist icons
+    	if($settings['add_font_awesome_css'] == '1')wp_enqueue_style('fontawesome', $settings['fontAwesomeCssUrl']);
 
-		// Enqueue main plugin CSS and JS with versioning
-		wp_enqueue_style('mvp', plugins_url('/source/css/mvp.css', __FILE__), [], filemtime(plugin_dir_path(__FILE__) . 'source/css/mvp.css'));
-		wp_enqueue_script('mvp', plugins_url('/source/js/new.js', __FILE__), array('jquery'), filemtime(plugin_dir_path(__FILE__) . 'source/js/new.js'), $js_to_footer);
+		wp_enqueue_style('mvp', plugins_url('/source/css/mvp.css', __FILE__));//main css
 
-		// Localize minimal data needed for frontend JS
-		wp_localize_script('mvp', 'mvp_data', array(
-            'ajax_url' => admin_url( 'admin-ajax.php'),
-            // Add other frontend specific settings if needed, e.g., 'someOption' => $settings['some_option'] ?? 'default_value'
-        ));
+		wp_enqueue_script('mvp', plugins_url('/source/js/new.js', __FILE__), array('jquery'), false, $js_to_footer);//main js
+
+		wp_localize_script('mvp', 'mvp_data', array('ajax_url' => admin_url( 'admin-ajax.php')));
 
 	}
 
-	// --- FUNCTION DEFINITION FOR mvp_plugins_loaded ---
-    // This was missing in the previous version causing the fatal error
+	//############################################//
+	/* global */
+	//############################################//
+
+	function mvp_save_global_options(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['options'])){
+
+			$settings = json_decode(stripcslashes($_POST['options']), true);
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $settings_table = $wpdb->prefix . "mvp_settings";
+
+			$id = $wpdb->get_row("SELECT id FROM {$settings_table}");
+		    if($wpdb->num_rows > 0){
+
+		    	$stmt = $wpdb->update(
+			    	$settings_table,
+					array('options' => serialize($settings)),
+					array('id' => 0),
+					array('%s'),
+					array('%d')
+			    );
+
+		    }else{
+
+		    	$stmt = $wpdb->insert(
+			    	$settings_table,
+					array('options' => serialize($settings)),
+					array('%s')
+			    );
+
+		    }
+
+			if($stmt !== false){
+	    		echo json_encode($stmt);
+	    	}
+
+	    	wp_die();
+
+	    }else{
+			wp_die();
+		}
+
+	}
+
+	//############################################//
+	/* player */
+	//############################################//
+
+	function mvp_duplicate_player(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['title']) && isset($_POST['player_id'])){
+
+			$player_id = $_POST['player_id'];
+			$title = stripslashes($_POST['title']);
+
+			global $wpdb;
+			$player_table = $wpdb->prefix . "mvp_players";
+
+			$stmt = $wpdb->prepare("SELECT preset, options, custom_css, custom_js FROM {$player_table} WHERE id = %d", $player_id);//get player options
+
+			if($stmt !== false){
+
+				$result = $wpdb->get_row($stmt, ARRAY_A);
+
+			    $stmt = $wpdb->insert(//copy player
+			    	$player_table,
+					array(
+						'title' => $title,
+						'preset' => $result['preset'],
+						'options' => $result['options'],
+						'custom_css' => $result['custom_css'],
+						'custom_js' => $result['custom_js']
+					),
+					array(
+						'%s',
+						'%s',
+						'%s',
+						'%s',
+						'%s'
+					)
+			    );
+
+			    if($stmt !== false){
+		    		echo json_encode($wpdb->insert_id);
+		    	}
+
+			}
+
+		    wp_die();
+
+		}else{
+			wp_die();
+		}
+
+	}
+
+	function mvp_create_player(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    // Send a proper JSON error response
+		    wp_send_json_error( ['message' => 'Invalid security token sent.'] , 403 ); // Added status code
+		    // wp_die() is called by wp_send_json_error
+		}
+
+		// Check if required fields are set AND title is not empty
+		if(isset($_POST['title']) && !empty(trim($_POST['title'])) && isset($_POST['preset'])){
+
+			$title = stripslashes($_POST['title']);
+		    $received_preset = $_POST['preset']; // Get the preset sent from the browser
+
+		    $default_options = mvp_player_options();
+            $all_preset_options = mvp_player_options_preset(); // Get all available presets array
+            $valid_preset_keys = array_keys($all_preset_options); // Get valid preset names
+
+            // *** START VALIDATION ***
+            // Define a safe default preset key (MAKE SURE 'minimal' EXISTS in mvp_player_options_preset!)
+            $default_preset_key = 'minimal';
+
+            // Check if the default key itself is valid, if not, try to use the first available key
+            if (!in_array($default_preset_key, $valid_preset_keys)) {
+                 if (!empty($valid_preset_keys)) {
+                     $default_preset_key = $valid_preset_keys[0]; // Fallback to the first defined preset
+                 } else {
+                    // This should not happen if mvp_player_options_preset() is defined correctly
+                    wp_send_json_error( ['message' => 'Configuration error: No valid player presets found.'], 500 );
+                 }
+            }
+
+            // Check if the received preset is valid. If not, use the default.
+            if (in_array($received_preset, $valid_preset_keys)) {
+                $preset = $received_preset; // Use the valid received preset
+            } else {
+                 // Optional: Log this issue for debugging
+                 // error_log("MVP Plugin Warning: Invalid or empty preset ('" . esc_html($received_preset) . "') received during player creation. Defaulting to '" . esc_html($default_preset_key) . "'.");
+                 $preset = $default_preset_key; // Use the default preset
+            }
+            // *** END VALIDATION ***
+
+            // Now $preset is guaranteed to be a valid key, so getting $preset_options is safe
+		    $preset_options = $all_preset_options[$preset];
+
+            // $preset_options is now guaranteed to be an array, so array_replace is safe
+			$options = array_replace($default_options, $preset_options);
+
+			global $wpdb;
+			$player_table = $wpdb->prefix . "mvp_players";
+
+			$stmt = $wpdb->insert(
+		    	$player_table,
+				array(
+					'title' => $title,
+					'preset' => $preset, // Store the *actual* preset used (validated or default)
+					'options' => serialize($options)
+				),
+				array(
+					'%s', // title
+					'%s', // preset name
+					'%s'  // serialized options
+				)
+		    );
+
+		    if($stmt !== false){
+                // Send success response with the new ID
+	    		wp_send_json_success( ['new_player_id' => $wpdb->insert_id] );
+	    	} else {
+                // Send specific error if insert fails
+                wp_send_json_error( ['message' => 'Database error: Could not save the new player. ' . $wpdb->last_error] , 500 );
+            }
+		    // wp_die() is called by wp_send_json_success/error
+
+		}else{
+            // Send specific error if required data is missing
+             $missing_fields = [];
+             if (!isset($_POST['title']) || empty(trim($_POST['title']))) $missing_fields[] = 'title';
+             if (!isset($_POST['preset'])) $missing_fields[] = 'preset';
+             wp_send_json_error( ['message' => 'Missing required information: ' . implode(', ', $missing_fields)], 400 ); // Bad Request
+			 // wp_die() is called by wp_send_json_error
+		}
+	} // End function mvp_create_player
+
+	function mvp_edit_player_title(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['title']) && isset($_POST['id'])){
+
+			$title = stripcslashes($_POST["title"]);
+			$id = $_POST["id"];
+
+			global $wpdb;
+		    $player_table = $wpdb->prefix . "mvp_players";
+
+		    $wpdb->update(
+		    	$player_table,
+				array(
+					'title' => $title
+				),
+				array('id' => $id),
+				array(
+					'%s'
+				),
+				array(
+					'%d'
+				)
+		    );
+
+		    wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_delete_player(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['player_id'])){
+
+			$player_id = $_POST['player_id'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $player_table = $wpdb->prefix . "mvp_players";
+
+			$ids = explode(',',$player_id);
+			$in = implode(',', array_fill(0, count($ids), '%d'));
+
+		    $stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$player_table} WHERE id IN ($in)", $ids));
+
+			if($stmt !== false){
+	    		echo json_encode($stmt);
+	    	}
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_save_player_options(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['player_id'])){
+
+			$player_id = $_POST['player_id'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $player_table = $wpdb->prefix . "mvp_players";
+
+			$custom_css = !mvp_nullOrEmpty($_POST['custom_css']) ? $_POST['custom_css'] : NULL;
+			$custom_js = !mvp_nullOrEmpty($_POST['custom_js']) ? $_POST['custom_js'] : NULL;
+			$player_options = json_decode(stripcslashes($_POST['player_options']), true);
+
+			$stmt = $wpdb->update(
+		    	$player_table,
+				array('options' => serialize($player_options), 'custom_css' => $custom_css, 'custom_js' => $custom_js),
+				array('id' => $player_id),
+				array('%s','%s','%s'),
+				array('%d')
+		    );
+
+			if($stmt !== false){
+	    		echo json_encode($stmt);
+	    	}
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	//############################################//
+	/* playlist */
+	//############################################//
+
+	function mvp_create_playlist(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['title'])){
+
+			$title = stripslashes($_POST['title']);
+
+			global $wpdb;
+			$playlist_table = $wpdb->prefix . "mvp_playlists";
+
+		    $stmt = $wpdb->insert(
+		    	$playlist_table,
+				array(
+					'title' => $title,
+				),
+				array(
+					'%s','%s'
+				)
+		    );
+
+		    $lastid = $wpdb->insert_id;
+
+		    if(isset($_POST['media_id'])){//from stats
+
+		    	$media_id = $_POST['media_id'];
+				$_ids = explode('_', $media_id);
+
+				$ids = array();
+				foreach($_ids as $id){
+		            $ids[] = array("id" => $id);
+		        }
+
+				mvp_duplicatePlaylist(null, $lastid, $ids, "playlist_id");
+
+		    }else{
+
+		    	if($stmt !== false){
+		    		echo json_encode($lastid);
+		    	}
+
+		    }
+
+		    wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_save_playlist_options(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['playlist_id'])){
+
+			$playlist_id = $_POST['playlist_id'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $playlist_table = $wpdb->prefix . "mvp_playlists";
+
+		    $playlist_options = json_decode(stripcslashes($_POST['playlist_options']), true);
+
+		    $stmt = $wpdb->update(
+		    	$playlist_table,
+				array('options' => serialize($playlist_options)),
+				array('id' => $playlist_id),
+				array('%s'),
+				array('%d')
+		    );
+
+	    	echo json_encode('SUCCESS');
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_edit_playlist_title(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['title']) && isset($_POST['id'])){
+
+			$title = stripcslashes($_POST["title"]);
+			$id = $_POST["id"];
+
+			global $wpdb;
+		    $playlist_table = $wpdb->prefix . "mvp_playlists";
+
+		    $wpdb->update(
+		    	$playlist_table,
+				array(
+					'title' => $title
+				),
+				array('id' => $id),
+				array(
+					'%s'
+				),
+				array(
+					'%d'
+				)
+		    );
+
+		    wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_delete_playlist(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['playlist_id'])){
+
+			$playlist_id = $_POST['playlist_id'];
+			$ids = explode(',',$playlist_id);
+			$in = implode(',', array_fill(0, count($ids), '%d'));
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $playlist_table = $wpdb->prefix . "mvp_playlists";
+		    $media_table = $wpdb->prefix . "mvp_media";
+		    $statistics_table = $wpdb->prefix . "mvp_statistics";
+		    $ad_table = $wpdb->prefix . "mvp_ad";
+			$annotation_table = $wpdb->prefix . "mvp_annotation";
+			$path_table = $wpdb->prefix . "mvp_path";
+			$subtitle_table = $wpdb->prefix . "mvp_subtitle";
+			$watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
+
+		    //path
+	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$path_table} WHERE playlist_id IN ($in)", $ids));
+
+	    	//sub
+	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$subtitle_table} WHERE playlist_id IN ($in)", $ids));
+
+	    	//ad
+	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$ad_table} WHERE playlist_id IN ($in)", $ids));
+
+	    	//ann
+	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$annotation_table} WHERE playlist_id IN ($in)", $ids));
+
+	    	//media
+	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$media_table} WHERE playlist_id IN ($in)", $ids));
+
+	    	//watched perc
+	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$watched_percentage_table} WHERE playlist_id IN ($in)", $ids));
+
+	    	//stat
+	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$statistics_table} WHERE playlist_id IN ($in)", $ids));
+
+	    	//playlist
+	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$playlist_table} WHERE id IN ($in)", $ids));
+
+			if($stmt !== false){
+	    		echo json_encode($stmt);
+	    	}
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_duplicate_playlist(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['title']) && isset($_POST['playlist_id'])){
+
+			$playlist_id = $_POST['playlist_id'];
+			$title = stripslashes($_POST['title']);
+
+			global $wpdb;
+			$playlist_table = $wpdb->prefix . "mvp_playlists";
+
+			$options = $wpdb->get_var($wpdb->prepare("SELECT options FROM {$playlist_table} WHERE id = %d", $playlist_id));
+
+		    $stmt = $wpdb->insert(
+		    	$playlist_table,
+				array(
+					'title' => $title,
+					'options' => $options
+				),
+				array(
+					'%s','%s'
+				)
+		    );
+
+		    if($stmt !== false){//copy tracks
+
+			    $lastid = $wpdb->insert_id;//playlist_id
+
+		    	mvp_duplicatePlaylist($playlist_id, $lastid, null, "playlist_id");
+
+			}
+
+		    wp_die();
+
+		}else{
+			wp_die();
+		}
+
+	}
+
+	function mvp_duplicatePlaylist($playlist_id = null, $lastid = null, $ids = null, $msg = null){
+
+		global $wpdb;
+		$wpdb->show_errors();
+		$media_table = $wpdb->prefix . "mvp_media";
+		$ad_table = $wpdb->prefix . "mvp_ad";
+		$annotation_table = $wpdb->prefix . "mvp_annotation";
+		$path_table = $wpdb->prefix . "mvp_path";
+		$subtitle_table = $wpdb->prefix . "mvp_subtitle";
+
+		$tn = 'mvp_temp_table'.time();
+		$order_id = 0;
+
+	    //copy playlist
+
+		if($playlist_id != null){
+
+			//get order
+		    $stmt = $wpdb->get_row($wpdb->prepare("SELECT IFNULL(MAX(order_id)+1,0) AS order_id FROM {$media_table} WHERE playlist_id = %d", $lastid), ARRAY_A);
+	        $order_id = $stmt['order_id'];
+		}
+
+		//copy tracks
+		if($ids == null){
+			$stmt = $wpdb->prepare("SELECT id FROM {$media_table} WHERE playlist_id = %d ORDER BY order_id", $playlist_id);
+			$ids = $wpdb->get_results($stmt, ARRAY_A);
+		}
+
+		foreach ($ids as $id) {
+
+			//duplicate tracks
+
+			$stmt = $wpdb->query($wpdb->prepare("CREATE TEMPORARY TABLE {$tn} SELECT * FROM $media_table WHERE id=%d", $id['id']));
+
+			//copy track by track
+			if($stmt !== false){
+
+				//media
+
+				$wpdb->query("UPDATE {$tn} SET id=NULL, order_id=$order_id, playlist_id='$lastid'");//update playlist id
+				$wpdb->query("INSERT INTO $media_table SELECT * FROM {$tn}");
+				$last_media_insert_id = $wpdb->insert_id;//media_id
+				$wpdb->query("DROP TABLE {$tn}");
+
+				//copy path
+
+				$wpdb->query($wpdb->prepare("CREATE TEMPORARY TABLE {$tn} SELECT * FROM $path_table WHERE media_id=%d", $id['id']));
+				$wpdb->query("UPDATE {$tn} SET id=NULL, media_id='$last_media_insert_id'");//update media id
+				$wpdb->query("INSERT INTO $path_table SELECT * FROM {$tn}");
+				$wpdb->query("DROP TABLE {$tn}");
+
+				//copy subtitles
+
+				$wpdb->query($wpdb->prepare("CREATE TEMPORARY TABLE {$tn} SELECT * FROM $subtitle_table WHERE media_id=%d", $id['id']));
+				$wpdb->query("UPDATE {$tn} SET id=NULL, media_id='$last_media_insert_id'");//update media id
+				$wpdb->query("INSERT INTO $subtitle_table SELECT * FROM {$tn}");
+				$wpdb->query("DROP TABLE {$tn}");
+
+				//copy ads
+
+				//media ads
+				$wpdb->query($wpdb->prepare("CREATE TEMPORARY TABLE {$tn} SELECT * FROM $ad_table WHERE media_id=%d", $id['id']));
+				$wpdb->query("UPDATE {$tn} SET id=NULL, media_id='$last_media_insert_id'");//update media id
+				$wpdb->query("INSERT INTO $ad_table SELECT * FROM {$tn}");
+				$wpdb->query("DROP TABLE {$tn}");
+
+				//copy annotations
+
+				//media annotations
+				$wpdb->query($wpdb->prepare("CREATE TEMPORARY TABLE {$tn} SELECT * FROM $annotation_table WHERE media_id=%d", $id['id']));
+				$wpdb->query("UPDATE {$tn} SET id=NULL, media_id='$last_media_insert_id'");//update media id
+				$wpdb->query("INSERT INTO $annotation_table SELECT * FROM {$tn}");
+				$wpdb->query("DROP TABLE {$tn}");
+
+				$order_id++;
+
+			}
+
+		}
+
+		if($msg != null){//for copy, move tracks
+			if($stmt !== false){
+
+				if($msg == "playlist_id"){//redirect to newly created playlist
+					echo json_encode($lastid);
+				}else if($msg == "copy_media" || $msg == "make_playlist"){
+					echo json_encode("SUCCESS");
+				}
+
+	    	}
+	    	wp_die();
+		}
+	}
+
+
+	//############################################//
+	/* media */
+	//############################################//
+
+	function mvp_update_media_order(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['media_id_arr']) && isset($_POST['order_id_arr']) && isset($_POST['playlist_id'])){
+
+			$media_id_arr = explode(",",$_POST["media_id_arr"]);
+			$order_id_arr = explode(",",$_POST["order_id_arr"]);
+			$playlist_id = $_POST["playlist_id"];
+
+			global $wpdb;
+			$wpdb->show_errors();
+
+		    $media_table = $wpdb->prefix . "mvp_media";
+
+		    for($i=0;$i<count($media_id_arr);$i++) {
+
+		        $stmt = $wpdb->update(
+			    	$media_table,
+					array(
+						'order_id' => $order_id_arr[$i]
+					),
+					array('playlist_id' => $playlist_id, 'id' => $media_id_arr[$i]),
+					array(
+						'%d'
+					),
+					array(
+						'%d','%d'
+					)
+			    );
+
+		    }
+
+		    echo json_encode($stmt);
+
+		    wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_delete_media(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		header("Content-Type: application/json");
+
+		if(isset($_POST['media_id'])){
+
+			$media_id = $_POST['media_id'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $media_table = $wpdb->prefix . "mvp_media";
+
+			$ids = explode(',',$media_id);
+			$in = implode(',', array_fill(0, count($ids), '%d'));
+
+		    $stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$media_table} WHERE id IN ($in)", $ids));
+
+			if($stmt !== false){
+
+				$statistics_table = $wpdb->prefix . "mvp_statistics";
+				$wpdb->query($wpdb->prepare("DELETE FROM {$statistics_table} WHERE media_id IN ($in)", $ids));
+
+	    		echo json_encode($stmt);
+	    	}
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_copy_media(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		header("Content-Type: application/json");
+
+		if(isset($_POST['media_id']) && isset($_POST['destination_playlist_id'])){
+
+			$media_id = $_POST['media_id'];
+			$lastid = $_POST['destination_playlist_id'];
+
+			$ids = explode(',',$media_id);
+
+			$id_arr = array();
+			foreach ($ids as $id) {
+				$id_arr[] = array('id' => $id);
+			}
+
+	        mvp_duplicatePlaylist(null, $lastid, $id_arr, true);
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_move_media(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		header("Content-Type: application/json");
+
+		if(isset($_POST['media_id']) && isset($_POST['destination_playlist_id'])){
+
+			$media_id = $_POST['media_id'];
+			$destination_playlist_id = $_POST['destination_playlist_id'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $media_table = $wpdb->prefix . "mvp_media";
+
+			$ids = explode(',',$media_id);
+			$in = implode(',', array_fill(0, count($ids), '%d'));
+
+			//only update playlist_id
+
+			$stmt = $wpdb->query($wpdb->prepare("UPDATE {$media_table} SET playlist_id = $destination_playlist_id WHERE id IN ($in)", $ids));
+
+			if($stmt !== false){
+	    		echo json_encode($stmt);
+	    	}
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_edit_media(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['media_id'])){
+
+			$media_id = $_POST['media_id'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $media_table = $wpdb->prefix . "mvp_media";
+		    $path_table = $wpdb->prefix . "mvp_path";
+		    $subtitle_table = $wpdb->prefix . "mvp_subtitle";
+		    $ad_table = $wpdb->prefix . "mvp_ad";
+		    $annotation_table = $wpdb->prefix . "mvp_annotation";
+
+		    //media
+
+		    $stmt = $wpdb->prepare("SELECT title, options FROM {$media_table} WHERE id = %d", $media_id);
+		    $result = $wpdb->get_row($stmt, ARRAY_A);
+		    $data = unserialize($result['options']);
+
+		    $data['title'] = $result['title'];
+
+		    //path
+
+		    $paths = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$path_table} WHERE media_id = %d", $media_id), ARRAY_A);
+
+		    $multi_path_query_result = array();
+		    foreach($paths as $item){
+		        $multi_path_query_result[] = unserialize($item['options']);
+		    }
+
+		    //subtitle
+
+		    $stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$subtitle_table} WHERE media_id = %d", $media_id), ARRAY_A);
+
+		    $subtitle_query_result = array();
+		    foreach($stmt as $item){
+		        $subtitle_query_result[] = unserialize($item['options']);
+		    }
+
+			//ads
+
+			$stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$ad_table} WHERE media_id = %d", $media_id), ARRAY_A);
+		    $ad_data = array();
+		    foreach($stmt as $item){
+		        $ad_data[] = unserialize($item['options']);
+		    }
+
+		    //annotations
+
+			$stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$annotation_table} WHERE media_id = %d", $media_id), ARRAY_A);
+		    $annotation_data = array();
+		    foreach($stmt as $item){
+		        $annotation_data[] = unserialize($item['options']);
+		    }
+
+			if($stmt !== false){
+	    		$arr = array(
+					"data" => $data,
+					"multi_path_query_result" => $multi_path_query_result,
+					"subtitle" => $subtitle_query_result,
+					"ad_data" => $ad_data,
+					"annotation_data" => $annotation_data
+	    		);
+	    		echo json_encode($arr);
+	    	}
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_domain_rename(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['playlist_id'])){
+
+			$playlist_id = $_POST['playlist_id'];
+			$from = $_POST['from'];
+			$to = $_POST['to'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $media_table = $wpdb->prefix . "mvp_media";
+		    $path_table = $wpdb->prefix . "mvp_path";
+		    $subtitle_table = $wpdb->prefix . "mvp_subtitle";
+
+		    //media
+			$stmt = $wpdb->prepare("SELECT id, options FROM $media_table WHERE playlist_id = %d", $playlist_id);
+
+			$medias = $wpdb->get_results($stmt, ARRAY_A);
+
+			$media_arr = array();
+
+			foreach ($medias as $media) {
+
+				$media_id = $media['id'];
+				$options = unserialize($media['options']);
+
+				$type = $options['type'];
+
+				if(isset($options['mp4']))$options['mp4'] = str_replace($from, $to, $options['mp4']);
+
+				if(isset($options['poster']))$options['poster'] = str_replace($from, $to, $options['poster']);
+
+				if(isset($options['download']))$options['download'] = str_replace($from, $to, $options['download']);
+
+				if(isset($options['hover_preview']))$options['hover_preview'] = str_replace($from, $to, $options['hover_preview']);
+
+				if(isset($options['slideshow_images'])){
+					$options['slideshow_images'] = str_replace($from, $to, $options['slideshow_images']);
+				}
+
+				if(isset($options['thumb']))$options['thumb'] = str_replace($from, $to, $options['thumb']);
+
+				if(isset($options['preview_seek']))$options['preview_seek'] = str_replace($from, $to, $options['preview_seek']);
+
+				if(isset($options['chapters']))$options['chapters'] = str_replace($from, $to, $options['chapters']);
+
+				if(isset($options['vast']))$options['vast'] = str_replace($from, $to, $options['vast']);
+
+
+				$stmt = $wpdb->update(
+			    	$media_table,
+					array(
+						'options' => serialize($options),
+					),
+					array('id' => $media_id),
+					array(
+						'%s'
+					),
+					array(
+						'%d'
+					)
+			    );
+
+
+				//path
+
+			    $paths = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$path_table} WHERE media_id = %d", $media_id), ARRAY_A);
+
+			    $media_path = array();
+			    foreach($paths as $item){
+			    	$mp = unserialize($item['options']);
+			    	$mp['path'] = str_replace($from, $to, $mp['path']);
+			        $media_path[] = $mp;
+
+			    }
+
+			    //delete current values
+				$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$path_table} WHERE media_id = %d", $media_id));
+
+		    	//multi path
+		    	if($type == 'video' || $type == 'audio'){
+
+		    		for($i = 0; $i < count($media_path); $i++){
+
+			    		$stmt = $wpdb->insert(
+					    	$path_table,
+							array(
+								'options' => serialize($media_path[$i]),
+								'media_id' => $media_id,
+								'playlist_id' => $playlist_id
+							),
+							array(
+								'%s','%d','%d'
+							)
+					    );
+
+			    	}
+
+			    }else{//path
+
+		    		$stmt = $wpdb->insert(
+				    	$path_table,
+						array(
+							'options' => serialize($media_path[0]),
+							'media_id' => $media_id,
+							'playlist_id' => $playlist_id
+						),
+						array(
+							'%s','%d','%d'
+						)
+				    );
+
+			    }
+
+			    //subtitles
+
+			    $subtitles = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$subtitle_table} WHERE media_id = %d", $media_id), ARRAY_A);
+
+			    $subtitle_query_result = array();
+			    foreach($subtitles as $item){
+			    	$mp = unserialize($item['options']);
+			        if(isset($mp['src']))$mp['src'] = str_replace($from, $to, $mp['src']);
+			        $subtitle_query_result[] = $mp;
+			    }
+
+		    	//delete current values
+				$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$subtitle_table} WHERE media_id = %d", $media_id));
+
+		    	//new values
+
+	    		for($i = 0; $i < count($subtitle_query_result); $i++){
+
+		    		$stmt = $wpdb->insert(
+				    	$subtitle_table,
+						array(
+							'options' => serialize($subtitle_query_result[$i]),
+							'media_id' => $media_id,
+							'playlist_id' => $playlist_id
+						),
+						array(
+							'%s','%d','%d'
+						)
+				    );
+
+		    	}
+
+			}
+
+	    	echo json_encode("");
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_add_media(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['options']) && isset($_POST['playlist_id'])){
+
+			$options = json_decode(stripcslashes($_POST['options']), true);
+			$playlist_id = $_POST['playlist_id'];
+			$save_type = $_POST['save_type'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $media_table = $wpdb->prefix . "mvp_media";
+		    $path_table = $wpdb->prefix . "mvp_path";
+		    $subtitle_table = $wpdb->prefix . "mvp_subtitle";
+		    $ad_table = $wpdb->prefix . "mvp_ad";
+		    $annotation_table = $wpdb->prefix . "mvp_annotation";
+
+		    $type = $_POST['type'];
+		    $media_title = str_replace('"', "'", stripslashes($_POST['title']));
+
+		    $first_insert_happend = null;
+
+		    if($save_type == 'add_media'){
+
+		    	if(!empty($_POST['additional_playlist'])){
+					$additional_playlist = explode(",", $_POST['additional_playlist']);
+					$additional_playlist[] = $playlist_id;
+				}else{
+					$additional_playlist = array($playlist_id);
+				}
+
+				foreach ($additional_playlist as $playlist_to_insert) {
+
+					$playlist_id = $playlist_to_insert;
+
+					//media order
+			        $stmt = $wpdb->get_row($wpdb->prepare("SELECT IFNULL(MAX(order_id)+1,0) AS order_id FROM {$media_table} WHERE playlist_id = %d", $playlist_id), ARRAY_A);
+			        $order_id = $stmt['order_id'];
+
+				    $stmt = $wpdb->insert(
+				    	$media_table,
+						array(
+							'title' => $media_title,
+							'options' => serialize($options),
+							'playlist_id' => $playlist_id,
+							'order_id' => $order_id
+						),
+						array(
+							'%s','%s','%d','%d'
+						)
+				    );
+
+				    if($stmt !== false){
+
+				    	$insert_id = $wpdb->insert_id;
+
+				    	//multi path
+				    	if($type == 'video' || $type == 'audio'){
+
+				    		$media_path = json_decode(stripcslashes($_POST['media_path']), true);
+
+				    		for($i = 0; $i < count($media_path); $i++){
+
+					    		$stmt = $wpdb->insert(
+							    	$path_table,
+									array(
+										'options' => serialize($media_path[$i]),
+										'media_id' => $insert_id,
+										'playlist_id' => $playlist_id
+									),
+									array(
+										'%s','%d','%d'
+									)
+							    );
+
+					    	}
+
+					    }else{//path
+
+					    	$media_path = json_decode(stripcslashes($_POST['media_path']), true);
+
+				    		$stmt = $wpdb->insert(
+						    	$path_table,
+								array(
+									'options' => serialize($media_path[0]),
+									'media_id' => $insert_id,
+									'playlist_id' => $playlist_id
+								),
+								array(
+									'%s','%d','%d'
+								)
+						    );
+
+					    }
+
+					    //subtitles
+
+				    	if(!empty($_POST['subtitle_src'])){
+
+				    		$subtitle_src = json_decode(stripcslashes($_POST['subtitle_src']), true);
+
+				    		for($i = 0; $i < count($subtitle_src); $i++){
+
+					    		$stmt = $wpdb->insert(
+							    	$subtitle_table,
+									array(
+										'options' => serialize($subtitle_src[$i]),
+										'media_id' => $insert_id,
+										'playlist_id' => $playlist_id
+									),
+									array(
+										'%s','%d','%d'
+									)
+							    );
+
+					    	}
+
+					    }
+
+				    	//ads
+
+				    	if(!empty($_POST['ad_pre'])){
+
+				    		$ad_pre = json_decode(stripcslashes($_POST['ad_pre']), true);
+
+				    		for($i = 0; $i < count($ad_pre); $i++){
+
+				    			$stmt = $wpdb->insert(
+							    	$ad_table,
+									array(
+										'options' => serialize($ad_pre[$i]),
+										'media_id' => $insert_id,
+										'playlist_id' => $playlist_id
+									),
+									array(
+										'%s','%d','%d'
+									)
+							    );
+
+							}
+
+				    	}
+
+				    	if(!empty($_POST['ad_mid'])){
+
+				    		$ad_mid = json_decode(stripcslashes($_POST['ad_mid']), true);
+
+				    		for($i = 0; $i < count($ad_mid); $i++){
+
+				    			$stmt = $wpdb->insert(
+							    	$ad_table,
+									array(
+										'options' => serialize($ad_mid[$i]),
+										'media_id' => $insert_id,
+										'playlist_id' => $playlist_id
+									),
+									array(
+										'%s','%d','%d'
+									)
+							    );
+
+					    	}
+
+				    	}
+
+				    	if(!empty($_POST['ad_end'])){
+
+				    		$ad_end = json_decode(stripcslashes($_POST['ad_end']), true);
+
+				    		for($i = 0; $i < count($ad_end); $i++){
+
+				    			$stmt = $wpdb->insert(
+							    	$ad_table,
+									array(
+										'options' => serialize($ad_end[$i]),
+										'media_id' => $insert_id,
+										'playlist_id' => $playlist_id
+									),
+									array(
+										'%s','%d','%d'
+									)
+							    );
+
+					    	}
+
+				    	}
+
+
+				    	//annotations
+
+						if(!empty($_POST['annotation'])){
+
+				    		$annotation = json_decode(stripcslashes($_POST['annotation']), true);
+
+				    		for($i = 0; $i < count($annotation); $i++){
+
+							    $stmt = $wpdb->insert(
+							    	$annotation_table,
+									array(
+										'options' => serialize($annotation[$i]),
+										'media_id' => $insert_id,
+										'playlist_id' => $playlist_id
+									),
+									array(
+										'%s','%d','%d'
+									)
+							    );
+
+					    	}
+				    	}
+
+				    }//if($stmt !== false){
+
+
+				    if(!$first_insert_happend){
+				    	 $first_insert_happend = true;
+
+				    	 if($stmt !== false){
+							$data = array('insert_id' => $insert_id,
+							 			  'order_id' => $order_id);
+				    		echo json_encode($data);
+				    	}
+				    }
+
+				}//foreach ($additional_playlist as $playlist_to_insert) {
+
+		    }else{//edit media
+
+		    	$media_id = $_POST['media_id'];
+
+				$stmt = $wpdb->update(
+			    	$media_table,
+					array(
+						'title' => $media_title,
+						'options' => serialize($options),
+					),
+					array('id' => $media_id),
+					array(
+						'%s','%s'
+					),
+					array(
+						'%d'
+					)
+			    );
+
+			    //path
+
+		    	//delete current values
+				$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$path_table} WHERE media_id = %d", $media_id));
+		    	//multi path
+		    	if($type == 'video' || $type == 'audio'){
+
+		    		$media_path = json_decode(stripcslashes($_POST['media_path']), true);
+
+		    		for($i = 0; $i < count($media_path); $i++){
+
+			    		$stmt = $wpdb->insert(
+					    	$path_table,
+							array(
+								'options' => serialize($media_path[$i]),
+								'media_id' => $media_id,
+								'playlist_id' => $playlist_id
+							),
+							array(
+								'%s','%d','%d'
+							)
+					    );
+
+			    	}
+
+			    }else{//path
+
+			    	$media_path = json_decode(stripcslashes($_POST['media_path']), true);
+
+		    		$stmt = $wpdb->insert(
+				    	$path_table,
+						array(
+							'options' => serialize($media_path[0]),
+							'media_id' => $media_id,
+							'playlist_id' => $playlist_id
+						),
+						array(
+							'%s','%d','%d'
+						)
+				    );
+
+			    }
+
+			    //subtitles
+
+		    	//delete current values
+				$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$subtitle_table} WHERE media_id = %d", $media_id));
+
+		    	//new values
+		    	if(!empty($_POST['subtitle_src'])){
+
+		    		$subtitle_src = json_decode(stripcslashes($_POST['subtitle_src']), true);
+
+		    		for($i = 0; $i < count($subtitle_src); $i++){
+
+			    		$stmt = $wpdb->insert(
+					    	$subtitle_table,
+							array(
+								'options' => serialize($subtitle_src[$i]),
+								'media_id' => $media_id,
+								'playlist_id' => $playlist_id
+							),
+							array(
+								'%s','%d','%d'
+							)
+					    );
+
+			    	}
+
+			    }
+
+
+		    	//ads
+
+		    	//delete current values
+				$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$ad_table} WHERE media_id = %d", $media_id));
+
+		    	if(!empty($_POST['ad_pre'])){
+
+		    		$ad_pre = json_decode(stripcslashes($_POST['ad_pre']), true);
+
+		    		for($i = 0; $i < count($ad_pre); $i++){
+
+		    			$stmt = $wpdb->insert(
+					    	$ad_table,
+							array(
+								'options' => serialize($ad_pre[$i]),
+								'media_id' => $media_id,
+								'playlist_id' => $playlist_id
+							),
+							array(
+								'%s','%d','%d'
+							)
+					    );
+
+					}
+
+		    	}
+
+		    	if(!empty($_POST['ad_mid'])){
+
+		    		$ad_mid = json_decode(stripcslashes($_POST['ad_mid']), true);
+
+		    		for($i = 0; $i < count($ad_mid); $i++){
+
+		    			$stmt = $wpdb->insert(
+					    	$ad_table,
+							array(
+								'options' => serialize($ad_mid[$i]),
+								'media_id' => $media_id,
+								'playlist_id' => $playlist_id
+							),
+							array(
+								'%s','%d','%d'
+							)
+					    );
+
+			    	}
+
+		    	}
+
+		    	if(!empty($_POST['ad_end'])){
+
+		    		$ad_end = json_decode(stripcslashes($_POST['ad_end']), true);
+
+		    		for($i = 0; $i < count($ad_end); $i++){
+
+		    			$stmt = $wpdb->insert(
+					    	$ad_table,
+							array(
+								'options' => serialize($ad_end[$i]),
+								'media_id' => $media_id,
+								'playlist_id' => $playlist_id
+							),
+							array(
+								'%s','%d','%d'
+							)
+					    );
+
+			    	}
+
+		    	}
+
+
+		    	//annotations
+
+		    	//delete current values
+				$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$annotation_table} WHERE media_id = %d", $media_id));
+
+				if(!empty($_POST['annotation'])){
+
+		    		$annotation = json_decode(stripcslashes($_POST['annotation']), true);
+
+		    		for($i = 0; $i < count($annotation); $i++){
+
+					    $stmt = $wpdb->insert(
+					    	$annotation_table,
+							array(
+								'options' => serialize($annotation[$i]),
+								'media_id' => $media_id,
+								'playlist_id' => $playlist_id
+							),
+							array(
+								'%s','%d','%d'
+							)
+					    );
+
+			    	}
+		    	}
+
+				if($stmt !== false){
+		    		echo json_encode('SUCCESS');
+		    	}
+		    }
+
+		    wp_die();
+
+		}else{
+
+			wp_die();
+		}
+
+	}
+
+	function mvp_add_media_multiple(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['media']) && isset($_POST['playlist_id'])){
+
+			$media = json_decode(stripcslashes($_POST['media']), true);
+			$playlist_id = $_POST['playlist_id'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $media_table = $wpdb->prefix . "mvp_media";
+		    $path_table = $wpdb->prefix . "mvp_path";
+		    $ad_table = $wpdb->prefix . "mvp_ad";
+		    $annotation_table = $wpdb->prefix . "mvp_annotation";
+
+			$data = array();
+
+			$len = count($media);
+			for($i=0; $i < $len; $i++){
+
+			    $options = $media[$i];
+
+			    $media_title = $options['title'];
+			    $order_id = $i;
+
+			    $stmt = $wpdb->insert(
+			    	$media_table,
+					array(
+						'title' => $media_title,
+						'options' => serialize($options),
+						'playlist_id' => $playlist_id,
+						'order_id' => $order_id
+					),
+					array(
+						'%s','%s','%d','%d'
+					)
+			    );
+
+			    if($stmt !== false){
+
+			    	$insert_id = $wpdb->insert_id;
+
+			    	//path
+
+			    	$media_path = array('path' => $options['path']);
+
+		    		$stmt = $wpdb->insert(
+				    	$path_table,
+						array(
+							'options' => serialize($media_path),
+							'media_id' => $insert_id,
+							'playlist_id' => $playlist_id
+						),
+						array(
+							'%s','%d','%d'
+						)
+				    );
+
+			    	//ads
+
+			    	if(!empty($_POST['ad_pre'])){
+
+			    		$ad_pre = json_decode(stripcslashes($_POST['ad_pre']), true);//same ads for all media
+
+			    		for($i = 0; $i < count($ad_pre); $i++){
+
+			    			$stmt = $wpdb->insert(
+						    	$ad_table,
+								array(
+									'options' => serialize($ad_pre[$i]),
+									'media_id' => $insert_id,
+									'playlist_id' => $playlist_id
+								),
+								array(
+									'%s','%d','%d'
+								)
+						    );
+
+						}
+
+			    	}
+
+			    	if(!empty($_POST['ad_mid'])){
+
+			    		$ad_mid = json_decode(stripcslashes($_POST['ad_mid']), true);
+
+			    		for($i = 0; $i < count($ad_mid); $i++){
+
+			    			$stmt = $wpdb->insert(
+						    	$ad_table,
+								array(
+									'options' => serialize($ad_mid[$i]),
+									'media_id' => $insert_id,
+									'playlist_id' => $playlist_id
+								),
+								array(
+									'%s','%d','%d'
+								)
+						    );
+
+				    	}
+
+			    	}
+
+			    	if(!empty($_POST['ad_end'])){
+
+			    		$ad_end = json_decode(stripcslashes($_POST['ad_end']), true);
+
+			    		for($i = 0; $i < count($ad_end); $i++){
+
+			    			$stmt = $wpdb->insert(
+						    	$ad_table,
+								array(
+									'options' => serialize($ad_end[$i]),
+									'media_id' => $insert_id,
+									'playlist_id' => $playlist_id
+								),
+								array(
+									'%s','%d','%d'
+								)
+						    );
+
+				    	}
+
+			    	}
+
+
+			    	//annotations
+
+					if(!empty($_POST['annotation'])){
+
+			    		$annotation = json_decode(stripcslashes($_POST['annotation']), true);
+
+			    		for($i = 0; $i < count($annotation); $i++){
+
+						    $stmt = $wpdb->insert(
+						    	$annotation_table,
+								array(
+									'options' => serialize($annotation[$i]),
+									'media_id' => $insert_id,
+									'playlist_id' => $playlist_id
+								),
+								array(
+									'%s','%d','%d'
+								)
+						    );
+
+				    	}
+			    	}
+
+					$data[] = array('insert_id' => $insert_id,
+					 			'order_id' => $order_id,
+					 			'options' => $options);
+
+			    }
+
+			}
+
+
+
+			//save original youtube url for update
+			if(isset($_POST['youtube_url']) && !mvp_nullOrEmpty($_POST['youtube_url']) && isset($_POST['youtube_url_type']) && !mvp_nullOrEmpty($_POST['youtube_url_type'])){
+
+			    $playlist_table = $wpdb->prefix . "mvp_playlists";
+
+			    //playlist data
+				$playlist_data = $wpdb->get_row($wpdb->prepare("SELECT  options FROM {$playlist_table} WHERE id = %d", $playlist_id), ARRAY_A);
+				$pl_options = unserialize($playlist_data['options']);
+
+			    $pl_options['youtubeUrl'] = $_POST['youtube_url'];
+			    $pl_options['youtubeUrlType'] = $_POST['youtube_url_type'];
+
+			    $stmt = $wpdb->update(
+			    	$playlist_table,
+					array('options' => serialize($pl_options)),
+					array('id' => $playlist_id),
+					array('%s'),
+					array('%d')
+			    );
+
+			}
+
+
+
+			echo json_encode($data);
+
+		    wp_die();
+
+		}else{
+
+			wp_die();
+		}
+
+	}
+
+
+
+	function mvp_add_more(){
+
+		if(isset($_POST['playlist_id'])){
+
+			$playlist_id = (int)$_POST['playlist_id'];
+			$offset = (int)$_POST['addMoreOffset'];
+			$limit = (int)$_POST['addMoreLimit'];
+			$sortOrder = $_POST['addMoreSortOrder'];
+			$sortDirection = $_POST['addMoreSortDirection'];
+			$encryptMediaPaths = $_POST['encryptMediaPaths'];
+
+        	global $wpdb;
+		    $wpdb->show_errors();
+			$media_table = $wpdb->prefix . "mvp_media";
+
+			$stmt = $wpdb->prepare("SELECT id, title, options FROM {$media_table} WHERE disabled = 0 AND playlist_id = %d ORDER BY $sortOrder $sortDirection LIMIT $offset, $limit", $playlist_id);
+			$medias = $wpdb->get_results($stmt, ARRAY_A);
+
+			/*
+			note: faster pagination could work for order_id sort (use order_id in both directions) but not for title sort. We would need another column id for that.
+			https://developer.wordpress.com/2014/02/14/an-efficient-alternative-to-paging-with-sql-offsets/
+			*/
+
+	    	$markup = array();
+
+	    	foreach($medias as $media) {
+                $markup[] = mvp_shortcode_media($media, $encryptMediaPaths = true);
+            }
+
+			echo json_encode($markup);
+
+
+			wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_set_disabled(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['media_id'])){
+
+
+			$media_id = $_POST['media_id'];
+			$disabled = $_POST['disabled'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $media_table = $wpdb->prefix . "mvp_media";
+
+
+		    $stmt = $wpdb->query($wpdb->prepare("UPDATE {$media_table} SET disabled = %s WHERE id = %d", $disabled, $media_id));
+
+		    echo json_encode("");
+
+			wp_die();
+
+		}else{
+			wp_die();
+		}
+
+	}
+
+	function mvp_set_disabled_all(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['media_id'])){
+
+			$media_id = $_POST['media_id'];
+			$disabled = $_POST['disabled'];
+
+			$ids = explode(',',$media_id);
+			$in = implode(',', array_fill(0, count($ids), '%d'));
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $media_table = $wpdb->prefix . "mvp_media";
+
+		    $stmt = $wpdb->query($wpdb->prepare("UPDATE {$media_table} SET disabled = %s WHERE id IN ($in)", $disabled, ...$ids));
+
+
+		    echo json_encode("");
+
+			wp_die();
+
+		}else{
+			wp_die();
+		}
+
+	}
+
+
+
+	function mvp_shortcode_media($m, $encryptMediaPaths = false){
+
+	    global $wpdb;
+	    $path_table = $wpdb->prefix . "mvp_path";
+	    $subtitle_table = $wpdb->prefix . "mvp_subtitle";
+	    $ad_table = $wpdb->prefix . "mvp_ad";
+	    $annotation_table = $wpdb->prefix . "mvp_annotation";
+
+	    $media = unserialize($m['options']);
+
+	    $type = $media["type"];
+
+	    $track = '<div class="mvp-playlist-item" data-type="'.$type.'" data-media-id="'.$m["id"].'" ';
+
+	    //path
+	    $paths = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$path_table} WHERE media_id = %d", $m["id"]), ARRAY_A);
+
+	    $custom_html = null;
+
+	    if($wpdb->num_rows > 0){
+
+	        if($type == "video" || $type == "audio"){
+
+	        	$quality;
+	        	$quality_mobile;
+
+	            $path = 'data-path=\'[';
+	            foreach($paths as $r){
+
+	                $row = unserialize($r['options']);
+
+	                if($type == "video"){
+	                    $ext = "mp4";
+	                }else if($type == "audio"){
+	                    $ext = pathinfo($row['path'], PATHINFO_EXTENSION);
+	                    if(mvp_nullOrEmpty($ext))$ext = "mp3";
+	                }
+
+	                if($encryptMediaPaths)$p = MVP_BSF_MATCH.base64_encode($row['path']);
+	                else $p = $row['path'];
+
+	                $path .= '{"quality": "'.$row['quality_title'].'", "'.$ext.'": "'.$p.'"},';
+
+	                if(!empty($row["def"]) && $row["def"] == $row['quality_title']){
+	                    $quality = $row["quality_title"];
+	                }
+	                if(!empty($row["defMobile"]) && $row["defMobile"] == $row['quality_title']){
+	                    $quality_mobile = $row["quality_title"];
+	                }
+
+	            }
+	            $path = substr_replace($path, "", -1);//remove last comma
+	            $path .= ']\' ';
+
+	            if(isset($quality)){
+	                $path .= 'data-quality="'.$quality.'" ';
+	            }
+	            if(isset($quality_mobile)){
+	                $path .= 'data-quality-mobile="'.$quality_mobile.'" ';
+	            }
+
+	        }else{
+
+	            $prefix='';
+	            if($type == "folder_video" || $type == "folder_audio" || $type == "folder_image"){
+
+				    if(!isset($media["folder_custom_url"]) || $media["folder_custom_url"] == '0'){
+				    	$prefix = MVP_FILE_DIR;
+				    }
+	            }
+
+	            foreach($paths as $r){//only one
+
+	                $row = unserialize($r['options']);
+
+	                if($type == "custom_html"){
+
+	                	$custom_html = $row['path'];
+	                	$custom_html_id = 'custom_html_id_'.mt_rand();
+	                	$p = $custom_html_id;
+
+	                }else{
+
+		                if($encryptMediaPaths)$p = MVP_BSF_MATCH.base64_encode($prefix.$row['path']);
+		                else $p = $prefix.$row['path'];
+
+	                }
+
+	                if($type == "s3_bucket_video" || $type == "s3_video"){
+			        	$path = 'data-bucket="'.$p.'" ';
+					}else{
+						$path = 'data-path="'.$p.'" ';
+					}
+
+					if($type == "folder_video" || $type == "folder_audio" || $type == "folder_image"){
+	                	$path .= 'data-content-url="'.MVP_FILE_DIR_URL.$row['path'].'" ';
+	                }
+
+	                if(!empty($row["quality_title"])){//yt?
+	                    $path .= 'data-quality="'.$row["quality_title"].'" ';
+	                }
+	                if(!empty($row["mp4"])){
+	                    $path .= 'data-mp4="'.$row["mp4"].'" ';
+	                }
+
+
+
+	            }
+
+	        }
+
+	        $track .= $path;
+	    }
+
+	    if(!empty($media["exclude"])){
+	        $track .= ' data-exclude="'.$media["exclude"].'"';
+		}
+
+	    if(!empty($media["bkey"])){
+	        if($encryptMediaPaths)$p = MVP_BSF_MATCH.base64_encode($media['bkey']);
+	        else $p = $media['bkey'];
+
+	        $track .= ' data-key="'.$p.'"';
+		}
+
+	    if(isset($media["account_type"])){
+	        $track .= 'data-user-account="'.$media["account_type"].'" ';
+	    }
+	    if(isset($media["upload_date"])){
+	        $track .= 'data-upload-date="'.$media["upload_date"].'" ';
+	    }
+	    if(!empty($media["noapi"])){
+            $track .= 'data-noapi="1" ';
+        }
+        if(isset($media["lock_time"])){
+	        $track .= 'data-lock-time="'.$media["lock_time"].'" ';
+	    }
+	    if(!empty($media["user_id"])){
+	        $track .= 'data-user-id="'.$media["user_id"].'" ';
+	    }
+	    if(!empty($media["is360"])){
+	        $track .= 'data-is360="1" ';
+	    }
+	    if(!empty($media["vrmode"])){
+	        $track .= 'data-vr-mode="'.$media["vrmode"].'" ';
+	    }
+	    if(!empty($media["islive"])){
+	        $track .= 'data-live-stream="1" ';
+	    }
+	    if(!empty($media["thumb"])){
+	        $track .= 'data-thumb="'.$media["thumb"].'" ';
+	    }
+	    if(!empty($media["alt_text"])){
+	        $track .= 'data-alt="'.$media["alt_text"].'" ';
+	    }
+	    if(!empty($m["title"])){
+	        $track .= 'data-title="'.trim($m["title"]).'" ';
+	    }
+	    if(!empty($media["description"])){
+	        $track .= 'data-description="'.trim($media["description"]).'" ';
+	    }
+	    if(!empty($media["slideshow_images"])){
+	        $track .= 'data-slideshow-images="'.$media["slideshow_images"].'" ';
+	    }
+	    if(!empty($media["poster"])){
+	        $track .= 'data-poster="'.$media["poster"].'" ';
+	    }
+	    if(!empty($media["poster_frame_time"])){
+	        $track .= 'data-poster-frame-time="'.$media["poster_frame_time"].'" ';
+	    }
+	    if(!empty($media["download"])){
+	        $track .= 'data-download="'.$media["download"].'" ';
+	    }
+	    if(!empty($media["preview_seek"])){
+	        $track .= 'data-preview-seek="'.$media["preview_seek"].'" ';
+	    }
+	    if(!empty($media["hover_preview"])){
+	        $track .= 'data-hover-preview="'.$media["hover_preview"].'" ';
+	    }
+	    if(!empty($media["share"])){
+	        $track .= 'data-share="'.$media["share"].'" ';
+	    }
+	    if(!empty($media["limit"])){
+	        $track .= 'data-limit="'.$media["limit"].'" ';
+	    }
+	    if(!empty($media["start"])){
+	        $track .= 'data-start="'.$media["start"].'" ';
+	    }
+	    if(!empty($media["end"])){
+	        $track .= 'data-end="'.$media["end"].'" ';
+	    }
+	    if(!empty($media["duration"])){
+	        $track .= 'data-duration="'.$media["duration"].'" ';
+	    }
+	    if(!empty($media["playback_rate"])){
+	        $track .= 'data-playback-rate="'.$media["playback_rate"].'" ';
+	    }
+	    if(!empty($media["user_id"])){
+	        $track .= 'data-user-id="'.$media["user_id"].'" ';
+	    }
+	    if(!empty($media["load_more"]) && $media["load_more"] == '1'){
+	        $track .= 'data-load-more="1" ';
+	    }
+	    if(!empty($media["chapters"])){
+	        $track .= 'data-chapters="'.$media["chapters"].'" ';
+
+	        if(!empty($media["chapters_cors"])){
+		        $track .= 'data-chapters-cors="'.$media["chapters_cors"].'" ';
+		    }
+	    }
+	    if(!empty($media["vast"])){
+	        $track .= 'data-vast="'.$media["vast"].'" ';
+	    }
+	    if(!empty($media["link"])){
+	        $track .= 'data-link="'.$media["link"].'" ';
+	        if(!empty($media["target"])){
+	            $track .= 'data-target="'.$media["target"].'" ';
+	        }
+	    }
+	    if(!empty($media["end_link"])){
+	        $track .= 'data-end-link="'.$media["end_link"].'" ';
+	        if(!empty($media["end_target"])){
+	            $track .= 'data-end-target="'.$media["end_target"].'" ';
+	        }
+	    }
+
+	    if(isset($media["pi_icons"])){
+
+	        $track .= ' data-playlist-icons=\'[';
+	        $pi_icons = '';
+
+	        foreach ($media["pi_icons"] as $icon) {
+
+	        	$pi_icons .= '{"icon": "'.$icon['icon'].'"';
+
+	        	if(isset($icon['rel']))$pi_icons .= ',"rel": "'.$icon['rel'].'"';
+	        	if(isset($icon['title']))$pi_icons .= ',"title": "'.$icon['title'].'"';
+	        	if(isset($icon['url']))$pi_icons .= ',"url": "'.$icon['url'].'"';
+	        	if(isset($icon['target']))$pi_icons .= ',"target": "'.$icon['target'].'"';
+	        	if(isset($icon['class']))$pi_icons .= ',"class": "'.$icon['class'].'"';
+
+	        	$pi_icons .= '},';
+
+	        }
+	        $pi_icons = substr($pi_icons, 0, -1);//remove last comma
+
+	        $track .= $pi_icons;
+	        $track .= ']\'';
+	    }
+
+
+	    if($type == "folder"){
+		    if(!empty($media["folder_sort"])){
+		        $track .= 'data-sort="'.$media["folder_sort"].'" ';
+		    }
+		    if(!empty($media["id3"])){
+		        $track .= 'data-id3="'.$media["id3"].'" ';
+		    }
+		}
+		else if($type == "gdrive_folder"){
+		    if(!empty($media["gdrive_sort"])){
+		        $track .= ' data-sort="'.$media["gdrive_sort"].'"';
+		    }
+		}
+		else if($type == "onedrive_folder"){
+		    if(!empty($media["onedrive_sort"])){
+		        $track .= ' data-sort="'.$media["onedrive_sort"].'"';
+		    }
+		}
+	    if(!empty($media["sort_type"])){
+	        $track .= 'data-sort="'.$media["sort_type"].'" ';
+	        if(!empty($media["sort_dir"])){
+	            $track .= 'data-sort-direction="'.$media["sort_dir"].'" ';
+	        }
+	    }
+	    if(!empty($media["pwd"])){
+	        $track .= 'data-pwd="'.md5($media["pwd"]).'" ';
+	    }
+	    if(!empty($media["vpwd"])){
+	        $track .= 'data-vpwd="'.base64_encode($media["vpwd"]).'" ';
+	    }
+	    if(!empty($media["age_verify"])){
+	        $track .= 'data-age-verify="'.$media["age_verify"].'" ';
+	    }
+	    if(!empty($media["width"])){
+	        $track .= 'data-width="'.$media["width"].'" ';
+	    }
+	    if(!empty($media["height"])){
+	        $track .= 'data-height="'.$media["height"].'" ';
+	    }
+
+
+	    $track .= '>';
+
+	    //custom html
+	    if($custom_html){
+	    	$track .= '<div class="mvp-custom-html" id="'.$custom_html_id.'">'.$custom_html.'</div>';
+	    }
+
+	    //subtitles
+	    $subtitles = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$subtitle_table} WHERE media_id = %d", $m["id"]), ARRAY_A);
+
+	    if($wpdb->num_rows > 0){
+
+	        $subtitle = '<div class="mvp-subtitles">';
+	        foreach($subtitles as $r){
+
+	            $row = unserialize($r['options']);
+
+	            if($encryptMediaPaths)$p = MVP_BSF_MATCH.base64_encode($row['src']);
+	            else $p = $row['src'];
+
+	            $subtitle .= '<div data-label="'.$row["label"].'" data-src="'.$p.'"';
+
+	            if(!empty($row["def"]) && $row["def"] == $row["label"]){
+	                $subtitle .= ' data-default';
+	            }
+
+	            if(!empty($row["cors"])){
+	                $subtitle .= ' data-cors="'.$row["cors"].'"';
+	            }
+
+	            $subtitle .= '></div>';
+
+	        }
+	        $subtitle .= '</div>';//end mvp-subtitles
+
+	        $track .= $subtitle;
+	    }
+
+	    //ads
+        $stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$ad_table} WHERE media_id = %d", $m["id"]), ARRAY_A);
+        if($wpdb->num_rows > 0){
+            $ad_data = array();
+            foreach($stmt as $item){
+                $ad_data[] = unserialize($item['options']);
+            }
+
+            //randomize ad comes from media
+            $ad_options = array();
+			$ad_options["randomizeAdPre"] = isset($media["randomizeAdPre"]) ? $media["randomizeAdPre"] : '0';
+			$ad_options["randomizeAdEnd"] = isset($media["randomizeAdEnd"]) ? $media["randomizeAdEnd"] : '0';
+
+            include('includes/shortcode_ad_data.php');
+        }
+
+	    //annotations
+        $stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$annotation_table} WHERE media_id = %d", $m["id"]), ARRAY_A);
+        if($wpdb->num_rows > 0){
+            $annotation_data = array();
+            foreach($stmt as $item){
+                $annotation_data[] = unserialize($item['options']);
+            }
+            include('includes/shortcode_annotation_data.php');
+        }
+
+	    if(!empty($media["custom_content"])){
+	        $track .= $media["custom_content"];
+	    }
+
+	    $track .= '</div>';//end div
+
+	    return $track.PHP_EOL;
+
+	}
+
+
+	//############################################//
+	/* export player */
+	//############################################//
+
+	function mvp_export_player(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['player_id']) && isset($_POST['player_title'])){
+
+			$player_id = $_POST['player_id'];
+			$player_title = $_POST['player_title'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+
+		    $player_table = $wpdb->prefix . "mvp_players";
+
+			// create zip file
+			$zipname = 'mvp_player_id_'.$player_id.'_'.$player_title.'_'.date('m-d-Y_hia').'.zip';
+			$zip = new ZipArchive;
+
+			$upload_path1 = MVP_FILE_DIR."/plzip/";
+			$zip->open($upload_path1.$zipname, ZipArchive::CREATE);
+
+			//player
+			$stmt = $wpdb->prepare("SELECT id, title, preset, options, custom_css, custom_js FROM {$player_table} WHERE id = %d", $player_id);//we need to select in specific order for bulk import!
+			$result = $wpdb->get_results($stmt, ARRAY_N);
+			mvp_getOutput("mvp_players", $result, $zip);
+
+			// close the archive
+			$zip->close();
+
+			$upload_path2 = MVP_FILE_DIR_URL."/plzip/";
+			echo json_encode(array('zip' => $upload_path2.$zipname, 'zip_clean' => $upload_path1.$zipname));
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_import_player(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		header("Content-Type: application/json");
+
+		$posted_data =  isset( $_POST ) ? $_POST : array();
+		$file_data = isset( $_FILES ) ? $_FILES : array();
+
+		$data = array_merge( $posted_data, $file_data );
+
+		$fileName = $data["mvp_file_upload"]["name"];
+		$temp_name = $data["mvp_file_upload"]["tmp_name"];
+		$fileError = $data["mvp_file_upload"]["error"];
+		$upload_path = MVP_FILE_DIR."/plzip/";
+
+		$response = array();
+
+		if($fileError > 0){
+
+			$error = array(
+				0 => "There is no error, the file uploaded with success",
+				1 => "The uploaded file exceeds the upload_max_files in server settings",
+				2 => "The uploaded file exceeds the MAX_FILE_SIZE from html form",
+				3 => "The uploaded file uploaded only partially",
+				4 => "No file was uploaded",
+				6 => "Missing a temporary folder",
+				7 => "Failed to write file to disk",
+				8 => "A PHP extension stoped file to upload" );
+
+			$response["response"] = "ERROR";
+            $response["error"] = $error[ $fileError ];
+
+		} else {
+
+			if( move_uploaded_file( $temp_name, $upload_path.$fileName ) ){
+
+				//unzip
+
+	            WP_Filesystem();
+
+	            $unzipfile = unzip_file( $upload_path.$fileName, $upload_path);
+
+			    if ( is_wp_error( $unzipfile ) ) {
+			    	$response["response"] = "ERROR";
+			        $response["error"] = 'There was an error unzipping the file.';
+			    } else {
+			    	$response["response"] = "SUCCESS";
+
+			        //process csv
+
+			        global $wpdb;
+					$wpdb->show_errors();
+					$player_table = $wpdb->prefix . "mvp_players";
+
+			        //players
+				    $csv = str_replace('\\', '/', $upload_path."mvp_players".'.csv');
+				    if(!file_exists($csv)){//in case wrong zip is uploaded (check only one file)
+				    	$response["response"] = "ERROR";
+            			$response["error"] = "No player file inside archive!";
+            			echo json_encode( $response );
+						die();
+				    }
+
+				    $arr = array('player' => MVP_FILE_DIR_URL . '/plzip/' . "mvp_players".'.csv');
+
+		    		echo json_encode($arr);
+					wp_die();
+
+			    }
+
+        	} else {
+
+        		$response["response"] = "ERROR";
+        		$response["error"]= "Upload Failed!";
+        	}
+
+        }
+
+        echo json_encode( $response );
+		wp_die();
+
+	}
+
+	function mvp_import_player_db(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['player'])){
+
+			$player = json_decode(stripcslashes($_POST['player']), true);
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $player_table = $wpdb->prefix . "mvp_players";
+
+			$stmt = $wpdb->insert(
+		    	$player_table,
+				array(
+					'title' => $player[1],
+					'preset' => $player[2],
+					'options' => $player[3],
+					'custom_css' => $player[4],
+					'custom_js' => $player[5]
+				),
+				array(
+					'%s','%s','%s','%s','%s'
+				)
+		    );
+
+
+	    	//delete files
+	    	$upload_path = MVP_FILE_DIR."/plzip/";
+	        $files = glob($upload_path.'/*');
+			foreach($files as $file){
+				if(is_file($file))unlink($file);
+			}
+
+			if($stmt !== false){
+	    		echo json_encode($wpdb->insert_id);
+	    	}
+
+			wp_die();
+
+		}else {
+			wp_die();
+		}
+
+	}
+
+	//############################################//
+	/* export ads */
+	//############################################//
+
+	function mvp_export_ad(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(!extension_loaded('zip'))wp_die('PHP zip extension not installed or enabled!');
+
+		if(isset($_POST['ad_id']) && isset($_POST['ad_title'])){
+
+			$ad_id = $_POST['ad_id'];
+			$ad_title = $_POST['ad_title'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $global_ad_table = $wpdb->prefix . "mvp_global_ad";
+		    $ad_table = $wpdb->prefix . "mvp_ad";
+			$annotation_table = $wpdb->prefix . "mvp_annotation";
+
+			// create zip file
+			$zipname = 'mvp_ad_id_'.$ad_id.'_'.$ad_title.'_'.date('m-d-Y_hia').'.zip';
+			$zip = new ZipArchive;
+
+			$upload_path1 = MVP_FILE_DIR."/plzip/";
+			$zip->open($upload_path1.$zipname, ZipArchive::CREATE);
+
+			//ad
+			$stmt = $wpdb->prepare("SELECT id, title, options FROM {$global_ad_table} WHERE id = %d", $ad_id);//we need to select in specific order for bulk import!
+			$result = $wpdb->get_results($stmt, ARRAY_N);
+			mvp_getOutput("mvp_global_ad", $result, $zip);
+
+			if($wpdb->num_rows > 0){
+
+				//ad
+				$stmt = $wpdb->prepare("SELECT id, options, ad_id FROM {$ad_table} WHERE ad_id = %d", $ad_id);
+				$result = $wpdb->get_results($stmt, ARRAY_N);
+				if($wpdb->num_rows > 0)mvp_getOutput("mvp_ad", $result, $zip);
+
+				//annotation
+				$stmt = $wpdb->prepare("SELECT id, options, ad_id FROM {$annotation_table} WHERE ad_id = %d", $ad_id);
+				$result = $wpdb->get_results($stmt, ARRAY_N);
+				if($wpdb->num_rows > 0)mvp_getOutput("mvp_annotation", $result, $zip);
+
+			}
+
+			// close the archive
+			$zip->close();
+
+			$upload_path2 = MVP_FILE_DIR_URL."/plzip/";
+			echo json_encode(array('zip' => $upload_path2.$zipname, 'zip_clean' => $upload_path1.$zipname));
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_import_ad(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		header("Content-Type: application/json");
+
+		$posted_data =  isset( $_POST ) ? $_POST : array();
+		$file_data = isset( $_FILES ) ? $_FILES : array();
+
+		$data = array_merge( $posted_data, $file_data );
+
+		$fileName = $data["mvp_file_upload"]["name"];
+		$temp_name = $data["mvp_file_upload"]["tmp_name"];
+		$fileError = $data["mvp_file_upload"]["error"];
+		$upload_path = MVP_FILE_DIR."/plzip/";
+
+		$response = array();
+
+		if($fileError > 0){
+
+			$error = array(
+				0 => "There is no error, the file uploaded with success",
+				1 => "The uploaded file exceeds the upload_max_files in server settings",
+				2 => "The uploaded file exceeds the MAX_FILE_SIZE from html form",
+				3 => "The uploaded file uploaded only partially",
+				4 => "No file was uploaded",
+				6 => "Missing a temporary folder",
+				7 => "Failed to write file to disk",
+				8 => "A PHP extension stoped file to upload" );
+
+			$response["response"] = "ERROR";
+            $response["error"] = $error[ $fileError ];
+
+		} else {
+
+			if( move_uploaded_file( $temp_name, $upload_path.$fileName ) ){
+
+				//unzip
+
+	            WP_Filesystem();
+
+	            $unzipfile = unzip_file( $upload_path.$fileName, $upload_path);
+
+			    if ( is_wp_error( $unzipfile ) ) {
+			    	$response["response"] = "ERROR";
+			        $response["error"] = 'There was an error unzipping the file.';
+			    } else {
+			    	$response["response"] = "SUCCESS";
+
+			        //process csv
+
+			        global $wpdb;
+					$wpdb->show_errors();
+					$global_ad_table = $wpdb->prefix . "mvp_global_ad";
+					$ad_table = $wpdb->prefix . "mvp_ad";
+					$annotation_table = $wpdb->prefix . "mvp_annotation";
+
+			        //ads
+				    $csv = str_replace('\\', '/', $upload_path."mvp_global_ad".'.csv');
+				    if(!file_exists($csv)){//in case wrong zip is uploaded (check only one file)
+				    	$response["response"] = "ERROR";
+            			$response["error"] = "No ad file inside archive!";
+            			echo json_encode( $response );
+						wp_die();
+				    }
+
+				    $arr = array('global_ad' => MVP_FILE_DIR_URL . '/plzip/' . "mvp_global_ad".'.csv');
+
+				    //ad
+				    $csv = str_replace('\\', '/', $upload_path."mvp_ad".'.csv');
+				    if(file_exists($csv)){
+				    	$arr['ad'] = MVP_FILE_DIR_URL . '/plzip/' . "mvp_ad".'.csv';
+				    }
+
+				    //annotation
+				    $csv = str_replace('\\', '/', $upload_path."mvp_annotation".'.csv');
+				    if(file_exists($csv)){
+				    	$arr['annotation'] = MVP_FILE_DIR_URL . '/plzip/' . "mvp_annotation".'.csv';
+				    }
+
+		    		echo json_encode($arr);
+
+					wp_die();
+
+			    }
+
+        	} else {
+
+        		$response["response"] = "ERROR";
+        		$response["error"]= "Upload Failed!";
+        	}
+
+        }
+
+        echo json_encode( $response );
+		wp_die();
+
+	}
+
+	function mvp_import_ad_db(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['global_ad'])){
+
+			$global_ad = json_decode(stripcslashes($_POST['global_ad']), true);
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $global_ad_table = $wpdb->prefix . "mvp_global_ad";
+		    $ad_table = $wpdb->prefix . "mvp_ad";
+			$annotation_table = $wpdb->prefix . "mvp_annotation";
+			$charset_collate = $wpdb->get_charset_collate();
+
+			$stmt = $wpdb->insert(
+		    	$global_ad_table,
+				array(
+					'title' => $global_ad[1],
+					'options' => $global_ad[2]
+				),
+				array(
+					'%s','%s'
+				)
+		    );
+
+		    $last_global_ad_id = $wpdb->insert_id;
+
+		    $wpdb->query("SET FOREIGN_KEY_CHECKS=0");
+
+		    //ad
+
+		    if(isset($_POST['ad'])){
+
+				$ad = json_decode(stripcslashes($_POST['ad']), true);
+
+			    $len = count($ad);
+				for($i=0; $i < $len; $i++){
+
+					$stmt = $wpdb->insert(
+				    	$ad_table,
+						array(
+							'options' => $ad[$i][1],
+							'ad_id' => $last_global_ad_id
+						),
+						array(
+							'%s','%d'
+						)
+				    );
+
+				}
+
+
+			}
+
+		    //annotation
+
+		    if(isset($_POST['annotation'])){
+
+				$annotation = json_decode(stripcslashes($_POST['annotation']), true);
+
+			    $len = count($annotation);
+				for($i=0; $i < $len; $i++){
+
+					$stmt = $wpdb->insert(
+				    	$annotation_table,
+						array(
+							'options' => $annotation[$i][1],
+							'ad_id' => $last_global_ad_id
+						),
+						array(
+							'%s','%d'
+						)
+				    );
+
+				}
+
+			}
+
+		    $wpdb->query("SET FOREIGN_KEY_CHECKS=1");
+
+	    	//delete files
+	    	$upload_path = MVP_FILE_DIR."/plzip/";
+	        $files = glob($upload_path.'/*');
+			foreach($files as $file){
+				if(is_file($file))unlink($file);
+			}
+
+			if($stmt !== false){
+	    		echo json_encode($last_global_ad_id);
+	    	}
+
+			wp_die();
+
+		}else {
+			wp_die();
+		}
+
+	}
+
+	//############################################//
+	/* export playlist (OLD CSV/ZIP) */
+	//############################################//
+
+	function mvp_export_playlist(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['playlist_id']) && isset($_POST['playlist_title'])){
+
+			$playlist_id = $_POST['playlist_id'];
+			$playlist_title = $_POST['playlist_title'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+
+		    $playlist_table = $wpdb->prefix . "mvp_playlists";
+			$media_table = $wpdb->prefix . "mvp_media";
+			$ad_table = $wpdb->prefix . "mvp_ad";
+			$annotation_table = $wpdb->prefix . "mvp_annotation";
+			$path_table = $wpdb->prefix . "mvp_path";
+			$subtitle_table = $wpdb->prefix . "mvp_subtitle";
+
+			// create zip file
+			$zipname = 'mvp_playlist_id_'.$playlist_id.'_'.$playlist_title.'_'.date('m-d-Y_hia').'.zip';
+			$zip = new ZipArchive;
+
+			$upload_path1 = MVP_FILE_DIR."/plzip/";
+			$zip->open($upload_path1.$zipname, ZipArchive::CREATE);
+
+
+			//playlist
+			$stmt = $wpdb->prepare("SELECT id, title, options FROM {$playlist_table} WHERE id = %d", $playlist_id);//we need to select in specific order for bulk import!
+			$result = $wpdb->get_results($stmt, ARRAY_N);
+			mvp_getOutput("mvp_playlists", $result, $zip);
+
+			//media
+			$stmt = $wpdb->prepare("SELECT id, options, order_id, playlist_id FROM {$media_table} WHERE playlist_id = %d", $playlist_id); // Missing title here
+			$result = $wpdb->get_results($stmt, ARRAY_A);
+
+			if($wpdb->num_rows > 0){
+				mvp_getOutput("mvp_media", $result, $zip);
+
+				$ids = array();
+				foreach($result as $row){
+				    $ids[] = $row['id'];
+				}
+				$in = implode(',', array_fill(0, count($ids), '%d'));
+
+				//path
+				$stmt = $wpdb->prepare("SELECT id, options, media_id FROM {$path_table} WHERE media_id IN ($in)", $ids);
+				$result = $wpdb->get_results($stmt, ARRAY_N);
+				if($wpdb->num_rows > 0)mvp_getOutput("mvp_path", $result, $zip);
+
+				//subtitle
+				$stmt = $wpdb->prepare("SELECT id, options, media_id FROM {$subtitle_table} WHERE media_id IN ($in)", $ids);
+				$result = $wpdb->get_results($stmt, ARRAY_N);
+				if($wpdb->num_rows > 0)mvp_getOutput("mvp_subtitle", $result, $zip);
+
+				//ad
+				$stmt = $wpdb->prepare("SELECT id, options, media_id FROM {$ad_table} WHERE media_id IN ($in)", $ids);
+				$result = $wpdb->get_results($stmt, ARRAY_N);
+				if($wpdb->num_rows > 0)mvp_getOutput("mvp_ad", $result, $zip);
+
+				//annotation
+				$stmt = $wpdb->prepare("SELECT id, options, media_id FROM {$annotation_table} WHERE media_id IN ($in)", $ids);
+				$result = $wpdb->get_results($stmt, ARRAY_N);
+				if($wpdb->num_rows > 0)mvp_getOutput("mvp_annotation", $result, $zip);
+
+			}
+
+			// close the archive
+			$zip->close();
+
+			$upload_path2 = MVP_FILE_DIR_URL."/plzip/";
+			echo json_encode(array('zip' => $upload_path2.$zipname, 'zip_clean' => $upload_path1.$zipname));
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_clean_export(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['zipname'])){
+			@unlink($_POST['zipname']);
+		}
+
+		wp_die();
+
+	}
+
+	function mvp_getOutput($table, $result, $zip){
+
+	    // create a temporary file
+	    $size = 1 * 1024 * 1024;
+	    $fp = fopen('php://temp/maxmemory:$size', 'w');
+	    if (false === $fp) {
+	        die('Failed to create temporary file');
+	    }
+	    fprintf($fp, chr(0xEF).chr(0xBB).chr(0xBF));
+
+	    foreach($result as $row){
+	        $trimmed_array = array_map('trim',array_values($row));
+	        $line = str_replace('^', '', $trimmed_array);
+	        fputcsv($fp, $line, '|','^');
+	    }
+
+	    // return to the start of the stream
+	    rewind($fp);
+
+	    $zip->addFromString($table.'.csv', stream_get_contents($fp) );
+	    //close the file
+	    fclose($fp);
+
+	}
+
+	function mvp_import_playlist(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		header("Content-Type: application/json");
+
+		$posted_data =  isset( $_POST ) ? $_POST : array();
+		$file_data = isset( $_FILES ) ? $_FILES : array();
+
+		$data = array_merge( $posted_data, $file_data );
+
+		$fileName = $data["mvp_file_upload"]["name"];
+		$temp_name = $data["mvp_file_upload"]["tmp_name"];
+		$fileError = $data["mvp_file_upload"]["error"];
+		$upload_path = MVP_FILE_DIR."/plzip/";
+
+		$response = array();
+
+		if($fileError > 0){
+
+			$error = array(
+				0 => "There is no error, the file uploaded with success",
+				1 => "The uploaded file exceeds the upload_max_files in server settings",
+				2 => "The uploaded file exceeds the MAX_FILE_SIZE from html form",
+				3 => "The uploaded file uploaded only partially",
+				4 => "No file was uploaded",
+				6 => "Missing a temporary folder",
+				7 => "Failed to write file to disk",
+				8 => "A PHP extension stoped file to upload" );
+
+			$response["response"] = "ERROR";
+            $response["error"] = $error[ $fileError ];
+
+		} else {
+
+			if( move_uploaded_file( $temp_name, $upload_path.$fileName ) ){
+
+				//unzip
+
+	            WP_Filesystem();
+
+	            $unzipfile = unzip_file( $upload_path.$fileName, $upload_path);
+
+			    if ( is_wp_error( $unzipfile ) ) {
+			    	$response["response"] = "ERROR";
+			        $response["error"] = 'There was an error unzipping the file.';
+			    } else {
+			    	$response["response"] = "SUCCESS";
+
+			        //process csv
+
+			        global $wpdb;
+					$wpdb->show_errors();
+					$playlist_table = $wpdb->prefix . "mvp_playlists";
+					$media_table = $wpdb->prefix . "mvp_media";
+					$ad_table = $wpdb->prefix . "mvp_ad";
+					$annotation_table = $wpdb->prefix . "mvp_annotation";
+					$path_table = $wpdb->prefix . "mvp_path";
+					$subtitle_table = $wpdb->prefix . "mvp_subtitle";
+
+			        //playlists
+				    $csv = str_replace('\\', '/', $upload_path."mvp_playlists".'.csv');
+				    if(!file_exists($csv)){//in case wrong zip is uploaded (check only one file)
+				    	$response["response"] = "ERROR";
+            			$response["error"] = "No playlist file inside archive!";
+            			echo json_encode( $response );
+						wp_die();
+				    }
+
+				    $arr = array('playlist' => MVP_FILE_DIR_URL . '/plzip/' . "mvp_playlists".'.csv');
+
+				    //media
+				    $csv = str_replace('\\', '/', $upload_path."mvp_media".'.csv');
+				    if(file_exists($csv)){
+				    	$arr['media'] = MVP_FILE_DIR_URL . '/plzip/' . "mvp_media".'.csv';
+				    }
+
+				    //path
+				    $csv = str_replace('\\', '/', $upload_path."mvp_path".'.csv');
+				    if(file_exists($csv)){
+				    	$arr['path'] = MVP_FILE_DIR_URL . '/plzip/' . "mvp_path".'.csv';
+				    }
+
+				    //subtitle
+				    $csv = str_replace('\\', '/', $upload_path."mvp_subtitle".'.csv');
+				    if(file_exists($csv)){
+				    	$arr['subtitle'] = MVP_FILE_DIR_URL . '/plzip/' . "mvp_subtitle".'.csv';
+				    }
+
+				    //ad
+				    $csv = str_replace('\\', '/', $upload_path."mvp_ad".'.csv');
+				    if(file_exists($csv)){
+				    	$arr['ad'] = MVP_FILE_DIR_URL . '/plzip/' . "mvp_ad".'.csv';
+				    }
+
+				    //annotation
+				    $csv = str_replace('\\', '/', $upload_path."mvp_annotation".'.csv');
+				    if(file_exists($csv)){
+				    	$arr['annotation'] = MVP_FILE_DIR_URL . '/plzip/' . "mvp_annotation".'.csv';
+				    }
+
+		    		echo json_encode($arr);
+
+	    			wp_die();
+
+			    }
+
+        	} else {
+
+        		$response["response"] = "ERROR";
+        		$response["error"]= "Upload Failed!";
+        	}
+
+        }
+
+        echo json_encode( $response );
+		wp_die();
+
+	}
+
+	function mvp_import_playlist_db(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['playlist'])){
+
+			$playlist = json_decode(stripcslashes($_POST['playlist']), true);
+
+			global $wpdb;
+			$wpdb->show_errors();
+			$charset_collate = $wpdb->get_charset_collate();
+
+		    $playlist_table = $wpdb->prefix . "mvp_playlists";
+			$media_table = $wpdb->prefix . "mvp_media";
+			$path_table = $wpdb->prefix . "mvp_path";
+			$subtitle_table = $wpdb->prefix . "mvp_subtitle";
+			$ad_table = $wpdb->prefix . "mvp_ad";
+			$annotation_table = $wpdb->prefix . "mvp_annotation";
+
+			//playlist
+
+			$stmt = $wpdb->insert(
+		    	$playlist_table,
+				array(
+					'title' => $playlist[1],
+					'options' => $playlist[2]
+				),
+				array(
+					'%s','%s'
+				)
+		    );
+
+		    $last_playlist_id = $wpdb->insert_id;
+
+		    $wpdb->query("SET FOREIGN_KEY_CHECKS=0");
+
+		   	//media
+
+		   	if(isset($_POST['media'])){
+
+			    //path
+
+			    if(isset($_POST['path'])){
+
+			    	$path = json_decode(stripcslashes($_POST['path']), true);
+
+				    $path_temp = 'path_temp'.time();
+
+				    $sql = "CREATE TEMPORARY TABLE {$path_temp} (
+				      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				      `options` longtext NOT NULL,
+				      `media_id` int(11) unsigned NOT NULL,
+				      PRIMARY KEY (`id`)
+				    ) $charset_collate;";
+				    $wpdb->query($sql);
+
+					$len = count($path);
+					for($i=0; $i < $len; $i++){
+
+						$stmt = $wpdb->insert(
+					    	$path_temp,
+							array(
+								'options' => $path[$i][1],
+								'media_id' => $path[$i][2]
+							),
+							array(
+								'%s','%d'
+							)
+					    );
+
+					}
+
+				}
+
+			    //subtitle
+
+			    if(isset($_POST['subtitle'])){
+
+					$subtitle = json_decode(stripcslashes($_POST['subtitle']), true);
+
+				    $subtitle_temp = 'subtitle_temp'.time();
+
+				    $sql = "CREATE TEMPORARY TABLE {$subtitle_temp} (
+				      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				      `options` longtext NOT NULL,
+				      `media_id` int(11) unsigned NOT NULL,
+				      PRIMARY KEY (`id`)
+				    ) $charset_collate;";
+				    $wpdb->query($sql);
+
+					$len = count($subtitle);
+					for($i=0; $i < $len; $i++){
+
+						$stmt = $wpdb->insert(
+					    	$subtitle_temp,
+							array(
+								'options' => $subtitle[$i][1],
+								'media_id' => $subtitle[$i][2]
+							),
+							array(
+								'%s','%d'
+							)
+					    );
+
+					}
+
+				}
+
+			    //ad
+
+			    if(isset($_POST['ad'])){
+
+					$ad = json_decode(stripcslashes($_POST['ad']), true);
+
+				    $ad_temp = 'ad_temp'.time();
+
+				    $sql = "CREATE TEMPORARY TABLE {$ad_temp} (
+				      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				      `options` longtext NOT NULL,
+				      `media_id` int(11) unsigned DEFAULT NULL,
+				      PRIMARY KEY (`id`)
+				    ) $charset_collate;";
+				    $wpdb->query($sql);
+
+				    $len = count($ad);
+					for($i=0; $i < $len; $i++){
+
+						$stmt = $wpdb->insert(
+					    	$ad_temp,
+							array(
+								'options' => $ad[$i][1],
+								'media_id' => $ad[$i][2]
+							),
+							array(
+								'%s','%d'
+							)
+					    );
+
+					}
+
+				}
+
+			    //annotation
+
+			    if(isset($_POST['annotation'])){
+
+					$annotation = json_decode(stripcslashes($_POST['annotation']), true);
+
+				    $annotation_temp = 'annotation_temp'.time();
+
+				    $sql = "CREATE TEMPORARY TABLE {$annotation_temp} (
+				      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				      `options` longtext NOT NULL,
+					  `media_id` int(11) unsigned DEFAULT NULL,
+				      PRIMARY KEY (`id`)
+				    ) $charset_collate;";
+				    $wpdb->query($sql);
+
+				    $len = count($annotation);
+					for($i=0; $i < $len; $i++){
+
+						$stmt = $wpdb->insert(
+					    	$annotation_temp,
+							array(
+								'options' => $annotation[$i][1],
+								'media_id' => $annotation[$i][2],
+							),
+							array(
+								'%s','%d'
+							)
+					    );
+
+					}
+
+				}
+
+				//media
+
+				$media = json_decode(stripcslashes($_POST['media']), true);
+
+			    $len = count($media);
+				for($i=0; $i < $len; $i++){
+
+					$stmt = $wpdb->insert(
+				    	$media_table,
+						array(
+							'options' => $media[$i][1], // Missing title here
+							'order_id' => $media[$i][2],
+							'playlist_id' => $last_playlist_id
+						),
+						array(
+							'%s','%d','%d'
+						)
+				    );
+
+				    $old_media_id = $media[$i][0];
+				    $last_media_id = $wpdb->insert_id;
+
+				    //path
+
+				    if(isset($_POST['path'])){
+
+				        $sql = "INSERT INTO $path_table (id, options, media_id)
+				                  SELECT NULL, options, $last_media_id
+				                  FROM {$path_temp} WHERE media_id='$old_media_id'";
+				        $wpdb->query($sql);
+
+				    }
+
+				    //subtitles
+
+			        if(isset($_POST['subtitle'])){
+
+				        $sql = "INSERT INTO $subtitle_table (id, options, media_id)
+				                  SELECT NULL, options, $last_media_id
+				                  FROM {$subtitle_temp} WHERE media_id='$old_media_id'";
+				        $wpdb->query($sql);
+
+				    }
+
+			        //ad
+
+			        if(isset($_POST['ad'])){
+
+				        $sql = "INSERT INTO $ad_table (id, options, media_id)
+				                  SELECT NULL, options, $last_media_id
+				                  FROM {$ad_temp} WHERE media_id='$old_media_id'";
+				        $wpdb->query($sql);
+
+				    }
+
+			        //annotation
+
+			        if(isset($_POST['annotation'])){
+
+				        $sql = "INSERT INTO $annotation_table (id, options, media_id)
+				                  SELECT NULL, options, $last_media_id
+				                  FROM {$annotation_temp} WHERE media_id='$old_media_id'";
+				        $wpdb->query($sql);
+
+				    }
+
+				}
+
+
+			}//end if media exist
+
+
+		    //drop temp tables
+		    if(isset($path_temp))$wpdb->query("DROP TABLE {$path_temp}");
+		    if(isset($subtitle_temp))$wpdb->query("DROP TABLE {$subtitle_temp}");
+		    if(isset($ad_temp))$wpdb->query("DROP TABLE {$ad_temp}");
+		    if(isset($annotation_temp))$wpdb->query("DROP TABLE {$annotation_temp}");
+		    $wpdb->query("SET FOREIGN_KEY_CHECKS=1");
+
+
+
+	    	//delete files
+    		$upload_path = MVP_FILE_DIR."/plzip/";
+	        $files = glob($upload_path.'/*');
+			foreach($files as $file){
+				if(is_file($file))unlink($file);
+			}
+
+			if($stmt !== false){
+	    		echo json_encode($last_playlist_id);
+	    	}
+
+			wp_die();
+
+		}else {
+			wp_die();
+		}
+
+	}
+
+    // --- NEW JSON Export/Import Functions ---
+
+    /**
+     * AJAX handler to export selected playlists as JSON.
+     */
+    function mvp_export_playlists_json() {
+        // 1. Security Checks
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'mvp-security-nonce')) {
+            // Send error as JSON, more appropriate for direct AJAX calls if the form submission fails
+            // However, since this is triggered by a form submit for download, direct output or wp_die might also occur.
+            // For consistency, let's stick to wp_send_json_error for potential future JS fetch calls.
+            status_header(403); // Set HTTP status code
+            echo wp_json_encode(['success' => false, 'data' => ['message' => 'Invalid security token sent.']]);
+            wp_die();
+        }
+        if (!current_user_can(MVP_CAPABILITY)) {
+            status_header(403);
+            echo wp_json_encode(['success' => false, 'data' => ['message' => 'You do not have permission to export playlists.']]);
+            wp_die();
+        }
+        if (!isset($_POST['playlist_ids']) || !is_array($_POST['playlist_ids'])) {
+            status_header(400);
+            echo wp_json_encode(['success' => false, 'data' => ['message' => 'No playlist IDs provided.']]);
+            wp_die();
+        }
+
+        $playlist_ids = array_map('intval', $_POST['playlist_ids']); // Sanitize IDs
+        if (empty($playlist_ids)) {
+            status_header(400);
+            echo wp_json_encode(['success' => false, 'data' => ['message' => 'No valid playlist IDs provided.']]);
+            wp_die();
+        }
+
+        // 2. Database Access
+        global $wpdb;
+        $playlist_table = $wpdb->prefix . "mvp_playlists";
+        $media_table = $wpdb->prefix . "mvp_media";
+        $path_table = $wpdb->prefix . "mvp_path";
+        $subtitle_table = $wpdb->prefix . "mvp_subtitle";
+        $ad_table = $wpdb->prefix . "mvp_ad";
+        $annotation_table = $wpdb->prefix . "mvp_annotation";
+
+        $export_data = [
+            'version'     => '1.0-mvp-json',
+            'exported_at' => gmdate('c'), // ISO 8601 format (UTC)
+            'playlists'   => [],
+        ];
+
+        // 3. Loop through requested playlists
+        foreach ($playlist_ids as $playlist_id) {
+            $playlist_row = $wpdb->get_row($wpdb->prepare("SELECT title, options FROM {$playlist_table} WHERE id = %d", $playlist_id), ARRAY_A);
+
+            if (!$playlist_row) {
+                continue; // Skip if playlist not found
+            }
+
+            $playlist_options = maybe_unserialize($playlist_row['options']);
+            if (!is_array($playlist_options)) { // Ensure options is an array/object
+                 $playlist_options = [];
+            }
+
+
+            $playlist_export_item = [
+                'title'   => $playlist_row['title'],
+                'options' => $playlist_options,
+                'media'   => [],
+            ];
+
+            // 4. Fetch media for this playlist
+            $media_rows = $wpdb->get_results($wpdb->prepare("SELECT id, title, options, order_id FROM {$media_table} WHERE playlist_id = %d ORDER BY order_id ASC", $playlist_id), ARRAY_A);
+
+            if ($media_rows) {
+                foreach ($media_rows as $media_row) {
+                    $media_id = $media_row['id']; // This is the OLD media ID
+                    $media_options = maybe_unserialize($media_row['options']);
+                     if (!is_array($media_options)) {
+                         $media_options = [];
+                     }
+
+                    $media_export_item = [
+                        'title'       => $media_row['title'], // Include the title!
+                        'order_id'    => (int) $media_row['order_id'],
+                        'options'     => $media_options,
+                        'paths'       => [],
+                        'subtitles'   => [],
+                        'ads'         => [],
+                        'annotations' => [],
+                    ];
+
+                    // 5. Fetch related data for this media item
+                    // Paths
+                    $path_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$path_table} WHERE media_id = %d", $media_id), ARRAY_A);
+                    if ($path_rows) {
+                        foreach ($path_rows as $path_row) {
+                            $path_options = maybe_unserialize($path_row['options']);
+                            if (is_array($path_options)) {
+                                 $media_export_item['paths'][] = ['options' => $path_options];
+                            }
+                        }
+                    }
+
+                    // Subtitles
+                    $subtitle_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$subtitle_table} WHERE media_id = %d", $media_id), ARRAY_A);
+                    if ($subtitle_rows) {
+                        foreach ($subtitle_rows as $subtitle_row) {
+                             $subtitle_options = maybe_unserialize($subtitle_row['options']);
+                             if (is_array($subtitle_options)) {
+                                $media_export_item['subtitles'][] = ['options' => $subtitle_options];
+                             }
+                        }
+                    }
+
+                    // Ads (associated with media, not global ads)
+                     $ad_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$ad_table} WHERE media_id = %d AND ad_id IS NULL", $media_id), ARRAY_A);
+                     if ($ad_rows) {
+                        foreach ($ad_rows as $ad_row) {
+                             $ad_options = maybe_unserialize($ad_row['options']);
+                             if (is_array($ad_options)) {
+                                $media_export_item['ads'][] = ['options' => $ad_options];
+                             }
+                        }
+                    }
+
+                    // Annotations (associated with media, not global ads)
+                     $annotation_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$annotation_table} WHERE media_id = %d AND ad_id IS NULL", $media_id), ARRAY_A);
+                     if ($annotation_rows) {
+                        foreach ($annotation_rows as $annotation_row) {
+                             $annotation_options = maybe_unserialize($annotation_row['options']);
+                             if (is_array($annotation_options)) {
+                                 $media_export_item['annotations'][] = ['options' => $annotation_options];
+                             }
+                        }
+                    }
+
+                    $playlist_export_item['media'][] = $media_export_item;
+                } // end foreach media_row
+            } // end if media_rows
+
+            $export_data['playlists'][] = $playlist_export_item;
+        } // end foreach playlist_ids
+
+        // 6. Send JSON Response for Download
+        $filename = 'mvp_playlists_export_' . date('Y-m-d_His') . '.json';
+        header('Content-Type: application/json; charset=utf-8'); // Ensure UTF-8
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Pragma: no-cache');
+        header("Expires: 0"); // Prevents caching
+        echo wp_json_encode($export_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); // Use wp_json_encode for better WP integration, ensure unicode is not escaped
+        wp_die(); // Important for AJAX handlers / direct output
+
+    }
+
+
+    /**
+     * AJAX handler to import playlists from an uploaded JSON file.
+     */
+    function mvp_import_playlists_json() {
+        // 1. Security and File Upload Checks
+        // Use the nonce from the form in playlist_manager.php
+        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'mvp-import-playlist-nonce')) {
+             wp_send_json_error(['message' => 'Invalid security token sent.'], 403);
+             wp_die();
+        }
+         if (!current_user_can(MVP_CAPABILITY)) {
+            wp_send_json_error(['message' => 'You do not have permission to import playlists.'], 403);
+            wp_die();
+        }
+        if (!isset($_FILES['mvp_import_file'])) {
+            wp_send_json_error(['message' => 'No file uploaded.'], 400);
+            wp_die();
+        }
+
+        $file = $_FILES['mvp_import_file'];
+
+        // Check for upload errors
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            $upload_errors = [
+                UPLOAD_ERR_INI_SIZE   => "The uploaded file exceeds the upload_max_filesize directive in php.ini.",
+                UPLOAD_ERR_FORM_SIZE  => "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.",
+                UPLOAD_ERR_PARTIAL    => "The uploaded file was only partially uploaded.",
+                UPLOAD_ERR_NO_FILE    => "No file was uploaded.",
+                UPLOAD_ERR_NO_TMP_DIR => "Missing a temporary folder.",
+                UPLOAD_ERR_CANT_WRITE => "Failed to write file to disk.",
+                UPLOAD_ERR_EXTENSION  => "A PHP extension stopped the file upload.",
+            ];
+            $error_message = isset($upload_errors[$file['error']]) ? $upload_errors[$file['error']] : 'Unknown upload error.';
+            wp_send_json_error(['message' => $error_message], 500);
+            wp_die();
+        }
+
+        // Check file type (basic check)
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime_type = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+
+        // Allow application/json and text/plain (sometimes JSON is uploaded as plain text)
+        if ($mime_type !== 'application/json' && $mime_type !== 'text/plain') {
+             // More specific check for file extension as fallback
+             $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+             if ($file_ext !== 'json') {
+                wp_send_json_error(['message' => 'Invalid file type detected (' . esc_html($mime_type) . '). Please upload a .json file.'], 415);
+                wp_die();
+             }
+        }
+
+
+        // 2. Read and Decode JSON
+        $json_content = file_get_contents($file['tmp_name']);
+        if ($json_content === false) {
+            wp_send_json_error(['message' => 'Could not read uploaded file.'], 500);
+            wp_die();
+        }
+
+        // Remove UTF-8 BOM if present (can interfere with json_decode)
+        if (substr($json_content, 0, 3) === "\xEF\xBB\xBF") {
+            $json_content = substr($json_content, 3);
+        }
+
+        $import_data = json_decode($json_content, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            wp_send_json_error(['message' => 'Invalid JSON file: ' . json_last_error_msg()], 400);
+            wp_die();
+        }
+
+        // 3. Validate Basic Structure
+        if (!isset($import_data['playlists']) || !is_array($import_data['playlists'])) {
+            wp_send_json_error(['message' => 'Invalid JSON structure: Missing "playlists" array.'], 400);
+            wp_die();
+        }
+
+        // 4. Database Access
+        global $wpdb;
+        $playlist_table = $wpdb->prefix . "mvp_playlists";
+        $media_table = $wpdb->prefix . "mvp_media";
+        $path_table = $wpdb->prefix . "mvp_path";
+        $subtitle_table = $wpdb->prefix . "mvp_subtitle";
+        $ad_table = $wpdb->prefix . "mvp_ad";
+        $annotation_table = $wpdb->prefix . "mvp_annotation";
+
+        $imported_playlists = 0;
+        $imported_media = 0;
+        $errors = [];
+
+        // 5. Start Transaction (Optional but recommended for bulk inserts)
+        $wpdb->query('START TRANSACTION');
+
+        try {
+            // 6. Loop through Playlists in JSON
+            foreach ($import_data['playlists'] as $playlist_index => $playlist_item) {
+                if (!isset($playlist_item['title'])) {
+                    $errors[] = "Playlist #" . ($playlist_index + 1) . " is missing a title. Skipping.";
+                    continue;
+                }
+
+                // Sanitize and prepare playlist data
+                $playlist_title = sanitize_text_field($playlist_item['title']);
+                // Add suffix to avoid exact title conflicts (you might want a setting for this)
+                $playlist_title .= ' (Imported ' . date('Y-m-d H:i:s') . ')';
+                $playlist_options = isset($playlist_item['options']) && is_array($playlist_item['options']) ? $playlist_item['options'] : [];
+
+                // Insert Playlist
+                $inserted_playlist = $wpdb->insert(
+                    $playlist_table,
+                    [
+                        'title'   => $playlist_title,
+                        'options' => maybe_serialize($playlist_options), // Re-serialize for DB
+                    ],
+                    ['%s', '%s']
+                );
+
+                if (!$inserted_playlist) {
+                    $errors[] = "Failed to insert playlist: " . esc_html($playlist_title) . ". Error: " . esc_html($wpdb->last_error);
+                    continue; // Skip media if playlist insertion failed
+                }
+
+                $new_playlist_id = $wpdb->insert_id;
+                $imported_playlists++;
+
+                // 7. Loop through Media in the current Playlist
+                if (isset($playlist_item['media']) && is_array($playlist_item['media'])) {
+                    foreach ($playlist_item['media'] as $media_index => $media_item) {
+                         if (!isset($media_item['title'])) {
+                            $errors[] = "Media item #" . ($media_index + 1) . " in playlist '" . esc_html($playlist_title) . "' is missing a title. Skipping.";
+                            continue;
+                        }
+
+                        // Sanitize and prepare media data
+                        $media_title = sanitize_text_field($media_item['title']);
+                        $media_order_id = isset($media_item['order_id']) ? intval($media_item['order_id']) : 0;
+                        $media_options = isset($media_item['options']) && is_array($media_item['options']) ? $media_item['options'] : [];
+
+                         // Insert Media
+                        $inserted_media = $wpdb->insert(
+                            $media_table,
+                            [
+                                'title'       => $media_title,
+                                'options'     => maybe_serialize($media_options),
+                                'order_id'    => $media_order_id,
+                                'playlist_id' => $new_playlist_id,
+                                'disabled'    => 0, // Ensure imported items are enabled by default
+                            ],
+                            ['%s', '%s', '%d', '%d', '%d']
+                        );
+
+                        if (!$inserted_media) {
+                             $errors[] = "Failed to insert media: " . esc_html($media_title) . " for playlist '" . esc_html($playlist_title) . "'. Error: " . esc_html($wpdb->last_error);
+                             continue; // Skip related data if media insertion failed
+                        }
+
+                        $new_media_id = $wpdb->insert_id;
+                        $imported_media++;
+
+                        // 8. Loop through and Insert Related Data (Paths, Subs, Ads, Annotations)
+                        // Paths
+                        if (isset($media_item['paths']) && is_array($media_item['paths'])) {
+                            foreach ($media_item['paths'] as $path_item) {
+                                 if (isset($path_item['options']) && is_array($path_item['options'])) {
+                                    $wpdb->insert(
+                                        $path_table,
+                                        [
+                                            'options'     => maybe_serialize($path_item['options']),
+                                            'media_id'    => $new_media_id,
+                                            'playlist_id' => $new_playlist_id, // Add playlist ID here too
+                                        ],
+                                        ['%s', '%d', '%d']
+                                    );
+                                    // Basic error check - could be more robust
+                                    if ($wpdb->last_error) $errors[] = "Error inserting path for media '" . esc_html($media_title) . "': " . esc_html($wpdb->last_error);
+                                }
+                            }
+                        }
+                        // Subtitles
+                        if (isset($media_item['subtitles']) && is_array($media_item['subtitles'])) {
+                             foreach ($media_item['subtitles'] as $sub_item) {
+                                 if (isset($sub_item['options']) && is_array($sub_item['options'])) {
+                                    $wpdb->insert(
+                                        $subtitle_table,
+                                        [
+                                            'options'     => maybe_serialize($sub_item['options']),
+                                            'media_id'    => $new_media_id,
+                                            'playlist_id' => $new_playlist_id,
+                                        ],
+                                         ['%s', '%d', '%d']
+                                    );
+                                    if ($wpdb->last_error) $errors[] = "Error inserting subtitle for media '" . esc_html($media_title) . "': " . esc_html($wpdb->last_error);
+                                 }
+                            }
+                        }
+                        // Ads
+                        if (isset($media_item['ads']) && is_array($media_item['ads'])) {
+                             foreach ($media_item['ads'] as $ad_item) {
+                                if (isset($ad_item['options']) && is_array($ad_item['options'])) {
+                                    $wpdb->insert(
+                                        $ad_table,
+                                        [
+                                            'options'     => maybe_serialize($ad_item['options']),
+                                            'media_id'    => $new_media_id,
+                                            'playlist_id' => $new_playlist_id,
+                                            'ad_id'       => null, // Ensure it's linked to media, not global ad
+                                        ],
+                                        ['%s', '%d', '%d', null] // Use specific format types
+                                    );
+                                    if ($wpdb->last_error) $errors[] = "Error inserting ad for media '" . esc_html($media_title) . "': " . esc_html($wpdb->last_error);
+                                }
+                            }
+                        }
+                        // Annotations
+                        if (isset($media_item['annotations']) && is_array($media_item['annotations'])) {
+                            foreach ($media_item['annotations'] as $ann_item) {
+                                if (isset($ann_item['options']) && is_array($ann_item['options'])) {
+                                    $wpdb->insert(
+                                        $annotation_table,
+                                        [
+                                            'options'     => maybe_serialize($ann_item['options']),
+                                            'media_id'    => $new_media_id,
+                                            'playlist_id' => $new_playlist_id,
+                                            'ad_id'       => null, // Ensure it's linked to media, not global ad
+                                        ],
+                                         ['%s', '%d', '%d', null] // Use specific format types
+                                    );
+                                    if ($wpdb->last_error) $errors[] = "Error inserting annotation for media '" . esc_html($media_title) . "': " . esc_html($wpdb->last_error);
+                                }
+                            }
+                        }
+
+                    } // end foreach media_item
+                } // end if has media
+            } // end foreach playlist_item
+
+            // 9. Commit or Rollback Transaction
+            if (empty($errors)) {
+                $wpdb->query('COMMIT');
+                 wp_send_json_success([
+                    'message' => sprintf(
+                        'Successfully imported %d playlist(s) and %d media item(s). Page will reload.',
+                        $imported_playlists,
+                        $imported_media
+                    )
+                ]);
+            } else {
+                $wpdb->query('ROLLBACK');
+                 wp_send_json_error([
+                    'message' => 'Import failed with errors. No changes were made. Please check the error details.',
+                    'errors'  => $errors // Send back the specific errors
+                ], 500); // Use 500 for server-side processing error during transaction
+            }
+
+        } catch (Exception $e) {
+            $wpdb->query('ROLLBACK');
+            wp_send_json_error(['message' => 'An unexpected critical error occurred during import: ' . $e->getMessage()], 500);
+        }
+
+        // This line should technically not be reached if commit/rollback works and wp_send_json_* calls wp_die()
+        wp_die();
+
+    }
+
+    // ------------------------------------
+
+	//############################################//
+	/* ads */
+	//############################################//
+
+	function mvp_edit_ad_title(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['title']) && isset($_POST['id'])){
+
+			$title = stripcslashes($_POST["title"]);
+			$id = $_POST["id"];
+
+			global $wpdb;
+		    $global_ad_table = $wpdb->prefix . "mvp_global_ad";
+
+		    $wpdb->update(
+		    	$global_ad_table,
+				array(
+					'title' => $title
+				),
+				array('id' => $id),
+				array(
+					'%s'
+				),
+				array(
+					'%d'
+				)
+		    );
+
+		    echo json_encode("");
+
+		    wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_delete_ad(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['ad_id'])){
+
+			$ad_id = $_POST['ad_id'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $global_ad_table = $wpdb->prefix . "mvp_global_ad";
+
+			$ids = explode(',',$ad_id);
+			$in = implode(',', array_fill(0, count($ids), '%d'));
+
+		    $stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$global_ad_table} WHERE id IN ($in)", $ids));
+
+			if($stmt !== false){
+	    		echo json_encode($stmt);
+	    	}
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_duplicate_ad(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['ad_id'])){
+
+			$ad_id = $_POST['ad_id'];
+			$title = $_POST['title'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $global_ad_table = $wpdb->prefix . "mvp_global_ad";
+		    $ad_table = $wpdb->prefix . "mvp_ad";
+	        $annotation_table = $wpdb->prefix . "mvp_annotation";
+
+			$stmt = $wpdb->prepare("SELECT options FROM {$global_ad_table} WHERE id = %d", $ad_id);
+
+			if($stmt !== false){
+
+				$result = $wpdb->get_row($stmt, ARRAY_A);
+
+			    $stmt = $wpdb->insert(//copy ad
+			    	$global_ad_table,
+					array(
+						'title' => $title,
+						'options' => $result['options']
+					),
+					array(
+						'%s',
+						'%s'
+					)
+			    );
+
+			    $insert_id = $wpdb->insert_id;
+
+			    //ads
+
+			    $stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$ad_table} WHERE ad_id = %d", $ad_id), ARRAY_A);
+
+			    foreach($stmt as $item){
+
+	    			$wpdb->insert(
+				    	$ad_table,
+						array(
+							'options' => $item['options'],
+							'ad_id' => $insert_id
+						),
+						array(
+							'%s','%d'
+						)
+				    );
+
+				}
+
+			    //annotations
+
+				$stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$annotation_table} WHERE ad_id = %d", $ad_id), ARRAY_A);
+
+				foreach($stmt as $item){
+
+	    			$wpdb->insert(
+				    	$annotation_table,
+						array(
+							'options' => $item['options'],
+							'ad_id' => $insert_id
+						),
+						array(
+							'%s','%d'
+						)
+				    );
+
+				}
+
+			    if($stmt !== false){
+		    		echo json_encode($insert_id);
+		    	}
+
+			}
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_save_ad_options(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['ad_id'])){
+
+			$ad_id = $_POST['ad_id'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+			$global_ad_table = $wpdb->prefix . "mvp_global_ad";
+	        $ad_table = $wpdb->prefix . "mvp_ad";
+	        $annotation_table = $wpdb->prefix . "mvp_annotation";
+
+
+
+			$global_ad_options = json_decode(stripcslashes($_POST['global_ad_options']), true);
+
+			$stmt = $wpdb->update(
+		    	$global_ad_table,
+				array('options' => serialize($global_ad_options)),
+				array('id' => $ad_id),
+				array('%s'),
+				array('%d')
+		    );
+
+
+			//ads
+
+	    	//delete current values
+			$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$ad_table} WHERE ad_id = %d", $ad_id));
+
+	    	if(!empty($_POST['ad_pre'])){
+
+	    		$ad_pre = json_decode(stripcslashes($_POST['ad_pre']), true);
+
+	    		for($i = 0; $i < count($ad_pre); $i++){
+
+	    			$stmt = $wpdb->insert(
+				    	$ad_table,
+						array(
+							'options' => serialize($ad_pre[$i]),
+							'ad_id' => $ad_id
+						),
+						array(
+							'%s','%d'
+						)
+				    );
+
+				}
+
+	    	}
+
+	    	if(!empty($_POST['ad_mid'])){
+
+	    		$ad_mid = json_decode(stripcslashes($_POST['ad_mid']), true);
+
+	    		for($i = 0; $i < count($ad_mid); $i++){
+
+	    			$stmt = $wpdb->insert(
+				    	$ad_table,
+						array(
+							'options' => serialize($ad_mid[$i]),
+							'ad_id' => $ad_id
+						),
+						array(
+							'%s','%d'
+						)
+				    );
+
+		    	}
+
+	    	}
+
+	    	if(!empty($_POST['ad_end'])){
+
+	    		$ad_end = json_decode(stripcslashes($_POST['ad_end']), true);
+
+	    		for($i = 0; $i < count($ad_end); $i++){
+
+	    			$stmt = $wpdb->insert(
+				    	$ad_table,
+						array(
+							'options' => serialize($ad_end[$i]),
+							'ad_id' => $ad_id
+						),
+						array(
+							'%s','%d'
+						)
+				    );
+
+		    	}
+
+	    	}
+
+
+	    	//annotations
+
+	    	//delete current values
+			$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$annotation_table} WHERE ad_id = %d", $ad_id));
+
+			if(!empty($_POST['annotation'])){
+
+	    		$annotation = json_decode(stripcslashes($_POST['annotation']), true);
+
+	    		for($i = 0; $i < count($annotation); $i++){
+
+				    $stmt = $wpdb->insert(
+				    	$annotation_table,
+						array(
+							'options' => serialize($annotation[$i]),
+							'ad_id' => $ad_id
+						),
+						array(
+							'%s','%d'
+						)
+				    );
+
+		    	}
+	    	}
+
+			if($stmt !== false){
+	    		echo json_encode($stmt);
+	    	}
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_ad_domain_rename(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['ad_id'])){
+
+			$ad_id = $_POST['ad_id'];
+			$from = $_POST['from'];
+			$to = $_POST['to'];
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $global_ad_table = $wpdb->prefix . "mvp_global_ad";
+	        $ad_table = $wpdb->prefix . "mvp_ad";
+	        $annotation_table = $wpdb->prefix . "mvp_annotation";
+
+
+	        //ads
+
+	        $stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$ad_table} WHERE ad_id = %d", $ad_id), ARRAY_A);
+
+		    $ad_data_global = array();
+		    foreach($stmt as $item){
+		        $mp = unserialize($item['options']);
+		    	$mp['path'] = str_replace($from, $to, $mp['path']);
+		    	if(isset($mp['poster']))$mp['poster'] = str_replace($from, $to, $mp['poster']);
+		        $ad_data_global[] = $mp;
+		    }
+
+		    //delete current values
+			$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$ad_table} WHERE ad_id = %d", $ad_id));
+
+			//inset
+			for($i = 0; $i < count($ad_data_global); $i++){
+
+    			$stmt = $wpdb->insert(
+			    	$ad_table,
+					array(
+						'options' => serialize($ad_data_global[$i]),
+						'ad_id' => $ad_id
+					),
+					array(
+						'%s','%d'
+					)
+			    );
+
+	    	}
+
+
+	    	//annotations
+
+			$stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$annotation_table} WHERE ad_id = %d", $ad_id), ARRAY_A);
+
+			$annotation_data_global = array();
+			foreach($stmt as $item){
+			    $mp = unserialize($item['options']);
+		    	$mp['path'] = str_replace($from, $to, $mp['path']);
+		        $annotation_data_global[] = $mp;
+			}
+
+
+	    	//delete current values
+			$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$annotation_table} WHERE ad_id = %d", $ad_id));
+
+			//insert
+    		for($i = 0; $i < count($annotation_data_global); $i++){
+
+			    $stmt = $wpdb->insert(
+			    	$annotation_table,
+					array(
+						'options' => serialize($annotation_data_global[$i]),
+						'ad_id' => $ad_id
+					),
+					array(
+						'%s','%d'
+					)
+			    );
+
+	    	}
+
+	    	echo json_encode("");
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+	}
+
+	function mvp_create_ad(){
+
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
+		    wp_send_json_error( 'Invalid security token sent.' );
+		    wp_die();
+		}
+
+		if(isset($_POST['title'])){
+
+			$title = stripslashes($_POST['title']);
+
+			global $wpdb;
+			$wpdb->show_errors();
+		    $global_ad_table = $wpdb->prefix . "mvp_global_ad";
+
+			$stmt = $wpdb->insert(
+		    	$global_ad_table,
+				array(
+					'title' => $title
+				),
+				array(
+					'%s'
+				)
+		    );
+
+		    if($stmt !== false){
+	    		echo json_encode($wpdb->insert_id);
+			}
+
+	    	wp_die();
+
+		}else{
+			wp_die();
+		}
+
+	}
+
+
+
+
+    function mvp_getAdData($atts){
+
+        $ad_id = $atts['ad_id'];
+
+        global $wpdb;
+        $global_ad_table = $wpdb->prefix . "mvp_global_ad";
+        $ad_table = $wpdb->prefix . "mvp_ad";
+        $annotation_table = $wpdb->prefix . "mvp_annotation";
+
+        $ad_options = null;
+	    $ad_data = null;
+	    $annotation_data = null;
+
+        //options
+
+        $stmt = $wpdb->get_row($wpdb->prepare("SELECT options FROM {$global_ad_table} WHERE id = %d", $ad_id), ARRAY_A);
+        $ad_options = unserialize($stmt['options']);
+
+        //ads
+
+        $stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$ad_table} WHERE ad_id = %d", $ad_id), ARRAY_A);
+        if($wpdb->num_rows > 0){
+            $ad_data = array();
+            foreach($stmt as $item){
+                $ad_data[] = unserialize($item['options']);
+            }
+        }
+
+        //annotations
+
+        $stmt = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$annotation_table} WHERE ad_id = %d", $ad_id), ARRAY_A);
+        if($wpdb->num_rows > 0){
+            $annotation_data = array();
+            foreach($stmt as $item){
+                $annotation_data[] = unserialize($item['options']);
+            }
+        }
+
+        return array('ad_options' => $ad_options,
+		        	 'ad_data' => $ad_data,
+		        	 'annotation_data' => $annotation_data);
+
+    }
+
+    //############################################//
+	/* front end playlist display */
+	//############################################//
+
+	function mvp_playlist_display($atts){
+
+		global $wpdb;
+        $playlist_table = $wpdb->prefix . "mvp_playlists";
+        $data = array();
+
+		if(isset($atts['playlist_id'])){
+
+			$playlist_id = explode(',', $atts['playlist_id']);
+
+		}else{
+			return '';
+		}
+
+		$in = implode(',', array_fill(0, count($playlist_id), '%d'));
+
+		$playlist_id = array_merge($playlist_id,$playlist_id);
+
+		$results = $wpdb->get_results($wpdb->prepare("SELECT id, title, options FROM {$playlist_table} WHERE id IN ($in) ORDER BY FIELD(id, $in)", $playlist_id), ARRAY_A);
+
+		foreach($results as $result){
+
+			$pl_options = unserialize($result['options']);
+
+			$data[] = array('id' => $result['id'],
+							'title' => $result['title'],
+							'description' => isset($pl_options['description']) ? $pl_options['description'] : null,
+							'thumb' => $pl_options['thumb']);
+
+		}
+
+		$id = 'mvp-playlist-display-wrap-'.mt_rand();//to limit selector for click
+
+	  	$markup = '<div class="mvp-playlist-display-wrap" id="'.$id.'">';
+
+			if(!empty($atts['header_title'])){
+				$markup .= '<div class="mvp-playlist-display-header">
+					<span>'.esc_html($atts['header_title']).'</span>
+				</div>';
+			}
+
+			$markup .= '<div class="mvp-playlist-display-wrap-inner">';
+
+			foreach($data as $d){
+
+				if(isset($atts['active_playlist']) && $atts['active_playlist'] == $d['id'])$active_class = ' mvp-playlist-display-item-active';
+				else $active_class = '';
+
+				$markup .= '<div class="mvp-playlist-display-item'.$active_class.'" data-playlist-id="'.esc_attr($d['id']).'" title="'.esc_attr($d['title']).'">';
+
+				$markup .= '<div class="mvp-playlist-display-item-inner">';
+
+				if(isset($d['thumb'])){
+					$markup .= '<img class="mvp-playlist-display-item-thumb" src="'.esc_attr($d['thumb']).'" alt="'.esc_attr($d['title']).'"/>';
+				}
+
+				$markup .= '<div class="mvp-playlist-display-item-title">'.esc_html($d['title']).'</div>';
+
+				$markup .= '</div>';//mvp-playlist-display-item-inner
+
+				if(isset($d['description'])){
+					$markup .= '<div class="mvp-playlist-display-item-description">'.$d['description'].'</div>';
+				}
+
+				$markup .= '</div>';//mvp-playlist-display-item
+
+			}
+			$markup .= '</div>
+
+		</div>';//mvp-playlist-display-wrap
+
+		if(isset($atts['player_id'])){
+
+			$player_id = $atts['player_id'];
+
+    		//click to load playlist in player
+    		$markup .= '<script type="text/javascript">
+				var elem = document.getElementById("'.$id.'"),
+				items = elem.querySelectorAll(".mvp-playlist-display-item"), i, len = items.length;
+				for (i = 0; i < len; i++) {
+				    items[i].addEventListener("click", function(e){
+				    	e.preventDefault();
+
+				    	if(this.classList.contains("mvp-playlist-display-item-active"))return false;//active item
+				    	var last_active = elem.getElementsByClassName("mvp-playlist-display-item-active");
+				    	if(last_active.length)last_active[0].classList.remove("mvp-playlist-display-item-active");
+				    	this.classList.add("mvp-playlist-display-item-active");
+
+				    	var pid = ".mvp-playlist-"+this.getAttribute("data-playlist-id");
+				    	mvp_player'.$player_id.'.loadPlaylist(pid); return false;
+					}, false);
+				}
+			</script>';
+
+		}
+
+		return $markup;
+
+	}
+
+
+	//############################################//
+	/* install */
+	//############################################//
+
+	function mvp_player_uninstall() {
+
+		global $wpdb;
+	    $settings_table = $wpdb->prefix . "mvp_settings";
+	    $result = $wpdb->get_row("SELECT options FROM {$settings_table} WHERE id = '0'", ARRAY_A);
+
+	    if($result){
+
+		    $settings = unserialize($result['options']);
+		    $delete_plugin_data_on_uninstall = isset($settings["delete_plugin_data_on_uninstall"]) ? (bool)($settings["delete_plugin_data_on_uninstall"]) : false;
+
+		    if($delete_plugin_data_on_uninstall){
+
+				global $wpdb;
+
+			    if ( is_multisite() ) {
+
+					$site_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs WHERE site_id = $wpdb->siteid;" );
+					foreach ( $site_ids as $site_id ) {
+				        switch_to_blog( $site_id );
+				        mvp_deinstall();
+				        restore_current_blog();
+				    }
+
+		    	}else{
+		    		mvp_deinstall();
+		    	}
+		    }
+	    }
+
+	}
+
+	function mvp_deinstall() {
+
+		global $wpdb;
+		$wpdb->show_errors();
+
+		$wpdb->query('SET foreign_key_checks=0');
+
+	    $settings_table = $wpdb->prefix . "mvp_settings";
+	    $sql = "DROP TABLE IF EXISTS $settings_table;";
+	    $wpdb->query($sql);
+
+	    $player_table = $wpdb->prefix . "mvp_players";
+	    $sql = "DROP TABLE IF EXISTS $player_table;";
+	    $wpdb->query($sql);
+
+		$path_table = $wpdb->prefix . "mvp_path";
+	    $sql = "DROP TABLE IF EXISTS $path_table;";
+	    $wpdb->query($sql);
+
+		$subtitle_table = $wpdb->prefix . "mvp_subtitle";
+	    $sql = "DROP TABLE IF EXISTS $subtitle_table;";
+	    $wpdb->query($sql);
+
+	    $ad_table = $wpdb->prefix . "mvp_ad";
+	    $sql = "DROP TABLE IF EXISTS $ad_table;";
+	    $wpdb->query($sql);
+
+		$annotation_table = $wpdb->prefix . "mvp_annotation";
+	    $sql = "DROP TABLE IF EXISTS $annotation_table;";
+	    $wpdb->query($sql);
+
+	 	$watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
+	    $sql = "DROP TABLE IF EXISTS $watched_percentage_table;";
+	    $wpdb->query($sql);
+
+	    $media_table = $wpdb->prefix . "mvp_media";
+	    $sql = "DROP TABLE IF EXISTS $media_table;";
+	    $wpdb->query($sql);
+
+	    $playlist_table = $wpdb->prefix . "mvp_playlists";
+	    $sql = "DROP TABLE IF EXISTS $playlist_table;";
+	    $wpdb->query($sql);
+
+	    $global_ad_table = $wpdb->prefix . "mvp_global_ad";
+	    $sql = "DROP TABLE IF EXISTS $global_ad_table;";
+	    $wpdb->query($sql);
+
+	    $statistics_table = $wpdb->prefix . "mvp_statistics";
+	    $sql = "DROP TABLE IF EXISTS $statistics_table;";
+	    $wpdb->query($sql);
+
+		$statistics_country_table = $wpdb->prefix . "mvp_statistics_country";
+	    $sql = "DROP TABLE IF EXISTS $statistics_country_table;";
+	    $wpdb->query($sql);
+
+		$statistics_country_play_table = $wpdb->prefix . "mvp_statistics_country_play";
+	    $sql = "DROP TABLE IF EXISTS $statistics_country_play_table;";
+	    $wpdb->query($sql);
+
+		$statistics_user_table = $wpdb->prefix . "mvp_statistics_user";
+	    $sql = "DROP TABLE IF EXISTS $statistics_user_table;";
+	    $wpdb->query($sql);
+
+		$statistics_user_play_table = $wpdb->prefix . "mvp_statistics_user_play";
+	    $sql = "DROP TABLE IF EXISTS $statistics_user_play_table;";
+	    $wpdb->query($sql);
+
+	    $wpdb->query('SET foreign_key_checks=1');
+
+		delete_option('mvp_video_player_version');
+	}
+
+	function mvp_player_activate($network_wide){
+
+		global $wpdb;
+
+		if ( is_multisite() ) {
+
+    		if ($network_wide) {
+    			$site_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs WHERE site_id = $wpdb->siteid;" );
+    			foreach ( $site_ids as $site_id ) {
+			        switch_to_blog( $site_id );
+			        mvp_install();
+			        restore_current_blog();
+			    }
+    		}else{
+    			mvp_install();
+    		}
+
+    	}else{
+    		mvp_install();
+    	}
+
+	}
+
+	function mvp_install(){
+
+
+
+
+
+		//database
+		global $wpdb;
+		$wpdb->show_errors();
+		$charset_collate = $wpdb->get_charset_collate();
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+		//WHEN altering tables, playlist_manager.php copy playlist; mvp.php copy tracks, import playlist!
+
+		$settings_table = $wpdb->prefix . "mvp_settings";
+		if($wpdb->get_var( "show tables like '$settings_table'" ) != $settings_table){
+
+			$sql = "CREATE TABLE $settings_table (
+				`id` tinyint NOT NULL,
+				`options` text NOT NULL,
+			    PRIMARY KEY (`id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$player_table = $wpdb->prefix . "mvp_players";
+		if($wpdb->get_var( "show tables like '$player_table'" ) != $player_table){
+
+			$sql = "CREATE TABLE $player_table (
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+			    `title` varchar(100) NOT NULL,
+			    `preset` varchar(50) NOT NULL,
+			    `options` text DEFAULT NULL,
+			    `custom_css` longtext DEFAULT NULL,
+			    `custom_js` longtext DEFAULT NULL,
+			    PRIMARY KEY (`id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$playlist_table = $wpdb->prefix . "mvp_playlists";
+		if($wpdb->get_var( "show tables like '$playlist_table'" ) != $playlist_table){
+
+			$sql = "CREATE TABLE $playlist_table (
+			    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`title` varchar(100) NOT NULL,
+				`options` text DEFAULT NULL,
+			    PRIMARY KEY (`id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+
+		$media_table = $wpdb->prefix . "mvp_media";
+		if($wpdb->get_var( "show tables like '$media_table'" ) != $media_table){
+
+			$sql = "CREATE TABLE $media_table (
+			    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+			    `title` varchar(300) DEFAULT NULL,
+			    `options` longtext DEFAULT NULL,
+			    `order_id` int(11) unsigned DEFAULT NULL,
+			    `playlist_id` int(11) unsigned NOT NULL,
+                `disabled` tinyint DEFAULT 0,
+			    PRIMARY KEY (`id`),
+			    INDEX `playlist_id` (`playlist_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$path_table = $wpdb->prefix . "mvp_path";
+		if($wpdb->get_var( "show tables like '$path_table'" ) != $path_table){
+
+			$sql = "CREATE TABLE $path_table (
+			    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+			    `options` longtext DEFAULT NULL,
+			    `media_id` int(11) unsigned NOT NULL,
+			    `playlist_id` int(11) unsigned,
+			    PRIMARY KEY (`id`),
+			    INDEX `media_id` (`media_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$subtitle_table = $wpdb->prefix . "mvp_subtitle";
+		if($wpdb->get_var( "show tables like '$subtitle_table'" ) != $subtitle_table){
+
+			$sql = "CREATE TABLE $subtitle_table (
+			    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+			    `options` longtext DEFAULT NULL,
+			    `media_id` int(11) unsigned NOT NULL,
+			    `playlist_id` int(11) unsigned,
+			    PRIMARY KEY (`id`),
+			    INDEX `media_id` (`media_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$ad_table = $wpdb->prefix . "mvp_ad";
+		if($wpdb->get_var( "show tables like '$ad_table'" ) != $ad_table){
+
+			$sql = "CREATE TABLE $ad_table (
+			    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+			    `options` longtext DEFAULT NULL,
+			    `media_id` int(11) unsigned DEFAULT NULL,
+			    `playlist_id` int(11) unsigned,
+			    `ad_id` int(11) unsigned DEFAULT NULL,
+			    PRIMARY KEY (`id`),
+			    INDEX `media_id` (`media_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$annotation_table = $wpdb->prefix . "mvp_annotation";
+		if($wpdb->get_var( "show tables like '$annotation_table'" ) != $annotation_table){
+
+			$sql = "CREATE TABLE $annotation_table (
+			    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+			    `options` longtext DEFAULT NULL,
+			    `media_id` int(11) unsigned DEFAULT NULL,
+			    `playlist_id` int(11) unsigned,
+			    `ad_id` int(11) unsigned DEFAULT NULL,
+			    PRIMARY KEY (`id`),
+			    INDEX `media_id` (`media_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$global_ad_table = $wpdb->prefix . "mvp_global_ad";
+		if($wpdb->get_var( "show tables like '$global_ad_table'" ) != $global_ad_table){
+
+			$sql = "CREATE TABLE $global_ad_table (
+			    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+			    `title` varchar(100) NOT NULL,
+			    `options` longtext DEFAULT NULL,
+			    PRIMARY KEY (`id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$statistics_table = $wpdb->prefix . "mvp_statistics";
+		if($wpdb->get_var( "show tables like '$statistics_table'" ) != $statistics_table){
+
+			$sql = "CREATE TABLE $statistics_table (
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`origtype` varchar(20) DEFAULT NULL,
+				`title` varchar(300) DEFAULT NULL,
+			    `c_play` int(11) unsigned DEFAULT '0',
+			    `c_time` int(11) unsigned DEFAULT '0',
+			    `c_download` int(11) DEFAULT '0',
+			    `c_finish` int(11) unsigned DEFAULT '0',
+			    `c_date` date DEFAULT NULL,
+			    `media_id` int(11) unsigned NOT NULL,
+			    `playlist_id` int(11) unsigned DEFAULT NULL,
+			    PRIMARY KEY (`id`),
+			    INDEX `media_id` (`media_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+        $statistics_country_table = $wpdb->prefix . "mvp_statistics_country";
+		if($wpdb->get_var( "show tables like '$statistics_country_table'" ) != $statistics_country_table){
+
+			$sql = "CREATE TABLE $statistics_country_table (
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`country` varchar(100),
+				`country_code` varchar(10),
+				`continent` varchar(15),
+			    PRIMARY KEY (`id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$statistics_country_play_table = $wpdb->prefix . "mvp_statistics_country_play";
+		if($wpdb->get_var( "show tables like '$statistics_country_play_table'" ) != $statistics_country_play_table){
+
+			$sql = "CREATE TABLE $statistics_country_play_table (
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`title` varchar(300),
+		    	`thumb` varchar(300),
+		    	`video_url` varchar(300),
+			    `c_play` int(11) unsigned,
+			    `c_time` int(11) unsigned,
+			    `c_date` date,
+			    `media_id` int(11) unsigned,
+			    `playlist_id` int(11) unsigned,
+			    `country_id` int(11) unsigned,
+			    PRIMARY KEY (`id`),
+			    INDEX `media_id` (`media_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$statistics_user_table = $wpdb->prefix . "mvp_statistics_user";
+		if($wpdb->get_var( "show tables like '$statistics_user_table'" ) != $statistics_user_table){
+
+			$sql = "CREATE TABLE $statistics_user_table (
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`user_id` smallint(11) unsigned,
+				`user_display_name` varchar(100),
+				`user_role` varchar(50),
+			    PRIMARY KEY (`id`),
+			    INDEX `user_id` (`user_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$statistics_user_play_table = $wpdb->prefix . "mvp_statistics_user_play";
+		if($wpdb->get_var( "show tables like '$statistics_user_play_table'" ) != $statistics_user_play_table){
+
+			$sql = "CREATE TABLE $statistics_user_play_table (
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`title` varchar(300),
+		    	`thumb` varchar(300),
+		    	`video_url` varchar(300),
+			    `c_play` int(11) unsigned,
+			    `c_time` int(11) unsigned,
+			    `c_date` date,
+			    `media_id` int(11) unsigned,
+			    `playlist_id` int(11) unsigned,
+			    `user_id` int(11) unsigned,
+			    PRIMARY KEY (`id`),
+			    INDEX `media_id` (`media_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
+		if($wpdb->get_var( "show tables like '$watched_percentage_table'" ) != $watched_percentage_table){
+
+			$sql = "CREATE TABLE $watched_percentage_table (
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`title` varchar(300) DEFAULT NULL,
+			    `watched` MEDIUMINT unsigned DEFAULT NULL,
+			    `duration` MEDIUMINT unsigned DEFAULT NULL,
+			    `media_id` int(11) unsigned DEFAULT NULL,
+			    `playlist_id` int(11) unsigned DEFAULT NULL,
+			    PRIMARY KEY (`id`),
+			    INDEX `media_id` (`media_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+	}
+
 	function mvp_plugins_loaded() {
 
 		//file dir for reading files from directory
 		if(!file_exists(MVP_FILE_DIR))wp_mkdir_p(MVP_FILE_DIR);
-		$upload_path = MVP_FILE_DIR."/plzip/"; // Still needed for ZIP export/import of Player/Ad if kept
+		$upload_path = MVP_FILE_DIR."/plzip/";
 		if(!file_exists($upload_path))wp_mkdir_p($upload_path);
 
 		load_plugin_textdomain(MVP_TEXTDOMAIN, false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
@@ -1594,11 +5819,10 @@ Author URI: https://codecanyon.net/user/Tean/
 	    $current_version = get_option('mvp_video_player_version');
 
 	    global $wpdb;
-		// $wpdb->show_errors(); // Turn off for production
+		$wpdb->show_errors();
 		$charset_collate = $wpdb->get_charset_collate();
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
-		// Table names...
 		$settings_table = $wpdb->prefix . "mvp_settings";
 		$player_table = $wpdb->prefix . "mvp_players";
 		$media_table = $wpdb->prefix . "mvp_media";
@@ -1609,441 +5833,681 @@ Author URI: https://codecanyon.net/user/Tean/
 		$annotation_table = $wpdb->prefix . "mvp_annotation";
 		$statistics_table = $wpdb->prefix . "mvp_statistics";
 		$watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
-        $statistics_country_table = $wpdb->prefix . "mvp_statistics_country";
-		$statistics_country_play_table = $wpdb->prefix . "mvp_statistics_country_play";
-		$statistics_user_table = $wpdb->prefix . "mvp_statistics_user";
-		$statistics_user_play_table = $wpdb->prefix . "mvp_statistics_user_play";
 
 
-        // --- Version Update Checks ---
-        // (Keep these as they handle database schema updates over time)
+
 		if($current_version < '2.56'){
-			update_option('mvp_video_player_version', '2.65'); $current_version = '2.65';
+
+			update_option('mvp_video_player_version', '2.65');
+			$current_version = get_option('mvp_video_player_version');
+
 		}
 		if($current_version == '2.65'){
+
 			$sql = "SHOW COLUMNS FROM {$settings_table} LIKE 'options'";
-	    	if($wpdb->get_results($sql)) { /* Column exists */ } else { $wpdb->query("ALTER TABLE {$settings_table} ADD COLUMN `options` text"); }
-	    	update_option('mvp_video_player_version', 2.7); $current_version = 2.7;
+	    	$result = $wpdb->query($sql);
+
+	    	if($wpdb->num_rows == 0){
+	    		$sql = "ALTER TABLE {$settings_table} ADD COLUMN `options` text";
+	    		$result = $wpdb->query($sql);
+	    	}
+
+	    	update_option('mvp_video_player_version', 2.7);
+			$current_version = get_option('mvp_video_player_version');
+
 		}
 		if($current_version == '2.7'){
+
 			$sql = "SHOW COLUMNS FROM {$player_table} LIKE 'custom_css'";
-	    	if($wpdb->get_results($sql)) { /* Column exists */ } else { $wpdb->query("ALTER TABLE {$player_table} ADD COLUMN `custom_css` longtext DEFAULT NULL"); }
-	    	update_option('mvp_video_player_version', 3.0); $current_version = 3.0;
+	    	$result = $wpdb->query($sql);
+
+	    	if($wpdb->num_rows == 0){
+	    		$sql = "ALTER TABLE {$player_table} ADD COLUMN `custom_css` longtext DEFAULT NULL";
+	    		$result = $wpdb->query($sql);
+	    	}
+
+	    	update_option('mvp_video_player_version', 3.0);
+			$current_version = get_option('mvp_video_player_version');
+
 		}
 		if($current_version == '3.0'){
-	    	update_option('mvp_video_player_version', 3.01); $current_version = 3.01;
+
+	    	update_option('mvp_video_player_version', 3.01);
+			$current_version = get_option('mvp_video_player_version');
+
 		}
 		if($current_version == '3.01'){
-	    	update_option('mvp_video_player_version', 3.1); $current_version = 3.1;
+
+
+	    	update_option('mvp_video_player_version', 3.1);
+			$current_version = get_option('mvp_video_player_version');
 		}
+
 		if($current_version == '3.1'){
+
+			//update playlist item content
+
  			$players = $wpdb->get_results("SELECT id, options FROM {$player_table}", ARRAY_A);
-		    if($players){ foreach($players as $pl) { $options = maybe_unserialize($pl['options']); if (!is_array($options)) $options = []; $options['playlistItemContent'] = ["thumb","title","description"]; $wpdb->update($player_table, ['options' => serialize($options)], ['id' => $pl['id']], ['%s'], ['%d']); } }
-		    update_option('mvp_video_player_version', 3.15); $current_version = 3.15;
+		    if($players){
+		    	foreach($players as $pl) {
+			        $options = unserialize($pl['options']);
+
+			        $options['playlistItemContent'] = array("thumb","title","description");
+
+			        $stmt = $wpdb->update(
+				    	$player_table,
+						array('options' => serialize($options)),
+						array('id' => $pl['id']),
+						array('%s'),
+						array('%d')
+				    );
+
+			    }
+		    }
+
+		    update_option('mvp_video_player_version', 3.15);
+			$current_version = get_option('mvp_video_player_version');
+
 		}
 		if($current_version == '3.15'){
+
+			//camelCase playlist options
+
  			$playlists = $wpdb->get_results("SELECT id, options FROM {$playlist_table}", ARRAY_A);
-		    if($playlists){ foreach($playlists as $pl) { $options = maybe_unserialize($pl['options']); if($options && is_array($options)){ $changed = false; foreach($options as $key => $value){ if(strpos($key, '_') !== false){ $newkey = mvp_underscoreToCamelCase($key); $options[$newkey] = $options[$key]; unset($options[$key]); $changed = true; } } if ($changed) $wpdb->update($playlist_table, ['options' => serialize($options)], ['id' => $pl['id']], ['%s'], ['%d']); } } }
-		    update_option('mvp_video_player_version', 3.3); $current_version = 3.3;
+		    if($playlists){
+		    	foreach($playlists as $pl) {
+			        $options = unserialize($pl['options']);
+
+			        if($options){
+
+				        foreach($options as $key => $value){
+				        	if(strpos($key, '_') !== false){
+							    $newkey = mvp_underscoreToCamelCase($key);
+								$options[$newkey] = $options[$key];
+								unset($options[$key]);
+							}
+						}
+
+				        $stmt = $wpdb->update(
+					    	$playlist_table,
+							array('options' => serialize($options)),
+							array('id' => $pl['id']),
+							array('%s'),
+							array('%d')
+					    );
+
+					}
+
+			    }
+		    }
+
+		    update_option('mvp_video_player_version', 3.3);
+			$current_version = get_option('mvp_video_player_version');
+
 		}
-        // ... (Keep other version checks similarly) ...
-        if($current_version == '3.3') { update_option('mvp_video_player_version', 3.4); $current_version = 3.4; }
-        if($current_version == '3.4') { update_option('mvp_video_player_version', 3.42); $current_version = 3.42; }
-        if($current_version == '3.42') { update_option('mvp_video_player_version', 3.5); $current_version = 3.5; }
-        if($current_version == '3.5') { update_option('mvp_video_player_version', 3.51); $current_version = 3.51; }
-        if($current_version == '3.51') { update_option('mvp_video_player_version', 3.52); $current_version = 3.52; }
-        if($current_version == '3.52') { update_option('mvp_video_player_version', 3.55); $current_version = 3.55; }
-        if($current_version == '3.55') { update_option('mvp_video_player_version', 3.56); $current_version = 3.56; }
-        if($current_version == '3.56') {
-             // Update playback rate array structure if needed
-             $players = $wpdb->get_results("SELECT id, options FROM {$player_table}", ARRAY_A);
-             if ($players) { foreach ($players as $pl) { $options = maybe_unserialize($pl['options']); if (!is_array($options)) $options = []; unset($options['playbackRateArr']); $options['playbackRateArr'] = [ ['value' => 2, 'menu_title' => '2x'], ['value' => 1.5, 'menu_title' => '1.5x'], ['value' => 1.25, 'menu_title' => '1.25x'], ['value' => 1, 'menu_title' => '1x (Normal)'], ['value' => 0.5, 'menu_title' => '0.5x'] ]; $wpdb->update($player_table, ['options' => serialize($options)], ['id' => $pl['id']], ['%s'], ['%d']); } }
-             update_option('mvp_video_player_version', 3.71); $current_version = 3.71;
-        }
-        if($current_version == '3.71') { update_option('mvp_video_player_version', 4.0); $current_version = 4.0; }
-        if($current_version == '4.0'){
-			$sql = "SHOW COLUMNS FROM {$ad_table} LIKE 'ad_id'"; if(!$wpdb->get_results($sql)){ $wpdb->query("ALTER TABLE {$ad_table} ADD COLUMN `ad_id` int(11) unsigned DEFAULT NULL"); }
-			$sql = "SHOW COLUMNS FROM {$annotation_table} LIKE 'ad_id'"; if(!$wpdb->get_results($sql)){ $wpdb->query("ALTER TABLE {$annotation_table} ADD COLUMN `ad_id` int(11) unsigned DEFAULT NULL"); }
-            if($wpdb->get_var( "show tables like '$global_ad_table'" ) != $global_ad_table){ $sql = "CREATE TABLE $global_ad_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `title` varchar(100) NOT NULL, `options` longtext DEFAULT NULL, PRIMARY KEY (`id`) ) $charset_collate;"; dbDelta( $sql ); }
-			if($wpdb->get_var( "show tables like '$statistics_table'" ) != $statistics_table){ $sql = "CREATE TABLE $statistics_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `origtype` varchar(20) DEFAULT NULL, `title` varchar(300) DEFAULT NULL, `c_play` int(11) unsigned DEFAULT '0', `c_time` int(11) unsigned DEFAULT '0', `c_download` int(11) DEFAULT '0', `c_finish` int(11) unsigned DEFAULT '0', `c_date` date DEFAULT NULL, `media_id` int(11) unsigned NOT NULL, `playlist_id` int(11) unsigned DEFAULT NULL, PRIMARY KEY (`id`), INDEX `media_id` (`media_id`) ) $charset_collate;"; dbDelta( $sql ); }
-			update_option('mvp_video_player_version', 4.5); $current_version = 4.5;
+		if($current_version == '3.3'){
+
+			update_option('mvp_video_player_version', 3.4);
+			$current_version = get_option('mvp_video_player_version');
+
 		}
-        if($current_version == '4.5') { update_option('mvp_video_player_version', 4.55); $current_version = 4.55; }
-        if($current_version == '4.55') { update_option('mvp_video_player_version', 4.56); $current_version = 4.56; }
-        if($current_version == '4.56') { update_option('mvp_video_player_version', 4.57); $current_version = 4.57; }
+		if($current_version == '3.4'){
+
+			update_option('mvp_video_player_version', 3.42);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.42'){
+
+			update_option('mvp_video_player_version', 3.5);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.5'){
+
+			update_option('mvp_video_player_version', 3.51);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.51'){
+
+			update_option('mvp_video_player_version', 3.52);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.52'){
+
+			update_option('mvp_video_player_version', 3.55);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.55'){
+
+			update_option('mvp_video_player_version', 3.56);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.56'){
+
+			//update playback rate
+
+ 			$players = $wpdb->get_results("SELECT id, options FROM {$player_table}", ARRAY_A);
+		    if($players){
+		    	foreach($players as $pl) {
+			        $options = unserialize($pl['options']);
+
+			        unset($options['playbackRateArr']);
+
+			        $options['playbackRateArr'] = array(
+		                  array(
+		                      'value' => 2,
+		                      'menu_title' => '2x'
+		                  ),
+		                  array(
+		                      'value' => 1.5,
+		                      'menu_title' => '1.5x'
+		                  ),
+		                  array(
+		                      'value' => 1.25,
+		                      'menu_title' => '1.25x'
+		                  ),
+		                  array(
+		                      'value' => 1,
+		                      'menu_title' => '1x (Normal)'
+		                  ),
+		                  array(
+		                      'value' => 0.5,
+		                      'menu_title' => '0.5x'
+		                  ),
+		            );
+
+			        $stmt = $wpdb->update(
+				    	$player_table,
+						array('options' => serialize($options)),
+						array('id' => $pl['id']),
+						array('%s'),
+						array('%d')
+				    );
+
+			    }
+		    }
+
+			update_option('mvp_video_player_version', 3.71);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '3.71'){
+
+			update_option('mvp_video_player_version', 4.0);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '4.0'){
+
+			//remove playlist id, ads are now sepearate from playlists, add column ad_id.
+
+			$sql = "SHOW COLUMNS FROM {$ad_table} LIKE 'ad_id'";
+	    	$result = $wpdb->query($sql);
+
+	    	if($wpdb->num_rows == 0){
+
+				$sql = "ALTER TABLE {$ad_table} ADD COLUMN `ad_id` int(11) unsigned DEFAULT NULL";
+			    $result = $wpdb->query($sql);
+
+			}
+
+			$sql = "SHOW COLUMNS FROM {$annotation_table} LIKE 'ad_id'";
+	    	$result = $wpdb->query($sql);
+
+	    	if($wpdb->num_rows == 0){
+
+			    $sql = "ALTER TABLE {$annotation_table} ADD COLUMN `ad_id` int(11) unsigned DEFAULT NULL";
+			    $result = $wpdb->query($sql);
+
+			}
+
+			//ad global ad table for ads and annotations
+
+			$global_ad_table = $wpdb->prefix . "mvp_global_ad";
+			if($wpdb->get_var( "show tables like '$global_ad_table'" ) != $global_ad_table){
+
+				$sql = "CREATE TABLE $global_ad_table (
+				    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				    `title` varchar(100) NOT NULL,
+				    `options` longtext NOT NULL,
+				    PRIMARY KEY (`id`)
+				) $charset_collate;";
+				dbDelta( $sql );
+
+			}
+
+			//statistics
+
+			if($wpdb->get_var( "show tables like '$statistics_table'" ) != $statistics_table){
+
+				$sql = "CREATE TABLE $statistics_table (
+					`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+					`origtype` varchar(20) DEFAULT NULL,
+					`title` varchar(300) NOT NULL,
+				    `c_play` int(11) unsigned NOT NULL,
+				    `c_time` int(11) unsigned NOT NULL,
+				    `c_date` date NOT NULL,
+				    `media_id` int(11) unsigned NOT NULL,
+				    `playlist_id` int(11) unsigned DEFAULT NULL,
+				    PRIMARY KEY (`id`),
+				    INDEX `media_id` (`media_id`)
+				) $charset_collate;";
+				dbDelta( $sql );
+
+			}
+
+			update_option('mvp_video_player_version', 4.5);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '4.5'){
+
+			update_option('mvp_video_player_version', 4.55);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '4.55'){
+
+			update_option('mvp_video_player_version', 4.56);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
+		if($current_version == '4.56'){
+
+			update_option('mvp_video_player_version', 4.57);
+			$current_version = get_option('mvp_video_player_version');
+
+		}
 		if($current_version == '4.57'){
-			if($wpdb->get_var( "show tables like '$watched_percentage_table'" ) != $watched_percentage_table){ $sql = "CREATE TABLE $watched_percentage_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `title` varchar(300) DEFAULT NULL, `watched` MEDIUMINT unsigned DEFAULT NULL, `duration` MEDIUMINT unsigned DEFAULT NULL, `media_id` int(11) unsigned DEFAULT NULL, `playlist_id` int(11) unsigned DEFAULT NULL, PRIMARY KEY (`id`), INDEX `media_id` (`media_id`) ) $charset_collate;"; dbDelta( $sql ); }
-			$sql = "SHOW COLUMNS FROM {$media_table} LIKE 'title'"; if(!$wpdb->get_results($sql)){ $wpdb->query("ALTER TABLE {$media_table} ADD COLUMN `title` varchar(300) DEFAULT NULL"); $media_data = $wpdb->get_results("SELECT id, options FROM {$media_table}", ARRAY_A); $values = []; $place_holders = []; if($media_data) { foreach ($media_data as $d) { $options = maybe_unserialize($d['options']); if(is_array($options) && isset($options['title']) && !empty($options['title'])) { $values[] = $options['title']; $values[] = $d['id']; $place_holders[] = "('%s', '%d')"; } } } if(!empty($values)) { $query = "INSERT INTO $media_table (title, id) VALUES " . implode( ', ', $place_holders ) . " ON DUPLICATE KEY UPDATE title=VALUES(title)"; $wpdb->query( $wpdb->prepare( "$query ", $values ) ); } }
- 			$playlists = $wpdb->get_results("SELECT id, options FROM {$playlist_table}", ARRAY_A); if($playlists){ $values = []; $place_holders = []; foreach($playlists as $pl) { $options = maybe_unserialize($pl['options']); if(is_array($options)){ $options['sortOrder'] = 'order_id'; $values[] = serialize($options); $values[] = $pl['id']; $place_holders[] = "('%s', '%d')"; } } if(!empty($values)) { $query = "INSERT INTO $playlist_table (options, id) VALUES " . implode( ', ', $place_holders ) . " ON DUPLICATE KEY UPDATE options=VALUES(options)"; $wpdb->query( $wpdb->prepare( "$query ", $values ) ); } }
-			$sql = "SHOW COLUMNS FROM {$statistics_table} LIKE 'c_download'"; if(!$wpdb->get_results($sql)){ $wpdb->query("ALTER TABLE {$statistics_table} ADD COLUMN `c_download` int(11) DEFAULT '0', ADD COLUMN `c_finish` int(11) unsigned DEFAULT '0'"); }
-			$result = $wpdb->get_row("SELECT options FROM {$settings_table} WHERE id = '0'", ARRAY_A); if($result) { $settings = maybe_unserialize($result['options']); if (!is_array($settings)) $settings = []; $settings['vimeo_no_cookie'] = 0; $wpdb->update($settings_table, ['options' => serialize($settings)], ['id' => 0], ['%s'], ['%d']); }
-			$sql = "SHOW COLUMNS FROM {$player_table} LIKE 'custom_js'"; if(!$wpdb->get_results($sql)){ $wpdb->query("ALTER TABLE {$player_table} ADD COLUMN `custom_js` longtext DEFAULT NULL"); }
-			update_option('mvp_video_player_version', 5.0); $current_version = 5.0;
-		}
-        if($current_version == '5.0'){
-            $media_data = $wpdb->get_results("SELECT id, options FROM {$media_table}", ARRAY_A); if ($media_data) { foreach ($media_data as $d) { $options = maybe_unserialize($d['options']); if (is_array($options) && isset($options['type']) && ($options['type'] == 'video_360' || $options['type'] == 'image_360')) { $v = substr($options['type'], 0, 5); $options['type'] = $v; $options['is360'] = '1'; $wpdb->update($media_table, ['options' => serialize($options)], ['id' => $d['id']], ['%s'], ['%d']); } } }
-            update_option('mvp_video_player_version', 5.01); $current_version = 5.01;
-        }
-        if($current_version == '5.01') { update_option('mvp_video_player_version', 5.02); $current_version = 5.02; }
-        if($current_version == '5.02') { update_option('mvp_video_player_version', 5.05); $current_version = 5.05; }
-        if($current_version == '5.05') { update_option('mvp_video_player_version', 5.06); $current_version = 5.06; }
-        if($current_version == '5.06') { update_option('mvp_video_player_version', 5.07); $current_version = 5.07; }
-        if($current_version == '5.07') { update_option('mvp_video_player_version', 5.1); $current_version = 5.1; }
-        if($current_version == '5.1') { update_option('mvp_video_player_version', 5.11); $current_version = 5.11; }
-        if($current_version == '5.11') { update_option('mvp_video_player_version', 5.12); $current_version = 5.12; }
-        if($current_version == '5.12') { update_option('mvp_video_player_version', 5.15); $current_version = 5.15; }
-        if($current_version == '5.15') { update_option('mvp_video_player_version', 5.16); $current_version = 5.16; }
-		if($current_version <= '5.16'){
- 			$players = $wpdb->get_results("SELECT id, options FROM {$player_table}", ARRAY_A); if($players){ foreach($players as $pl) { $options = maybe_unserialize($pl['options']); if (!is_array($options)) $options = []; $options['limitDescriptionText'] = '2'; $wpdb->update($player_table, ['options' => serialize($options)], ['id' => $pl['id']], ['%s'], ['%d']); } }
-            // Foreign key removal was commented out, keep it that way unless issues arise
-			update_option('mvp_video_player_version', 6.0); $current_version = 6.0;
-		}
-        // Add playlist_id columns if missing
-		$sql = "SHOW COLUMNS FROM {$path_table} LIKE 'playlist_id'"; if(!$wpdb->get_results($sql)){ $wpdb->query("ALTER TABLE {$path_table} ADD COLUMN `playlist_id` int(11) unsigned"); }
-		$sql = "SHOW COLUMNS FROM {$subtitle_table} LIKE 'playlist_id'"; if(!$wpdb->get_results($sql)){ $wpdb->query("ALTER TABLE {$subtitle_table} ADD COLUMN `playlist_id` int(11) unsigned"); }
-		$sql = "SHOW COLUMNS FROM {$ad_table} LIKE 'playlist_id'"; if(!$wpdb->get_results($sql)){ $wpdb->query("ALTER TABLE {$ad_table} ADD COLUMN `playlist_id` int(11) unsigned"); }
-		$sql = "SHOW COLUMNS FROM {$annotation_table} LIKE 'playlist_id'"; if(!$wpdb->get_results($sql)){ $wpdb->query("ALTER TABLE {$annotation_table} ADD COLUMN `playlist_id` int(11) unsigned"); }
 
-        // Ensure newer stats tables exist
-        if($wpdb->get_var( "show tables like '$statistics_country_table'" ) != $statistics_country_table){ $sql = "CREATE TABLE $statistics_country_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `country` varchar(100), `country_code` varchar(10), `continent` varchar(15), PRIMARY KEY (`id`) ) $charset_collate;"; dbDelta( $sql ); }
-		if($wpdb->get_var( "show tables like '$statistics_country_play_table'" ) != $statistics_country_play_table){ $sql = "CREATE TABLE $statistics_country_play_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `title` varchar(300), `thumb` varchar(300), `video_url` varchar(300), `c_play` int(11) unsigned, `c_time` int(11) unsigned, `c_date` date, `media_id` int(11) unsigned, `playlist_id` int(11) unsigned, `country_id` int(11) unsigned, PRIMARY KEY (`id`), INDEX `media_id` (`media_id`) ) $charset_collate;"; dbDelta( $sql ); }
-		if($wpdb->get_var( "show tables like '$statistics_user_table'" ) != $statistics_user_table){ $sql = "CREATE TABLE $statistics_user_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `user_id` smallint(11) unsigned, `user_display_name` varchar(100), `user_role` varchar(50), PRIMARY KEY (`id`), INDEX `user_id` (`user_id`) ) $charset_collate;"; dbDelta( $sql ); }
-		if($wpdb->get_var( "show tables like '$statistics_user_play_table'" ) != $statistics_user_play_table){ $sql = "CREATE TABLE $statistics_user_play_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `title` varchar(300), `thumb` varchar(300), `video_url` varchar(300), `c_play` int(11) unsigned, `c_time` int(11) unsigned, `c_date` date, `media_id` int(11) unsigned, `playlist_id` int(11) unsigned, `user_id` int(11) unsigned, PRIMARY KEY (`id`), INDEX `media_id` (`media_id`) ) $charset_collate;"; dbDelta( $sql ); }
-
-		// Add 'disabled' column if missing
-		$sql = "SHOW COLUMNS FROM {$media_table} LIKE 'disabled'"; if(!$wpdb->get_results($sql)){ $wpdb->query("ALTER TABLE {$media_table} ADD COLUMN `disabled` tinyint DEFAULT 0"); }
-
-        // Set current version after all checks/updates
-		update_option('mvp_video_player_version', 7.5);
-	}
-	// --- END mvp_plugins_loaded ---
-
-
-    // --- *** RESTORED FUNCTION: mvp_delete_playlist *** ---
-	function mvp_delete_playlist(){
-
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
-		}
-        if (!current_user_can(MVP_CAPABILITY)) {
-            wp_send_json_error( 'Permission denied.' , 403);
-            wp_die();
-        }
-
-		if(isset($_POST['playlist_id'])){
-
-            $playlist_ids_raw = explode(',', $_POST['playlist_id']);
-            $ids = array_map('intval', $playlist_ids_raw);
-            $ids = array_filter($ids, function($id) { return $id > 0; });
-
-            if (empty($ids)) {
-                wp_send_json_error('No valid playlist IDs provided for deletion.');
-                wp_die();
-            }
-
-			global $wpdb;
-			// $wpdb->show_errors();
-		    $playlist_table = $wpdb->prefix . "mvp_playlists";
-		    $media_table = $wpdb->prefix . "mvp_media";
-		    $statistics_table = $wpdb->prefix . "mvp_statistics";
-		    $ad_table = $wpdb->prefix . "mvp_ad";
-			$annotation_table = $wpdb->prefix . "mvp_annotation";
-			$path_table = $wpdb->prefix . "mvp_path";
-			$subtitle_table = $wpdb->prefix . "mvp_subtitle";
 			$watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
+			if($wpdb->get_var( "show tables like '$watched_percentage_table'" ) != $watched_percentage_table){
 
-            // Create placeholders for the IN clause
-            $placeholders = implode(',', array_fill(0, count($ids), '%d'));
+				$sql = "CREATE TABLE $watched_percentage_table (
+					`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+					`title` varchar(300) DEFAULT NULL,
+				    `watched` MEDIUMINT unsigned DEFAULT NULL,
+				    `duration` MEDIUMINT unsigned DEFAULT NULL,
+				    `media_id` int(11) unsigned DEFAULT NULL,
+				    `playlist_id` int(11) unsigned DEFAULT NULL,
+				    PRIMARY KEY (`id`),
+				    INDEX `media_id` (`media_id`)
+				) $charset_collate;";
+				dbDelta( $sql );
 
-            // Use transaction for multi-table delete
-            $wpdb->query('START TRANSACTION');
-            $error = false;
-            $deleted_count = 0;
+			}
 
-            try {
-                // Delete related data first
-                $wpdb->query($wpdb->prepare("DELETE FROM {$path_table} WHERE playlist_id IN ($placeholders)", $ids));
-                if ($wpdb->last_error) throw new Exception($wpdb->last_error);
 
-                $wpdb->query($wpdb->prepare("DELETE FROM {$subtitle_table} WHERE playlist_id IN ($placeholders)", $ids));
-                 if ($wpdb->last_error) throw new Exception($wpdb->last_error);
+			//add title so we can sort videos by title
 
-                $wpdb->query($wpdb->prepare("DELETE FROM {$ad_table} WHERE playlist_id IN ($placeholders)", $ids));
-                 if ($wpdb->last_error) throw new Exception($wpdb->last_error);
+			$sql = "SHOW COLUMNS FROM {$media_table} LIKE 'title'";
+	    	$result = $wpdb->query($sql);
 
-                $wpdb->query($wpdb->prepare("DELETE FROM {$annotation_table} WHERE playlist_id IN ($placeholders)", $ids));
-                 if ($wpdb->last_error) throw new Exception($wpdb->last_error);
+	    	if($wpdb->num_rows == 0){
 
-                $wpdb->query($wpdb->prepare("DELETE FROM {$watched_percentage_table} WHERE playlist_id IN ($placeholders)", $ids));
-                 if ($wpdb->last_error) throw new Exception($wpdb->last_error);
+			    $sql = "ALTER TABLE {$media_table} ADD COLUMN `title` varchar(300) DEFAULT NULL";
+			    $result = $wpdb->query($sql);
 
-                $wpdb->query($wpdb->prepare("DELETE FROM {$statistics_table} WHERE playlist_id IN ($placeholders)", $ids));
-                 if ($wpdb->last_error) throw new Exception($wpdb->last_error);
+				//move title
 
-                // Now delete media items
-                $wpdb->query($wpdb->prepare("DELETE FROM {$media_table} WHERE playlist_id IN ($placeholders)", $ids));
-                 if ($wpdb->last_error) throw new Exception($wpdb->last_error);
+		    	$media_data = $wpdb->get_results("SELECT id, options FROM {$media_table}", ARRAY_A);
 
-                // Finally, delete the playlists themselves
-                $deleted_count = $wpdb->query($wpdb->prepare("DELETE FROM {$playlist_table} WHERE id IN ($placeholders)", $ids));
-                 if ($deleted_count === false) throw new Exception($wpdb->last_error); // Check for error on last delete
+		    	$values = array();
+				$place_holders = array();
 
-                 // If all deletions succeeded
-                 $wpdb->query('COMMIT');
-                 wp_send_json_success(['deleted_count' => $deleted_count]);
+		    	foreach ($media_data as $d) {
 
-            } catch (Exception $e) {
-                 $wpdb->query('ROLLBACK');
-                 wp_send_json_error('Failed to delete playlist(s) and associated data. Error: ' . $e->getMessage());
-            }
+					$options = unserialize($d['options']);
 
-	    	wp_die();
+					foreach($options as $key => $value){
+						if($key == 'title' && !empty($value)){
 
-		}else{
-            wp_send_json_error('Playlist ID(s) not provided for deletion.');
-			wp_die();
+							array_push( $values, $value, $d['id']);
+							$place_holders[] = "('%s', '%d')";
+						}
+					}
+
+				}
+
+				if(count($values)){
+
+					$query = "INSERT INTO $media_table (title, id) VALUES ";
+					$query .= implode( ', ', $place_holders );
+
+					$query .= "ON DUPLICATE KEY UPDATE title=VALUES(title)";
+
+					$wpdb->query( $wpdb->prepare( "$query ", $values ) );
+
+				}
+
+			}
+
+			//update sort order
+
+ 			$playlists = $wpdb->get_results("SELECT id, options FROM {$playlist_table}", ARRAY_A);
+		    if($playlists){
+
+		    	$values = array();
+				$place_holders = array();
+
+		    	foreach($playlists as $pl) {
+			        $options = unserialize($pl['options']);
+
+			        if($options){
+						$options['sortOrder'] = 'order_id';
+
+						array_push( $values, serialize($options), $pl['id']);
+						$place_holders[] = "('%s', '%d')";
+					}
+
+			    }
+
+			    if(count($values)){
+
+				    $query = "INSERT INTO $playlist_table (options, id) VALUES ";
+					$query .= implode( ', ', $place_holders );
+
+					$query .= "ON DUPLICATE KEY UPDATE options=VALUES(options)";
+
+					$wpdb->query( $wpdb->prepare( "$query ", $values ) );
+
+				}
+			}
+
+
+			//stats finish and download
+
+			$sql = "SHOW COLUMNS FROM {$statistics_table} LIKE 'c_download'";
+	    	$result = $wpdb->query($sql);
+
+	    	if($wpdb->num_rows == 0){
+
+				$sql = "ALTER TABLE {$statistics_table} ADD COLUMN `c_download` int(11) DEFAULT '0',
+														ADD COLUMN `c_finish` int(11) unsigned DEFAULT '0'";
+			    $result = $wpdb->query($sql);
+
+			}
+
+			//settings table
+
+			$settings_table = $wpdb->prefix . "mvp_settings";
+		    $result = $wpdb->get_row("SELECT options FROM {$settings_table} WHERE id = '0'", ARRAY_A);
+		    $settings = unserialize($result['options']);
+		    $settings['vimeo_no_cookie'] = 0;
+
+		    $stmt = $wpdb->update(
+		    	$settings_table,
+				array('options' => serialize($settings)),
+				array('id' => 0),
+				array('%s'),
+				array('%d')
+		    );
+
+			//custom javascript
+
+			$sql = "SHOW COLUMNS FROM {$player_table} LIKE 'custom_js'";
+	    	$result = $wpdb->query($sql);
+
+	    	if($wpdb->num_rows == 0){
+	    		$sql = "ALTER TABLE {$player_table} ADD COLUMN `custom_js` longtext DEFAULT NULL";
+	    		$result = $wpdb->query($sql);
+	    	}
+
+
+			update_option('mvp_video_player_version', 5.0);
+			$current_version = get_option('mvp_video_player_version');
+
 		}
+		if($current_version == '5.0'){
+
+			//update 360
+
+	    	$media_data = $wpdb->get_results("SELECT id, options FROM {$media_table}", ARRAY_A);
+
+	    	foreach ($media_data as $d) {
+
+				$options = unserialize($d['options']);
+
+				foreach($options as $key => $value){
+					if($key == 'type' && ($value == 'video_360' || $value == 'image_360')){
+
+						$v = substr($value, 0, 5);///remove _ 360
+
+						$options['type'] = $v;
+						$options['is360'] = '1';
+
+						$stmt = $wpdb->update(
+					    	$media_table,
+							array('options' => serialize($options)),
+							array('id' => $d['id']),
+							array('%s'),
+							array('%d')
+					    );
+
+					}
+				}
+
+			}
+
+			update_option('mvp_video_player_version', 5.01);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.01'){
+			update_option('mvp_video_player_version', 5.02);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.02'){
+			update_option('mvp_video_player_version', 5.05);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.05'){
+			update_option('mvp_video_player_version', 5.06);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.06'){
+			update_option('mvp_video_player_version', 5.07);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.07'){
+			update_option('mvp_video_player_version', 5.1);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.1'){
+			update_option('mvp_video_player_version', 5.11);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.11'){
+			update_option('mvp_video_player_version', 5.12);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.12'){
+			update_option('mvp_video_player_version', 5.15);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version == '5.15'){
+			update_option('mvp_video_player_version', 5.16);
+			$current_version = get_option('mvp_video_player_version');
+		}
+		if($current_version <= '5.16'){
+
+			//update limitDescriptionText
+
+ 			$players = $wpdb->get_results("SELECT id, options FROM {$player_table}", ARRAY_A);
+		    if($players){
+		    	foreach($players as $pl) {
+			        $options = unserialize($pl['options']);
+
+			        $options['limitDescriptionText'] = '2';
+
+			        $stmt = $wpdb->update(
+				    	$player_table,
+						array('options' => serialize($options)),
+						array('id' => $pl['id']),
+						array('%s'),
+						array('%d')
+				    );
+
+			    }
+		    }
+
+		    //remove fk
+			/*$sql = "ALTER TABLE $path_table DROP FOREIGN KEY mvp_path_ibfk_1";
+		    $wpdb->query($sql);
+
+		    $sql = "ALTER TABLE $subtitle_table DROP FOREIGN KEY mvp_subtitle_ibfk_1";
+		    $wpdb->query($sql);
+
+		    $sql = "ALTER TABLE $ad_table DROP FOREIGN KEY mvp_ad_ibfk_1";
+		    $wpdb->query($sql);
+
+		    $sql = "ALTER TABLE $annotation_table DROP FOREIGN KEY mvp_annotation_ibfk_1";
+		    $wpdb->query($sql);
+
+		    $sql = "ALTER TABLE $statistics_table DROP FOREIGN KEY mvp_stat_ibfk_1";
+		    $wpdb->query($sql);
+
+			$sql = "ALTER TABLE $media_table DROP FOREIGN KEY mvp_media_ibfk_1";
+		    $wpdb->query($sql);
+
+		    $sql = "ALTER TABLE $watched_percentage_table DROP FOREIGN KEY mvp_wperc_ibfk_1";
+			$wpdb->query($sql);
+
+			$sql = "ALTER TABLE $watched_percentage_table MODIFY COLUMN `playlist_id` int(11) unsigned DEFAULT NULL";
+			$wpdb->query($sql);*/
+
+			update_option('mvp_video_player_version', 6.0);
+			$current_version = get_option('mvp_video_player_version');
+		}
+
+		$sql = "SHOW COLUMNS FROM {$path_table} LIKE 'playlist_id'";
+    	$result = $wpdb->query($sql);
+
+	    if($wpdb->num_rows == 0){
+	    	$sql = "ALTER TABLE {$path_table} ADD COLUMN `playlist_id` int(11) unsigned";
+		    $result = $wpdb->query($sql);
+		}
+
+		$sql = "SHOW COLUMNS FROM {$subtitle_table} LIKE 'playlist_id'";
+    	$result = $wpdb->query($sql);
+
+	    if($wpdb->num_rows == 0){
+	    	$sql = "ALTER TABLE {$subtitle_table} ADD COLUMN `playlist_id` int(11) unsigned";
+		    $result = $wpdb->query($sql);
+		}
+
+		$sql = "SHOW COLUMNS FROM {$ad_table} LIKE 'playlist_id'";
+    	$result = $wpdb->query($sql);
+
+	    if($wpdb->num_rows == 0){
+	    	$sql = "ALTER TABLE {$ad_table} ADD COLUMN `playlist_id` int(11) unsigned";
+		    $result = $wpdb->query($sql);
+		}
+
+		$sql = "SHOW COLUMNS FROM {$annotation_table} LIKE 'playlist_id'";
+    	$result = $wpdb->query($sql);
+
+	    if($wpdb->num_rows == 0){
+	    	$sql = "ALTER TABLE {$annotation_table} ADD COLUMN `playlist_id` int(11) unsigned";
+		    $result = $wpdb->query($sql);
+		}
+
+
+
+
+		$statistics_country_table = $wpdb->prefix . "mvp_statistics_country";
+		if($wpdb->get_var( "show tables like '$statistics_country_table'" ) != $statistics_country_table){
+
+			$sql = "CREATE TABLE $statistics_country_table (
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`country` varchar(100),
+				`country_code` varchar(10),
+				`continent` varchar(15),
+			    PRIMARY KEY (`id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$statistics_country_play_table = $wpdb->prefix . "mvp_statistics_country_play";
+		if($wpdb->get_var( "show tables like '$statistics_country_play_table'" ) != $statistics_country_play_table){
+
+			$sql = "CREATE TABLE $statistics_country_play_table (
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`title` varchar(300),
+		    	`thumb` varchar(300),
+		    	`video_url` varchar(300),
+			    `c_play` int(11) unsigned,
+			    `c_time` int(11) unsigned,
+			    `c_date` date,
+			    `media_id` int(11) unsigned,
+			    `playlist_id` int(11) unsigned,
+			    `country_id` int(11) unsigned,
+			    PRIMARY KEY (`id`),
+			    INDEX `media_id` (`media_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$statistics_user_table = $wpdb->prefix . "mvp_statistics_user";
+		if($wpdb->get_var( "show tables like '$statistics_user_table'" ) != $statistics_user_table){
+
+			$sql = "CREATE TABLE $statistics_user_table (
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`user_id` smallint(11) unsigned,
+				`user_display_name` varchar(100),
+				`user_role` varchar(50),
+			    PRIMARY KEY (`id`),
+			    INDEX `user_id` (`user_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		$statistics_user_play_table = $wpdb->prefix . "mvp_statistics_user_play";
+		if($wpdb->get_var( "show tables like '$statistics_user_play_table'" ) != $statistics_user_play_table){
+
+			$sql = "CREATE TABLE $statistics_user_play_table (
+				`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+				`title` varchar(300),
+		    	`thumb` varchar(300),
+		    	`video_url` varchar(300),
+			    `c_play` int(11) unsigned,
+			    `c_time` int(11) unsigned,
+			    `c_date` date,
+			    `media_id` int(11) unsigned,
+			    `playlist_id` int(11) unsigned,
+			    `user_id` int(11) unsigned,
+			    PRIMARY KEY (`id`),
+			    INDEX `media_id` (`media_id`)
+			) $charset_collate;";
+			dbDelta( $sql );
+
+		}
+
+		//disabled
+
+		$sql = "SHOW COLUMNS FROM {$media_table} LIKE 'disabled'";
+    	$result = $wpdb->query($sql);
+
+    	if($wpdb->num_rows == 0){
+    		$sql = "ALTER TABLE {$media_table} ADD COLUMN `disabled` tinyint DEFAULT 0";
+    		$result = $wpdb->query($sql);
+    	}
+
+
+
+		update_option('mvp_video_player_version', 7.5);
+
+
+
+
 	}
-    // --- END mvp_delete_playlist ---
 
-
-    // --- NEW SINGLE JSON Export Function ---
-    /**
-     * AJAX handler to export a single playlist as JSON.
-     * Triggered multiple times by JS for multi-select export.
-     */
-    function mvp_export_single_playlist_json() {
-        // 1. Security Checks
-        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'mvp-security-nonce')) {
-            status_header(403); echo wp_json_encode(['success' => false, 'data' => ['message' => 'Invalid security token sent.']]); wp_die();
-        }
-        if (!current_user_can(MVP_CAPABILITY)) {
-            status_header(403); echo wp_json_encode(['success' => false, 'data' => ['message' => 'Permission denied.']]); wp_die();
-        }
-        if (!isset($_POST['playlist_id']) || !is_numeric($_POST['playlist_id'])) {
-            status_header(400); echo wp_json_encode(['success' => false, 'data' => ['message' => 'No valid playlist ID provided.']]); wp_die();
-        }
-        $playlist_id = intval($_POST['playlist_id']);
-
-        // 2. Database Access
-        global $wpdb;
-        $playlist_table = $wpdb->prefix . "mvp_playlists";
-        $media_table = $wpdb->prefix . "mvp_media";
-        $path_table = $wpdb->prefix . "mvp_path";
-        $subtitle_table = $wpdb->prefix . "mvp_subtitle";
-        $ad_table = $wpdb->prefix . "mvp_ad";
-        $annotation_table = $wpdb->prefix . "mvp_annotation";
-
-        // 3. Fetch data for the single playlist
-        $playlist_row = $wpdb->get_row($wpdb->prepare("SELECT title, options FROM {$playlist_table} WHERE id = %d", $playlist_id), ARRAY_A);
-        if (!$playlist_row) {
-            status_header(404); echo wp_json_encode(['success' => false, 'data' => ['message' => 'Playlist not found.']]); wp_die();
-        }
-        $playlist_title = $playlist_row['title'];
-        $playlist_options = maybe_unserialize($playlist_row['options']);
-        if (!is_array($playlist_options)) $playlist_options = [];
-
-        $playlist_export_item = ['title' => $playlist_title, 'options' => $playlist_options, 'media' => []];
-
-        // 4. Fetch media
-        $media_rows = $wpdb->get_results($wpdb->prepare("SELECT id, title, options, order_id FROM {$media_table} WHERE playlist_id = %d ORDER BY order_id ASC", $playlist_id), ARRAY_A);
-        if ($media_rows) {
-            foreach ($media_rows as $media_row) {
-                $media_id = (int) $media_row['id'];
-                $media_options = maybe_unserialize($media_row['options']);
-                if (!is_array($media_options)) $media_options = [];
-
-                $media_export_item = [
-                    'title' => $media_row['title'], 'order_id' => (int) $media_row['order_id'], 'options' => $media_options,
-                    'paths' => [], 'subtitles' => [], 'ads' => [], 'annotations' => [],
-                ];
-
-                // 5. Fetch related data
-                // Paths
-                $path_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$path_table} WHERE media_id = %d", $media_id), ARRAY_A);
-                if ($path_rows) { foreach ($path_rows as $r) { $opts = maybe_unserialize($r['options']); if(is_array($opts)) $media_export_item['paths'][] = ['options' => $opts]; } }
-                // Subtitles
-                $subtitle_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$subtitle_table} WHERE media_id = %d", $media_id), ARRAY_A);
-                if ($subtitle_rows) { foreach ($subtitle_rows as $r) { $opts = maybe_unserialize($r['options']); if(is_array($opts)) $media_export_item['subtitles'][] = ['options' => $opts]; } }
-                // Ads (media-specific)
-                 $ad_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$ad_table} WHERE media_id = %d AND ad_id IS NULL", $media_id), ARRAY_A);
-                 if ($ad_rows) { foreach ($ad_rows as $r) { $opts = maybe_unserialize($r['options']); if(is_array($opts)) $media_export_item['ads'][] = ['options' => $opts]; } }
-                // Annotations (media-specific)
-                 $annotation_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$annotation_table} WHERE media_id = %d AND ad_id IS NULL", $media_id), ARRAY_A);
-                 if ($annotation_rows) { foreach ($annotation_rows as $r) { $opts = maybe_unserialize($r['options']); if(is_array($opts)) $media_export_item['annotations'][] = ['options' => $opts]; } }
-
-                $playlist_export_item['media'][] = $media_export_item;
-            }
-        }
-
-        // Final export structure
-        $export_data = [
-            'version' => '1.1-mvp-json-single', 'exported_at' => gmdate('c'), 'playlist' => $playlist_export_item,
-        ];
-
-        // 6. Send JSON Response for Download
-        $safe_title = sanitize_file_name($playlist_title);
-        if (empty($safe_title)) $safe_title = 'playlist-' . $playlist_id;
-        $filename = 'mvp_playlist_' . $safe_title . '_' . $playlist_id . '_' . date('Y-m-d') . '.json';
-        header('Content-Type: application/json; charset=utf-8');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Pragma: no-cache'); header("Expires: 0");
-        echo wp_json_encode($export_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        wp_die();
-    }
-    // --- END NEW SINGLE JSON Export Function ---
-
-
-    /**
-     * AJAX handler to import playlists from one or more uploaded JSON files.
-     * *** THIS IS THE UPDATED VERSION FOR BULK IMPORT ***
-     */
-    function mvp_import_playlists_json() {
-        // 1. Security and Initial Checks
-        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'mvp-import-playlist-nonce')) {
-             wp_send_json_error(['message' => 'Invalid security token sent.'], 403);
-        }
-         if (!current_user_can(MVP_CAPABILITY)) {
-            wp_send_json_error(['message' => 'You do not have permission to import playlists.'], 403);
-        }
-        if (!isset($_FILES['mvp_import_file']) || !is_array($_FILES['mvp_import_file'])) {
-            wp_send_json_error(['message' => 'No file data received. Ensure form input name is "mvp_import_file[]".'], 400);
-        }
-        if (empty($_FILES['mvp_import_file']['name']) || !is_array($_FILES['mvp_import_file']['name']) || empty(array_filter($_FILES['mvp_import_file']['name']))) {
-             wp_send_json_error(['message' => 'No files were uploaded or files array is empty.'], 400);
-        }
-
-        // 2. Database Access
-        global $wpdb;
-        $playlist_table = $wpdb->prefix . "mvp_playlists"; $media_table = $wpdb->prefix . "mvp_media";
-        $path_table = $wpdb->prefix . "mvp_path"; $subtitle_table = $wpdb->prefix . "mvp_subtitle";
-        $ad_table = $wpdb->prefix . "mvp_ad"; $annotation_table = $wpdb->prefix . "mvp_annotation";
-
-        // 3. Initialize counters and error storage
-        $total_files_processed = 0; $total_playlists_imported = 0; $total_media_imported = 0;
-        $errors = []; $processed_files_info = [];
-
-        // 4. Start Transaction (covers ALL files)
-        $wpdb->query('START TRANSACTION');
-
-        try {
-            // 5. Loop through each uploaded file
-            $num_files = count($_FILES['mvp_import_file']['name']);
-            for ($i = 0; $i < $num_files; $i++) {
-                if (empty($_FILES['mvp_import_file']['name'][$i])) continue;
-
-                $file_name = $_FILES['mvp_import_file']['name'][$i]; $tmp_name = $_FILES['mvp_import_file']['tmp_name'][$i];
-                $file_error = $_FILES['mvp_import_file']['error'][$i]; // $file_type = $_FILES['mvp_import_file']['type'][$i];
-                $current_file_label = "File #" . ($i + 1) . " ('" . esc_html($file_name) . "')";
-                $total_files_processed++;
-
-                // 5a. Check upload error
-                if ($file_error !== UPLOAD_ERR_OK) {
-                     $upload_errors = [
-                        UPLOAD_ERR_INI_SIZE => "Exceeds php.ini size limit.", UPLOAD_ERR_FORM_SIZE => "Exceeds form size limit.",
-                        UPLOAD_ERR_PARTIAL => "Partial upload.", UPLOAD_ERR_NO_FILE => "No file.", UPLOAD_ERR_NO_TMP_DIR => "No temp dir.",
-                        UPLOAD_ERR_CANT_WRITE => "Cannot write.", UPLOAD_ERR_EXTENSION => "Extension stopped upload."];
-                    $error_message = isset($upload_errors[$file_error]) ? $upload_errors[$file_error] : 'Unknown error.';
-                    $errors[] = $current_file_label . ": Upload Error - " . $error_message; continue;
-                 }
-                 // 5b. Check file type
-                 if (!file_exists($tmp_name)) { $errors[] = $current_file_label . ": Temporary file not found."; continue; }
-                 $finfo = finfo_open(FILEINFO_MIME_TYPE); $mime_type = finfo_file($finfo, $tmp_name); finfo_close($finfo);
-                 if ($mime_type !== 'application/json' && $mime_type !== 'text/plain') {
-                     $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-                     if ($file_ext !== 'json') { $errors[] = $current_file_label . ": Invalid file type (" . esc_html($mime_type) . "). Only .json allowed."; continue; }
-                 }
-                // 5c. Read/Decode JSON
-                $json_content = file_get_contents($tmp_name);
-                if ($json_content === false) { $errors[] = $current_file_label . ": Could not read file."; continue; }
-                if (substr($json_content, 0, 3) === "\xEF\xBB\xBF") $json_content = substr($json_content, 3);
-                $import_data = json_decode($json_content, true);
-                if (json_last_error() !== JSON_ERROR_NONE) { $errors[] = $current_file_label . ": Invalid JSON - " . json_last_error_msg(); continue; }
-                // 5d. Validate Structure
-                if (!isset($import_data['playlist']) || !is_array($import_data['playlist'])) { $errors[] = $current_file_label . ": Invalid JSON structure (missing 'playlist')."; continue; }
-
-                // --- Process Single Playlist ---
-                $playlist_item = $import_data['playlist'];
-                if (!isset($playlist_item['title'])) { $errors[] = $current_file_label . ": Playlist data missing title."; continue; }
-
-                $playlist_title = sanitize_text_field($playlist_item['title']); $original_title_for_msg = $playlist_title;
-                $playlist_title .= ' (Imported ' . date('Y-m-d H:i:s') . ')';
-                $playlist_options = isset($playlist_item['options']) && is_array($playlist_item['options']) ? $playlist_item['options'] : [];
-
-                // Insert Playlist
-                $inserted_playlist = $wpdb->insert($playlist_table, ['title' => $playlist_title, 'options' => maybe_serialize($playlist_options)], ['%s', '%s']);
-                if (!$inserted_playlist) { $errors[] = $current_file_label . ": Failed to insert playlist '" . esc_html($original_title_for_msg) . "'. Error: " . esc_html($wpdb->last_error); continue; }
-                $new_playlist_id = $wpdb->insert_id; $total_playlists_imported++; $media_count_for_this_playlist = 0;
-
-                // 6. Loop through Media
-                if (isset($playlist_item['media']) && is_array($playlist_item['media'])) {
-                    foreach ($playlist_item['media'] as $media_index => $media_item) {
-                         if (!isset($media_item['title'])) { $errors[] = $current_file_label . ": Media #" . ($media_index + 1) . " missing title."; continue; }
-                         $media_title = sanitize_text_field($media_item['title']); $media_order_id = isset($media_item['order_id']) ? intval($media_item['order_id']) : 0;
-                         $media_options = isset($media_item['options']) && is_array($media_item['options']) ? $media_item['options'] : [];
-                         // Insert Media
-                        $inserted_media = $wpdb->insert($media_table, ['title' => $media_title, 'options' => maybe_serialize($media_options), 'order_id' => $media_order_id, 'playlist_id' => $new_playlist_id, 'disabled' => 0], ['%s', '%s', '%d', '%d', '%d']);
-                        if (!$inserted_media) { $errors[] = $current_file_label . ": Failed inserting media '" . esc_html($media_title) . "'. Error: " . esc_html($wpdb->last_error); continue; }
-                        $new_media_id = $wpdb->insert_id; $total_media_imported++; $media_count_for_this_playlist++;
-
-                        // 7. Insert Related Data
-                        // Paths
-                        if (isset($media_item['paths']) && is_array($media_item['paths'])) { foreach ($media_item['paths'] as $p) { if (isset($p['options']) && is_array($p['options'])) { $ins = $wpdb->insert( $path_table, [ 'options' => maybe_serialize($p['options']), 'media_id' => $new_media_id, 'playlist_id' => $new_playlist_id ], ['%s', '%d', '%d'] ); if (!$ins) $errors[] = $current_file_label . ": Error inserting path: " . esc_html($wpdb->last_error); } } }
-                        // Subtitles
-                        if (isset($media_item['subtitles']) && is_array($media_item['subtitles'])) { foreach ($media_item['subtitles'] as $s) { if (isset($s['options']) && is_array($s['options'])) { $ins = $wpdb->insert( $subtitle_table, [ 'options' => maybe_serialize($s['options']), 'media_id' => $new_media_id, 'playlist_id' => $new_playlist_id ], ['%s', '%d', '%d'] ); if (!$ins) $errors[] = $current_file_label . ": Error inserting subtitle: " . esc_html($wpdb->last_error); } } }
-                        // Ads
-                        if (isset($media_item['ads']) && is_array($media_item['ads'])) { foreach ($media_item['ads'] as $a) { if (isset($a['options']) && is_array($a['options'])) { $ins = $wpdb->insert( $ad_table, [ 'options' => maybe_serialize($a['options']), 'media_id' => $new_media_id, 'playlist_id' => $new_playlist_id, 'ad_id' => null ], ['%s', '%d', '%d', null] ); if (!$ins) $errors[] = $current_file_label . ": Error inserting ad: " . esc_html($wpdb->last_error); } } }
-                        // Annotations
-                        if (isset($media_item['annotations']) && is_array($media_item['annotations'])) { foreach ($media_item['annotations'] as $an) { if (isset($an['options']) && is_array($an['options'])) { $ins = $wpdb->insert( $annotation_table, [ 'options' => maybe_serialize($an['options']), 'media_id' => $new_media_id, 'playlist_id' => $new_playlist_id, 'ad_id' => null ], ['%s', '%d', '%d', null] ); if (!$ins) $errors[] = $current_file_label . ": Error inserting annotation: " . esc_html($wpdb->last_error); } } }
-                    }
-                }
-                // Store success info
-                $processed_files_info[] = $current_file_label . ": Imported playlist '" . esc_html($original_title_for_msg) . "' with " . $media_count_for_this_playlist . " media items.";
-            } // end loop files
-
-            // 8. Commit or Rollback
-            if (empty($errors)) {
-                $wpdb->query('COMMIT');
-                 wp_send_json_success(['message' => sprintf('Successfully processed %d file(s). Imported %d playlist(s) and %d media item(s) in total. Page will reload.', $total_files_processed, $total_playlists_imported, $total_media_imported)]);
-            } else {
-                $wpdb->query('ROLLBACK');
-                $error_message = sprintf('Import failed during processing of %d file(s). %d playlist(s) and %d media item(s) were potentially processed before failure. No changes were saved. Check details.', $total_files_processed, $total_playlists_imported, $total_media_imported);
-                 wp_send_json_error(['message' => $error_message, 'errors' => $errors, 'processed_files' => $processed_files_info], 400);
-            }
-        } catch (Exception $e) {
-            $wpdb->query('ROLLBACK'); wp_send_json_error(['message' => 'Critical error during import: ' . $e->getMessage()], 500);
-        }
-        wp_die(); // Should be called by wp_send_json_*
-    }
-    // --- END NEW JSON Import Function ---
-
-
-	//############################################//
-	/* ads */ // (Ad functions remain unchanged unless ZIP export/import for Ads is also removed)
-	//############################################//
-    function mvp_edit_ad_title(){ if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) { wp_send_json_error( 'Invalid security token sent.' ); wp_die(); } if (!current_user_can(MVP_CAPABILITY)) { wp_send_json_error( 'Permission denied.' , 403); wp_die(); } if(isset($_POST['title']) && isset($_POST['id'])){ $title = sanitize_text_field(stripcslashes($_POST["title"])); $id = intval($_POST["id"]); if ($id <= 0 || empty($title)) { wp_send_json_error('Invalid ad ID or title.'); wp_die(); } global $wpdb; $global_ad_table = $wpdb->prefix . "mvp_global_ad"; $updated = $wpdb->update( $global_ad_table, ['title' => $title], ['id' => $id], ['%s'], ['%d'] ); if ($updated !== false) { wp_send_json_success('Ad title updated.'); } else { wp_send_json_error('Failed to update ad title. ' . $wpdb->last_error); } wp_die(); }else{ wp_send_json_error('Required data missing for title update.'); wp_die(); } }
-	function mvp_delete_ad(){ if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) { wp_send_json_error( 'Invalid security token sent.' ); wp_die(); } if (!current_user_can(MVP_CAPABILITY)) { wp_send_json_error( 'Permission denied.' , 403); wp_die(); } if(isset($_POST['ad_id'])){ $ad_ids_raw = explode(',', $_POST['ad_id']); $ids = array_map('intval', $ad_ids_raw); $ids = array_filter($ids, function($id) { return $id > 0; }); if (empty($ids)) { wp_send_json_error('No valid ad IDs provided.'); wp_die(); } global $wpdb; $global_ad_table = $wpdb->prefix . "mvp_global_ad"; $ad_table = $wpdb->prefix . "mvp_ad"; $annotation_table = $wpdb->prefix . "mvp_annotation"; $placeholders = implode(',', array_fill(0, count($ids), '%d')); $wpdb->query('START TRANSACTION'); try { $wpdb->query($wpdb->prepare("DELETE FROM {$ad_table} WHERE ad_id IN ($placeholders)", $ids)); if ($wpdb->last_error) throw new Exception($wpdb->last_error); $wpdb->query($wpdb->prepare("DELETE FROM {$annotation_table} WHERE ad_id IN ($placeholders)", $ids)); if ($wpdb->last_error) throw new Exception($wpdb->last_error); $deleted_rows = $wpdb->query($wpdb->prepare("DELETE FROM {$global_ad_table} WHERE id IN ($placeholders)", $ids)); if ($deleted_rows === false) throw new Exception($wpdb->last_error); $wpdb->query('COMMIT'); wp_send_json_success(['deleted_count' => $deleted_rows]); } catch (Exception $e) { $wpdb->query('ROLLBACK'); wp_send_json_error('Failed to delete ad(s). Error: ' . $e->getMessage()); } wp_die(); }else{ wp_send_json_error('Ad ID(s) not provided.'); wp_die(); } }
-	function mvp_duplicate_ad(){ if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) { wp_send_json_error( 'Invalid security token sent.' ); wp_die(); } if (!current_user_can(MVP_CAPABILITY)) { wp_send_json_error( 'Permission denied.' , 403); wp_die(); } if(isset($_POST['ad_id']) && isset($_POST['title'])){ $ad_id = intval($_POST['ad_id']); $title = sanitize_text_field(stripslashes($_POST['title'])); if ($ad_id <= 0 || empty($title)) { wp_send_json_error('Invalid source ad ID or title.'); wp_die(); } $title .= ' (Copy)'; global $wpdb; $global_ad_table = $wpdb->prefix . "mvp_global_ad"; $ad_table = $wpdb->prefix . "mvp_ad"; $annotation_table = $wpdb->prefix . "mvp_annotation"; $result = $wpdb->get_row($wpdb->prepare("SELECT options FROM {$global_ad_table} WHERE id = %d", $ad_id), ARRAY_A); if($result){ $wpdb->query('START TRANSACTION'); $insert_id = null; try { $inserted = $wpdb->insert($global_ad_table, ['title' => $title, 'options' => $result['options']], ['%s', '%s']); if (!$inserted) throw new Exception("Failed inserting new global ad: " . $wpdb->last_error); $insert_id = $wpdb->insert_id; $ads = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$ad_table} WHERE ad_id = %d", $ad_id), ARRAY_A); if ($ads) { foreach($ads as $item){ $ins = $wpdb->insert($ad_table, ['options' => $item['options'], 'ad_id' => $insert_id], ['%s','%d']); if (!$ins) throw new Exception("Failed duplicating ad item: " . $wpdb->last_error); } } $annotations = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$annotation_table} WHERE ad_id = %d", $ad_id), ARRAY_A); if ($annotations) { foreach($annotations as $item){ $ins = $wpdb->insert($annotation_table, ['options' => $item['options'], 'ad_id' => $insert_id], ['%s','%d']); if (!$ins) throw new Exception("Failed duplicating annotation item: " . $wpdb->last_error); } } $wpdb->query('COMMIT'); wp_send_json_success(['new_ad_id' => $insert_id]); } catch (Exception $e) { $wpdb->query('ROLLBACK'); wp_send_json_error('Failed duplicating ad: ' . $e->getMessage()); } } else { wp_send_json_error('Source ad not found.'); } wp_die(); }else{ wp_send_json_error('Required data missing for ad duplication.'); wp_die(); } }
-	function mvp_save_ad_options(){ if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) { wp_send_json_error( 'Invalid security token sent.' ); wp_die(); } if (!current_user_can(MVP_CAPABILITY)) { wp_send_json_error( 'Permission denied.' , 403); wp_die(); } if(isset($_POST['ad_id'])){ $ad_id = intval($_POST['ad_id']); if ($ad_id <= 0) { wp_send_json_error('Invalid ad ID.'); wp_die(); } global $wpdb; $global_ad_table = $wpdb->prefix . "mvp_global_ad"; $ad_table = $wpdb->prefix . "mvp_ad"; $annotation_table = $wpdb->prefix . "mvp_annotation"; $options_raw = isset($_POST['global_ad_options']) ? stripcslashes($_POST['global_ad_options']) : '{}'; $options = json_decode($options_raw, true); if (json_last_error() !== JSON_ERROR_NONE || !is_array($options)) { wp_send_json_error('Invalid ad options JSON.'); wp_die(); } $ad_pre_raw = isset($_POST['ad_pre']) ? stripcslashes($_POST['ad_pre']) : '[]'; $ad_pre = json_decode($ad_pre_raw, true); if (json_last_error() !== JSON_ERROR_NONE || !is_array($ad_pre)) $ad_pre = []; $ad_mid_raw = isset($_POST['ad_mid']) ? stripcslashes($_POST['ad_mid']) : '[]'; $ad_mid = json_decode($ad_mid_raw, true); if (json_last_error() !== JSON_ERROR_NONE || !is_array($ad_mid)) $ad_mid = []; $ad_end_raw = isset($_POST['ad_end']) ? stripcslashes($_POST['ad_end']) : '[]'; $ad_end = json_decode($ad_end_raw, true); if (json_last_error() !== JSON_ERROR_NONE || !is_array($ad_end)) $ad_end = []; $ann_raw = isset($_POST['annotation']) ? stripcslashes($_POST['annotation']) : '[]'; $ann = json_decode($ann_raw, true); if (json_last_error() !== JSON_ERROR_NONE || !is_array($ann)) $ann = []; $wpdb->query('START TRANSACTION'); try { $updated = $wpdb->update($global_ad_table, ['options' => serialize($options)], ['id' => $ad_id], ['%s'], ['%d']); if ($updated === false) throw new Exception("Failed updating global ad options: ".$wpdb->last_error); $wpdb->delete($ad_table, ['ad_id' => $ad_id], ['%d']); if (!empty($ad_pre)) { foreach ($ad_pre as $ad) { if (is_array($ad)) { $ins = $wpdb->insert($ad_table, ['options' => serialize($ad), 'ad_id' => $ad_id], ['%s','%d']); if (!$ins) throw new Exception("Failed inserting pre-ad: ".$wpdb->last_error); } } } if (!empty($ad_mid)) { foreach ($ad_mid as $ad) { if (is_array($ad)) { $ins = $wpdb->insert($ad_table, ['options' => serialize($ad), 'ad_id' => $ad_id], ['%s','%d']); if (!$ins) throw new Exception("Failed inserting mid-ad: ".$wpdb->last_error); } } } if (!empty($ad_end)) { foreach ($ad_end as $ad) { if (is_array($ad)) { $ins = $wpdb->insert($ad_table, ['options' => serialize($ad), 'ad_id' => $ad_id], ['%s','%d']); if (!$ins) throw new Exception("Failed inserting end-ad: ".$wpdb->last_error); } } } $wpdb->delete($annotation_table, ['ad_id' => $ad_id], ['%d']); if (!empty($ann)) { foreach ($ann as $a) { if (is_array($a)) { $ins = $wpdb->insert($annotation_table, ['options' => serialize($a), 'ad_id' => $ad_id], ['%s','%d']); if (!$ins) throw new Exception("Failed inserting annotation: ".$wpdb->last_error); } } } $wpdb->query('COMMIT'); wp_send_json_success('Ad options saved.'); } catch (Exception $e) { $wpdb->query('ROLLBACK'); wp_send_json_error('Failed saving ad options: ' . $e->getMessage()); } wp_die(); }else{ wp_send_json_error('Ad ID not provided.'); wp_die(); } }
-	function mvp_ad_domain_rename(){ if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) { wp_send_json_error( 'Invalid security token sent.' ); wp_die(); } if (!current_user_can(MVP_CAPABILITY)) { wp_send_json_error( 'Permission denied.' , 403); wp_die(); } if(isset($_POST['ad_id'])){ $ad_id = intval($_POST['ad_id']); $from = isset($_POST['from']) ? wp_unslash($_POST['from']) : ''; $to = isset($_POST['to']) ? wp_unslash($_POST['to']) : ''; if ($ad_id <= 0 || empty($from)) { wp_send_json_error('Invalid ad ID or "from" domain.'); wp_die(); } global $wpdb; $ad_table = $wpdb->prefix . "mvp_ad"; $annotation_table = $wpdb->prefix . "mvp_annotation"; $wpdb->query('START TRANSACTION'); try { $ads = $wpdb->get_results($wpdb->prepare("SELECT id, options FROM {$ad_table} WHERE ad_id = %d", $ad_id), ARRAY_A); if ($ads) { foreach($ads as $item){ $ad_item_id = (int) $item['id']; $options = maybe_unserialize($item['options']); $changed = false; if (is_array($options)) { if(isset($options['path']) && is_string($options['path']) && strpos($options['path'], $from) !== false) { $options['path'] = str_replace($from, $to, $options['path']); $changed = true; } if(isset($options['poster']) && is_string($options['poster']) && strpos($options['poster'], $from) !== false) { $options['poster'] = str_replace($from, $to, $options['poster']); $changed = true; } } if ($changed) { $upd = $wpdb->update($ad_table, ['options' => serialize($options)], ['id' => $ad_item_id], ['%s'], ['%d']); if (!$upd) throw new Exception("Failed updating ad item ID {$ad_item_id}: " . $wpdb->last_error); } } } $anns = $wpdb->get_results($wpdb->prepare("SELECT id, options FROM {$annotation_table} WHERE ad_id = %d", $ad_id), ARRAY_A); if ($anns) { foreach($anns as $item){ $ann_item_id = (int) $item['id']; $options = maybe_unserialize($item['options']); $changed = false; if (is_array($options)) { if(isset($options['path']) && is_string($options['path']) && strpos($options['path'], $from) !== false) { $options['path'] = str_replace($from, $to, $options['path']); $changed = true; } } if ($changed) { $upd = $wpdb->update($annotation_table, ['options' => serialize($options)], ['id' => $ann_item_id], ['%s'], ['%d']); if (!$upd) throw new Exception("Failed updating annotation item ID {$ann_item_id}: " . $wpdb->last_error); } } } $wpdb->query('COMMIT'); wp_send_json_success('Ad domains/URLs potentially updated.'); } catch (Exception $e) { $wpdb->query('ROLLBACK'); wp_send_json_error('Error during ad domain rename: ' . $e->getMessage()); } wp_die(); }else{ wp_send_json_error('Required data missing for ad domain rename.'); wp_die(); } }
-	function mvp_create_ad(){ if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) { wp_send_json_error( 'Invalid security token sent.' ); wp_die(); } if (!current_user_can(MVP_CAPABILITY)) { wp_send_json_error( 'Permission denied.' , 403); wp_die(); } if(isset($_POST['title']) && !empty(trim($_POST['title']))){ $title = sanitize_text_field(stripslashes($_POST['title'])); global $wpdb; $global_ad_table = $wpdb->prefix . "mvp_global_ad"; $stmt = $wpdb->insert($global_ad_table, ['title' => $title], ['%s']); if($stmt !== false){ wp_send_json_success(['new_ad_id' => $wpdb->insert_id]); } else { wp_send_json_error('Failed to create ad. ' . $wpdb->last_error); } wp_die(); }else{ wp_send_json_error('Ad title cannot be empty.'); wp_die(); } }
-    function mvp_getAdData($atts){ if (!isset($atts['ad_id'])) return null; $ad_id = intval($atts['ad_id']); if ($ad_id <= 0) return null; global $wpdb; $global_ad_table = $wpdb->prefix . "mvp_global_ad"; $ad_table = $wpdb->prefix . "mvp_ad"; $annotation_table = $wpdb->prefix . "mvp_annotation"; $ad_options = null; $ad_data = null; $annotation_data = null; $stmt = $wpdb->get_row($wpdb->prepare("SELECT options FROM {$global_ad_table} WHERE id = %d", $ad_id), ARRAY_A); if ($stmt && isset($stmt['options'])) $ad_options = maybe_unserialize($stmt['options']); $stmt_ads = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$ad_table} WHERE ad_id = %d", $ad_id), ARRAY_A); if($stmt_ads){ $ad_data = []; foreach($stmt_ads as $item){ $opts = maybe_unserialize($item['options']); if(is_array($opts)) $ad_data[] = $opts; } } $stmt_anns = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$annotation_table} WHERE ad_id = %d", $ad_id), ARRAY_A); if($stmt_anns){ $annotation_data = []; foreach($stmt_anns as $item){ $opts = maybe_unserialize($item['options']); if(is_array($opts)) $annotation_data[] = $opts; } } return ['ad_options' => $ad_options, 'ad_data' => $ad_data, 'annotation_data' => $annotation_data]; }
-
-
-	//############################################//
-	/* front end playlist display */ // (Unchanged)
-	//############################################//
-    function mvp_playlist_display($atts){ global $wpdb; $playlist_table = $wpdb->prefix . "mvp_playlists"; $data = array(); if(isset($atts['playlist_id'])){ $playlist_id_raw = explode(',', $atts['playlist_id']); $playlist_id = array_map('intval', $playlist_id_raw); $playlist_id = array_filter($playlist_id, function($id){ return $id > 0; }); } else { return ''; } if (empty($playlist_id)) return ''; $placeholders = implode(',', array_fill(0, count($playlist_id), '%d')); $results = $wpdb->get_results($wpdb->prepare("SELECT id, title, options FROM {$playlist_table} WHERE id IN ($placeholders) ORDER BY FIELD(id, $placeholders)", array_merge($playlist_id, $playlist_id)), ARRAY_A); if (!$results) return ''; foreach($results as $result){ $pl_options = maybe_unserialize($result['options']); if (!is_array($pl_options)) $pl_options = []; $data[] = array('id' => $result['id'], 'title' => $result['title'], 'description' => isset($pl_options['description']) ? $pl_options['description'] : null, 'thumb' => isset($pl_options['thumb']) ? esc_url($pl_options['thumb']) : null ); } $id = 'mvp-playlist-display-wrap-'.mt_rand(); $markup = '<div class="mvp-playlist-display-wrap" id="'.esc_attr($id).'">'; if(!empty($atts['header_title'])){ $markup .= '<div class="mvp-playlist-display-header"><span>'.esc_html($atts['header_title']).'</span></div>'; } $markup .= '<div class="mvp-playlist-display-wrap-inner">'; foreach($data as $d){ $active_class = (isset($atts['active_playlist']) && $atts['active_playlist'] == $d['id']) ? ' mvp-playlist-display-item-active' : ''; $markup .= '<div class="mvp-playlist-display-item'.$active_class.'" data-playlist-id="'.esc_attr($d['id']).'" title="'.esc_attr($d['title']).'">'; $markup .= '<div class="mvp-playlist-display-item-inner">'; if(isset($d['thumb'])){ $markup .= '<img class="mvp-playlist-display-item-thumb" src="'.esc_attr($d['thumb']).'" alt="'.esc_attr($d['title']).'"/>'; } $markup .= '<div class="mvp-playlist-display-item-title">'.esc_html($d['title']).'</div>'; $markup .= '</div>'; if(isset($d['description'])){ $markup .= '<div class="mvp-playlist-display-item-description">'.wp_kses_post($d['description']).'</div>'; } $markup .= '</div>'; } $markup .= '</div></div>'; if(isset($atts['player_id'])){ $player_id_js = intval($atts['player_id']); if ($player_id_js > 0) { $markup .= "<script type=\"text/javascript\">(function() { var elem = document.getElementById('".esc_js($id)."'); if (!elem) return; var items = elem.querySelectorAll('.mvp-playlist-display-item'); function loadPlaylist(e){ e.preventDefault(); if(this.classList.contains('mvp-playlist-display-item-active')) return false; var last_active = elem.querySelector('.mvp-playlist-display-item-active'); if(last_active) last_active.classList.remove('mvp-playlist-display-item-active'); this.classList.add('mvp-playlist-display-item-active'); var pid = '.mvp-playlist-' + this.getAttribute('data-playlist-id'); if (typeof window.mvp_player".esc_js($player_id_js)." !== 'undefined' && window.mvp_player".esc_js($player_id_js).".loadPlaylist) { window.mvp_player".esc_js($player_id_js).".loadPlaylist(pid); } else { console.error('MVP Player ".esc_js($player_id_js)." not found.'); } return false; } for (var i = 0; i < items.length; i++) { items[i].removeEventListener('click', loadPlaylist); items[i].addEventListener('click', loadPlaylist, false); } })();</script>"; } } return $markup; }
-
-
-	//############################################//
-	/* install */ // (Unchanged)
-	//############################################//
-    function mvp_player_uninstall() { global $wpdb; $settings_table = $wpdb->prefix . "mvp_settings"; $result = $wpdb->get_row("SELECT options FROM {$settings_table} WHERE id = '0'", ARRAY_A); if($result){ $settings = maybe_unserialize($result['options']); if(!is_array($settings)) $settings = []; $delete_plugin_data_on_uninstall = isset($settings["delete_plugin_data_on_uninstall"]) ? (bool)($settings["delete_plugin_data_on_uninstall"]) : false; if($delete_plugin_data_on_uninstall){ if ( is_multisite() ) { $site_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs WHERE site_id = $wpdb->siteid;" ); foreach ( $site_ids as $site_id ) { switch_to_blog( $site_id ); mvp_deinstall(); restore_current_blog(); } }else{ mvp_deinstall(); } } } }
-	function mvp_deinstall() { global $wpdb; $wpdb->query('SET foreign_key_checks=0'); $tables_to_drop = ['mvp_settings', 'mvp_players', 'mvp_path', 'mvp_subtitle', 'mvp_ad', 'mvp_annotation', 'mvp_watched_percentage', 'mvp_media', 'mvp_playlists', 'mvp_global_ad', 'mvp_statistics', 'mvp_statistics_country', 'mvp_statistics_country_play', 'mvp_statistics_user', 'mvp_statistics_user_play']; foreach ($tables_to_drop as $table_short_name) { $table_name = $wpdb->prefix . $table_short_name; $wpdb->query("DROP TABLE IF EXISTS {$table_name}"); } $wpdb->query('SET foreign_key_checks=1'); delete_option('mvp_video_player_version'); }
-	function mvp_player_activate($network_wide){ global $wpdb; if ( is_multisite() ) { if ($network_wide) { $site_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs WHERE site_id = $wpdb->siteid;" ); foreach ( $site_ids as $site_id ) { switch_to_blog( $site_id ); mvp_install(); restore_current_blog(); } }else{ mvp_install(); } }else{ mvp_install(); } }
-	function mvp_install(){ global $wpdb; $charset_collate = $wpdb->get_charset_collate(); require_once( ABSPATH . 'wp-admin/includes/upgrade.php' ); $settings_table = $wpdb->prefix . "mvp_settings"; if($wpdb->get_var( "show tables like '$settings_table'" ) != $settings_table){ $sql = "CREATE TABLE $settings_table ( `id` tinyint NOT NULL, `options` text NOT NULL, PRIMARY KEY (`id`) ) $charset_collate;"; dbDelta( $sql ); } $player_table = $wpdb->prefix . "mvp_players"; if($wpdb->get_var( "show tables like '$player_table'" ) != $player_table){ $sql = "CREATE TABLE $player_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `title` varchar(100) NOT NULL, `preset` varchar(50) NOT NULL, `options` text DEFAULT NULL, `custom_css` longtext DEFAULT NULL, `custom_js` longtext DEFAULT NULL, PRIMARY KEY (`id`) ) $charset_collate;"; dbDelta( $sql ); } $playlist_table = $wpdb->prefix . "mvp_playlists"; if($wpdb->get_var( "show tables like '$playlist_table'" ) != $playlist_table){ $sql = "CREATE TABLE $playlist_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `title` varchar(100) NOT NULL, `options` text DEFAULT NULL, PRIMARY KEY (`id`) ) $charset_collate;"; dbDelta( $sql ); } $media_table = $wpdb->prefix . "mvp_media"; if($wpdb->get_var( "show tables like '$media_table'" ) != $media_table){ $sql = "CREATE TABLE $media_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `title` varchar(300) DEFAULT NULL, `options` longtext DEFAULT NULL, `order_id` int(11) unsigned DEFAULT NULL, `playlist_id` int(11) unsigned NOT NULL, `disabled` tinyint DEFAULT 0, PRIMARY KEY (`id`), INDEX `playlist_id` (`playlist_id`) ) $charset_collate;"; dbDelta( $sql ); } $path_table = $wpdb->prefix . "mvp_path"; if($wpdb->get_var( "show tables like '$path_table'" ) != $path_table){ $sql = "CREATE TABLE $path_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `options` longtext DEFAULT NULL, `media_id` int(11) unsigned NOT NULL, `playlist_id` int(11) unsigned, PRIMARY KEY (`id`), INDEX `media_id` (`media_id`) ) $charset_collate;"; dbDelta( $sql ); } $subtitle_table = $wpdb->prefix . "mvp_subtitle"; if($wpdb->get_var( "show tables like '$subtitle_table'" ) != $subtitle_table){ $sql = "CREATE TABLE $subtitle_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `options` longtext DEFAULT NULL, `media_id` int(11) unsigned NOT NULL, `playlist_id` int(11) unsigned, PRIMARY KEY (`id`), INDEX `media_id` (`media_id`) ) $charset_collate;"; dbDelta( $sql ); } $ad_table = $wpdb->prefix . "mvp_ad"; if($wpdb->get_var( "show tables like '$ad_table'" ) != $ad_table){ $sql = "CREATE TABLE $ad_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `options` longtext DEFAULT NULL, `media_id` int(11) unsigned DEFAULT NULL, `playlist_id` int(11) unsigned, `ad_id` int(11) unsigned DEFAULT NULL, PRIMARY KEY (`id`), INDEX `media_id` (`media_id`) ) $charset_collate;"; dbDelta( $sql ); } $annotation_table = $wpdb->prefix . "mvp_annotation"; if($wpdb->get_var( "show tables like '$annotation_table'" ) != $annotation_table){ $sql = "CREATE TABLE $annotation_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `options` longtext DEFAULT NULL, `media_id` int(11) unsigned DEFAULT NULL, `playlist_id` int(11) unsigned, `ad_id` int(11) unsigned DEFAULT NULL, PRIMARY KEY (`id`), INDEX `media_id` (`media_id`) ) $charset_collate;"; dbDelta( $sql ); } $global_ad_table = $wpdb->prefix . "mvp_global_ad"; if($wpdb->get_var( "show tables like '$global_ad_table'" ) != $global_ad_table){ $sql = "CREATE TABLE $global_ad_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `title` varchar(100) NOT NULL, `options` longtext DEFAULT NULL, PRIMARY KEY (`id`) ) $charset_collate;"; dbDelta( $sql ); } $statistics_table = $wpdb->prefix . "mvp_statistics"; if($wpdb->get_var( "show tables like '$statistics_table'" ) != $statistics_table){ $sql = "CREATE TABLE $statistics_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `origtype` varchar(20) DEFAULT NULL, `title` varchar(300) DEFAULT NULL, `c_play` int(11) unsigned DEFAULT '0', `c_time` int(11) unsigned DEFAULT '0', `c_download` int(11) DEFAULT '0', `c_finish` int(11) unsigned DEFAULT '0', `c_date` date DEFAULT NULL, `media_id` int(11) unsigned NOT NULL, `playlist_id` int(11) unsigned DEFAULT NULL, PRIMARY KEY (`id`), INDEX `media_id` (`media_id`) ) $charset_collate;"; dbDelta( $sql ); } $statistics_country_table = $wpdb->prefix . "mvp_statistics_country"; if($wpdb->get_var( "show tables like '$statistics_country_table'" ) != $statistics_country_table){ $sql = "CREATE TABLE $statistics_country_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `country` varchar(100), `country_code` varchar(10), `continent` varchar(15), PRIMARY KEY (`id`) ) $charset_collate;"; dbDelta( $sql ); } $statistics_country_play_table = $wpdb->prefix . "mvp_statistics_country_play"; if($wpdb->get_var( "show tables like '$statistics_country_play_table'" ) != $statistics_country_play_table){ $sql = "CREATE TABLE $statistics_country_play_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `title` varchar(300), `thumb` varchar(300), `video_url` varchar(300), `c_play` int(11) unsigned, `c_time` int(11) unsigned, `c_date` date, `media_id` int(11) unsigned, `playlist_id` int(11) unsigned, `country_id` int(11) unsigned, PRIMARY KEY (`id`), INDEX `media_id` (`media_id`) ) $charset_collate;"; dbDelta( $sql ); } $statistics_user_table = $wpdb->prefix . "mvp_statistics_user"; if($wpdb->get_var( "show tables like '$statistics_user_table'" ) != $statistics_user_table){ $sql = "CREATE TABLE $statistics_user_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `user_id` smallint(11) unsigned, `user_display_name` varchar(100), `user_role` varchar(50), PRIMARY KEY (`id`), INDEX `user_id` (`user_id`) ) $charset_collate;"; dbDelta( $sql ); } $statistics_user_play_table = $wpdb->prefix . "mvp_statistics_user_play"; if($wpdb->get_var( "show tables like '$statistics_user_play_table'" ) != $statistics_user_play_table){ $sql = "CREATE TABLE $statistics_user_play_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `title` varchar(300), `thumb` varchar(300), `video_url` varchar(300), `c_play` int(11) unsigned, `c_time` int(11) unsigned, `c_date` date, `media_id` int(11) unsigned, `playlist_id` int(11) unsigned, `user_id` int(11) unsigned, PRIMARY KEY (`id`), INDEX `media_id` (`media_id`) ) $charset_collate;"; dbDelta( $sql ); } $watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage"; if($wpdb->get_var( "show tables like '$watched_percentage_table'" ) != $watched_percentage_table){ $sql = "CREATE TABLE $watched_percentage_table ( `id` int(11) unsigned NOT NULL AUTO_INCREMENT, `title` varchar(300) DEFAULT NULL, `watched` MEDIUMINT unsigned DEFAULT NULL, `duration` MEDIUMINT unsigned DEFAULT NULL, `media_id` int(11) unsigned DEFAULT NULL, `playlist_id` int(11) unsigned DEFAULT NULL, PRIMARY KEY (`id`), INDEX `media_id` (`media_id`) ) $charset_collate;"; dbDelta( $sql ); } }
-    // (mvp_plugins_loaded definition is now correctly placed above)
 
 ?>
