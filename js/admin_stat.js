@@ -21,15 +21,15 @@ jQuery(document).ready(function($) {
         },
         onChange: function(value, isOnInitialize) {
             console.log('Selectize playlist changed: ' + value);
-            
+
             if(value){
                 selectedPlaylistId = value;
                 loadStats( 'playlist', value)
             }
-            
+
         }
     });
-   
+
 
 
 
@@ -94,7 +94,7 @@ jQuery(document).ready(function($) {
 
 
 
-            //summary 
+            //summary
 
             if(r.total.c_time)$('.mvp-stats-total-time').html(convertTime(r.total.c_time))
             else $('.mvp-stats-total-time').html('0')
@@ -149,7 +149,7 @@ jQuery(document).ready(function($) {
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText, textStatus, errorThrown);
             preloader.hide();
-            
+
         });
 
     }
@@ -187,7 +187,7 @@ jQuery(document).ready(function($) {
                 obj = arr[i]
 
                 if(obj.media_id != undefined && ids.indexOf(obj.media_id) == -1) ids.push(obj.media_id);
-       
+
                 s += '<li>'
 
                 if(obj.title && obj.artist){
@@ -203,19 +203,19 @@ jQuery(document).ready(function($) {
                 s += '<span class="mvp-stat-info"> ('+obj.total_count+')</span></li>';
 
             }
-                   
+
             s += '</ol>';
 
             box.find('.top-box-content').append(s)//add new
 
             var top_id = ids.join('_');
 
-            box.find('.mvp-stat-no-data').addClass('mvp-stat-hidden')   
-            box.find('.mvp-create-playlist-from-stat').removeClass('mvp-stat-hidden').attr('data-media-id', top_id) 
+            box.find('.mvp-stat-no-data').addClass('mvp-stat-hidden')
+            box.find('.mvp-create-playlist-from-stat').removeClass('mvp-stat-hidden').attr('data-media-id', top_id)
 
         }else{
-            box.find('.mvp-stat-no-data').removeClass('mvp-stat-hidden')   
-            box.find('.mvp-create-playlist-from-stat').addClass('mvp-stat-hidden').removeAttr('data-media-id')  
+            box.find('.mvp-stat-no-data').removeClass('mvp-stat-hidden')
+            box.find('.mvp-create-playlist-from-stat').addClass('mvp-stat-hidden').removeAttr('data-media-id')
 
         }
 
@@ -224,7 +224,7 @@ jQuery(document).ready(function($) {
     function getBox2(arr, box){
 
         box.find('.mvp-top-stat-list').remove()//clear current
-        
+
         if(arr.length){
 
             var i, len = arr.length, obj, s = '';
@@ -238,16 +238,16 @@ jQuery(document).ready(function($) {
                     '<td>'+ obj.continent +'</td>'+
                     '<td>'+obj.total_count+'</td>'+
                     '<td>'+convertTime(obj.c_time)+'</td>'+
-      
+
                 '</tr>'
 
             }
 
-            box.find('.mvp-stat-no-data').addClass('mvp-stat-hidden')   
+            box.find('.mvp-stat-no-data').addClass('mvp-stat-hidden')
             box.find('.inline-stat-table').removeClass('inline-stat-table-hidden').find('tbody').html(s)
 
         }else{
-            box.find('.mvp-stat-no-data').removeClass('mvp-stat-hidden')   
+            box.find('.mvp-stat-no-data').removeClass('mvp-stat-hidden')
         }
 
     }
@@ -255,9 +255,9 @@ jQuery(document).ready(function($) {
     function getBox3(arr, box){
 
         box.find('.mvp-top-stat-list').remove()//clear current
-        
+
         if(arr.length){
-            
+
             var i, len = arr.length, obj, s = '';
             for(i = 0; i <len; i++){
 
@@ -269,16 +269,16 @@ jQuery(document).ready(function($) {
                     '<td>'+ obj.user_role +'</td>'+
                     '<td>'+obj.total_count+'</td>'+
                     '<td>'+convertTime(obj.c_time)+'</td>'+
-      
+
                 '</tr>'
 
             }
 
-            box.find('.mvp-stat-no-data').addClass('mvp-stat-hidden')   
+            box.find('.mvp-stat-no-data').addClass('mvp-stat-hidden')
             box.find('.inline-stat-table').removeClass('inline-stat-table-hidden').find('tbody').html(s)
 
         }else{
-            box.find('.mvp-stat-no-data').removeClass('mvp-stat-hidden')   
+            box.find('.mvp-stat-no-data').removeClass('mvp-stat-hidden')
         }
     }
 
@@ -303,7 +303,7 @@ jQuery(document).ready(function($) {
         }).done(function(arr){
 
             if(arr.length){
-            
+
                 var i, len = arr.length, obj, s = '';
                 for(i = 0; i <len; i++){
 
@@ -314,7 +314,7 @@ jQuery(document).ready(function($) {
                         '<td>'+obj.title+'</td>'+
                         '<td>'+obj.total_count+'</td>'+
                         '<td>'+convertTime(obj.c_time)+'</td>'+
-          
+
                     '</tr>'
 
                 }
@@ -330,7 +330,7 @@ jQuery(document).ready(function($) {
 
             preloader.hide()
 
-            
+
         }).fail(function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR.responseText, textStatus, errorThrown);
             removeUserDataModal()
@@ -345,7 +345,7 @@ jQuery(document).ready(function($) {
 
     var userDataModal = $('#mvp-user-data-modal'),
     userDataModalBg = $('.mvp-modal-bg').on('click',function(e){
-        if(e.target == this){ 
+        if(e.target == this){
             removeUserDataModal()
         }
     });
@@ -355,7 +355,7 @@ jQuery(document).ready(function($) {
     });
 
     function removeUserDataModal(){
-        userDataModal.hide();  
+        userDataModal.hide();
     }
 
     function showUserDataModal(){
@@ -363,7 +363,7 @@ jQuery(document).ready(function($) {
         userDataModalBg.scrollTop(0);
     }
 
-  
+
 
 
 
@@ -379,7 +379,7 @@ jQuery(document).ready(function($) {
     paginationCurrentPage = 0,
     paginationPerPage = parseInt(paginationPerPageNum.val(),10),
     paginationTotalPages,
-    paginationInited, 
+    paginationInited,
     lastActivePaginationBtn,
     lastPaginationPage,
     paginationWrap = $('.mvp-pagination-wrap')
@@ -434,7 +434,7 @@ jQuery(document).ready(function($) {
 
     }
 
-    
+
 
     //adjust per page
     $('#mvp-pag-per-page-btn').on('click', function(){
@@ -474,7 +474,7 @@ jQuery(document).ready(function($) {
         }
 
     }
-    
+
     function createPaginationBtn(page){
 
         page += 1;
@@ -530,7 +530,7 @@ jQuery(document).ready(function($) {
         str += '<div class="mvp-pagination-total">Page '+page+' of '+paginationTotalPages+'</div>';
 
         paginationWrap.html(str);
-        
+
         if(!paginationInited){
             paginationInited = true;
 
@@ -544,14 +544,14 @@ jQuery(document).ready(function($) {
                 if(page == 'prev')paginationCurrentPage -= 1;
                 else if(page == 'next')paginationCurrentPage += 1;
                 else if(page == 'first')paginationCurrentPage = 0;
-                else if(page == 'last')paginationCurrentPage = paginationTotalPages - 1; 
+                else if(page == 'last')paginationCurrentPage = paginationTotalPages - 1;
                 else paginationCurrentPage = parseInt(page,10);
 
                 if(paginationTotalPages > 1)createPaginationBtn(paginationCurrentPage);
                 else paginationWrap.html('');
 
                 if(paginationArr.length)showPaginationTracks()
-                
+
             });
 
             lastActivePaginationBtn = paginationWrap.find('.mvp-pagination-currentpage')
@@ -602,7 +602,7 @@ jQuery(document).ready(function($) {
             id = graph.attr('data-parent-id'),
             parent = mediaItemList.find('.mvp-stat-row[data-parent-id="'+id+'"]')
 
-            parent.after(graph)   
+            parent.after(graph)
         })
 
 
@@ -628,7 +628,7 @@ jQuery(document).ready(function($) {
 
 
 
-   
+
 
     //search songs
 
@@ -697,7 +697,7 @@ jQuery(document).ready(function($) {
             obj = arr[i]
 
             dates.push(obj.stat_day)
-            plays.push(obj.total_count)   
+            plays.push(obj.total_count)
         }
 
         ///
@@ -705,8 +705,8 @@ jQuery(document).ready(function($) {
         var _dates = []
         var _plays = []
 
-        var i, d1, d2, 
-        start = dates[0], 
+        var i, d1, d2,
+        start = dates[0],
         //end = dates[dates.length-1]
         end = new Date();//if no song placed in last days
 
@@ -716,7 +716,7 @@ jQuery(document).ready(function($) {
         var endDate = moment(end);
 
         for (var m = moment(startDate); m.isBefore(endDate); m.add(1, 'days')) {
-         
+
             d1 = new Date(m)
 
             if(dates.length){
@@ -825,7 +825,7 @@ jQuery(document).ready(function($) {
         var dataDisplay = graphOptions.find('.graph-data-display:checked').map(function() {
             return this.value;
         }).get();
-        
+
         if(dataDisplay.length == 0){
             preloader.hide();
             creatingGraph = false;
@@ -838,7 +838,7 @@ jQuery(document).ready(function($) {
             {name: 'action', value: 'mvp_stat_create_graph'},
             {name: 'media_id', value: row.attr('data-media-id')},
             {name: 'title', value: row.attr('data-title')},
-            {name: 'data_display', value: JSON.stringify(dataDisplay)}, 
+            {name: 'data_display', value: JSON.stringify(dataDisplay)},
             {name: 'return_days', value: returnDays},
             {name: 'security', value: mvp_data.security}
         ];
@@ -856,7 +856,7 @@ jQuery(document).ready(function($) {
             var dates = [], play_data = [], download_data = [], finish_data = [];
 
             //generate date list for last x days
-            //NOTE: we need to compare dates because statistics does not contain dates for days that media doesnt not play 
+            //NOTE: we need to compare dates because statistics does not contain dates for days that media doesnt not play
 
             var i, d1, d2, song;
             for(i = 0; i < returnDays; i++){
@@ -900,18 +900,18 @@ jQuery(document).ready(function($) {
                 data: play_data,
                 backgroundColor: "#00BFFF"
             });
-            if(dataDisplay.indexOf('c_download')>-1)datasets.push({     
+            if(dataDisplay.indexOf('c_download')>-1)datasets.push({
                 label: 'Downloads',
                 data: download_data,
                 backgroundColor: "#DA70D6"
             });
-            if(dataDisplay.indexOf('c_finish')>-1)datasets.push({     
+            if(dataDisplay.indexOf('c_finish')>-1)datasets.push({
                 label: 'Finishes',
                 data: finish_data,
                 backgroundColor: "#59ab5f"
             });
 
-            //add graph in next row 
+            //add graph in next row
             var graph_holder = $('<tr class="mvp-stat-graph-holder-row">'+
                 '<td class="mvp-stat-graph-holder" colspan="7">'+
                 '<canvas class="mvp-stat-graph-canvas"></canvas>'+
@@ -959,12 +959,12 @@ jQuery(document).ready(function($) {
             console.log(jqXHR.responseText, textStatus, errorThrown);
             preloader.hide();
             creatingGraph = false;
-            alert(mvp_translate.attr('data-create-graph-error')); 
+            alert(mvp_translate.attr('data-create-graph-error'));
         });
 
     });
 
-    
+
 
 
 
@@ -974,7 +974,7 @@ jQuery(document).ready(function($) {
 
     var addPlaylistModal = $('#mvp-add-playlist-modal'),
     modalBg = $('.mvp-modal-bg').on('click',function(e){
-        if(e.target == this){ 
+        if(e.target == this){
             removePlaylistModal()
         }
     });
@@ -982,13 +982,13 @@ jQuery(document).ready(function($) {
     _doc.on('keyup', function(e) {
         e.stopImmediatePropagation();
         e.preventDefault();
-        
+
         var key = e.keyCode, target = $(e.target);
-        
+
         if(key == 27) {//esc
             removePlaylistModal()
-        } 
-    }); 
+        }
+    });
 
     $('#mvp-add-playlist-cancel').on('click',function(e){
         removePlaylistModal()
@@ -1001,7 +1001,7 @@ jQuery(document).ready(function($) {
         var title_field = $('#playlist-title')
 
         if(isEmpty(title_field.val())){
-            title_field.addClass('aprf'); 
+            title_field.addClass('aprf');
             modalBg.scrollTop(0);
             alert(mvp_translate.attr('data-title-required'));
             return false;
@@ -1026,7 +1026,7 @@ jQuery(document).ready(function($) {
             url: mvp_data.ajax_url,
             type: 'post',
             data: postData,
-            dataType: 'json',   
+            dataType: 'json',
         }).done(function(response){
 
             //go to edit playlist page
@@ -1043,9 +1043,9 @@ jQuery(document).ready(function($) {
     });
 
     function removePlaylistModal(){
-        addPlaylistModal.hide();  
+        addPlaylistModal.hide();
 
-        addPlaylistModal.find('#playlist-title').val('').removeClass('aprf'); 
+        addPlaylistModal.find('#playlist-title').val('').removeClass('aprf');
     }
 
     function showPlaylistModal(){
@@ -1064,14 +1064,23 @@ jQuery(document).ready(function($) {
 
 
 
-    
+
+
 
     $('#mvp-clear-statistics').on('click', function(){
-        
+
         var result = confirm(mvp_translate.attr('data-sure-to-clear-stat'));
         if(result){
 
-            var playlist_id = $('#mvp-stat-wrap').attr('data-playlist-id')
+            // NOTE: Original code gets playlist_id from a different place than loadStats uses.
+            // Using the 'selectedPlaylistId' variable which is updated by the dropdown is safer.
+            // var playlist_id = $('#mvp-stat-wrap').attr('data-playlist-id')
+            var playlist_id = selectedPlaylistId; // Use the variable from the dropdown
+
+            if (!playlist_id) {
+                 alert("Please select a playlist first."); // Or handle the case where no playlist is selected
+                 return; // Stop if no playlist is selected
+            }
 
             preloader.show();
 
@@ -1085,78 +1094,89 @@ jQuery(document).ready(function($) {
                 url: mvp_data.ajax_url,
                 type: 'post',
                 data: postData,
-                dataType: 'json',
+                dataType: 'json', // Expecting JSON back (even if it's just "SUCCESS")
             }).done(function(response){
 
                 //console.log(response)
 
-                if(response){
-                    if(response == 'SUCCESS'){
+                // Check if the response from PHP (after json_encode) is exactly "SUCCESS"
+                if(response && response === 'SUCCESS'){ // Strict comparison recommended
 
-                        mediaItemList.find('.mvp-stat-row:not(.media-item-container-hidden)').remove()//clear current
+                    mediaItemList.find('.mvp-stat-row:not(.media-item-container-hidden)').remove()//clear current
 
-                        $('.mvp-stats-total-time').html('')
-                        $('.mvp-stats-total-play').html('')
-                        $('.mvp-stats-total-download').html('')
-                        $('.mvp-stats-total-like').html('')
-                        $('.mvp-stats-total-finish').html('')
+                    $('.mvp-stats-total-time').html('0') // Default to '0' instead of empty
+                    $('.mvp-stats-total-play').html('0')
+                    $('.mvp-stats-total-download').html('0')
+                    $('.mvp-stats-total-like').html('0')
+                    $('.mvp-stats-total-finish').html('0')
 
-                        getBox([], $('.mvp-box-top-play-day'))
-                        getGrandTotal([], $('.mvp-box-top-play-day'))
+                    // Reset top boxes
+                    getBox([], $('.mvp-box-top-play-day'))
+                    getGrandTotal([], $('.mvp-box-top-play-day'))
 
-                        getBox([], $('.mvp-box-top-play-week'))
-                        getGrandTotal([], $('.mvp-box-top-play-week'))
+                    getBox([], $('.mvp-box-top-play-week'))
+                    getGrandTotal([], $('.mvp-box-top-play-week'))
 
-                        getBox([], $('.mvp-box-top-play-month'))
-                        getGrandTotal([], $('.mvp-box-top-play-month'))
+                    getBox([], $('.mvp-box-top-play-month'))
+                    getGrandTotal([], $('.mvp-box-top-play-month'))
 
-                        getBox([], $('.mvp-box-top-play-all-time'))
-                        getGrandTotal([], $('.mvp-box-top-play-all-time'))
+                    getBox([], $('.mvp-box-top-play-all-time'))
+                    getGrandTotal([], $('.mvp-box-top-play-all-time'))
 
-                        getBox([], $('.mvp-box-top-download-all-time'))
-                        getGrandTotal([], $('.mvp-box-top-download-all-time'))
+                    getBox([], $('.mvp-box-top-download-all-time'))
+                    getGrandTotal([], $('.mvp-box-top-download-all-time'))
 
-                        getBox([], $('.mvp-box-top-finish-all-time'))
-                        getGrandTotal([], $('.mvp-box-top-finish-all-time'))
+                    getBox([], $('.mvp-box-top-finish-all-time'))
+                    getGrandTotal([], $('.mvp-box-top-finish-all-time'))
 
-                        getBox2([], $('.mvp-box-top-plays-country-all-time'))
-                        getGrandTotal([], $('.mvp-box-top-plays-country-all-time'))
+                    getBox2([], $('.mvp-box-top-plays-country-all-time'))
+                    getGrandTotal([], $('.mvp-box-top-plays-country-all-time'))
 
-                        getBox3([], $('.mvp-box-top-plays-user-all-time'))
-                        getGrandTotal([], $('.mvp-box-top-plays-user-all-time'))
-
-
-                        var canvas = $('.mvp-stats-total-grap-canvas')[0],
-                        ctx = canvas.getContext('2d');
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    getBox3([], $('.mvp-box-top-plays-user-all-time'))
+                    getGrandTotal([], $('.mvp-box-top-plays-user-all-time'))
 
 
+                    // Clear the canvas
+                    var canvas = $('.mvp-stats-total-grap-canvas')[0],
+                    ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+                    // Optionally add a success message to the user
+                    // alert("Statistics cleared successfully!");
 
-                    }
+                } else {
+                     // Handle cases where the request succeeded but the response wasn't "SUCCESS"
+                     console.log("Clear statistics response was not 'SUCCESS':", response);
+                     alert(mvp_translate.attr('data-clear-stat-error') + ' (Unexpected response)');
                 }
+
+                preloader.hide(); // <-- ADDED LINE (Hide preloader after processing success)
 
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText, textStatus, errorThrown);
-                preloader.hide();
+                preloader.hide(); // Already correctly placed here for failures
                 alert(mvp_translate.attr('data-clear-stat-error'));
-            }); 
+            });
 
+        } // end if(result)
+
+    }); // end #mvp-clear-statistics click
+
+    var statsPlaylistListSelectize = $('#mvp-stats-playlist-list').selectize()[0].selectize; // Get Selectize instance
+    statsPlaylistListSelectize.on('change',function(){ // Use selectize API for change event
+
+        var playlist_id = this.getValue(); // Use Selectize method to get value
+
+        if (playlist_id) { // Only change URL if a valid playlist is selected
+            insertParam('playlist_id', playlist_id);
         }
-
-    });
-
-    var statsPlaylistList = $('#mvp-stats-playlist-list').on('change',function(){
-
-        var playlist_id = $(this).val();
-
-        insertParam('playlist_id', playlist_id);
 
     });
 
     var urlParams = getUrlParameter();
     if(urlParams.playlist_id){
-        statsPlaylistList.val(urlParams.playlist_id);
+        // statsPlaylistList.val(urlParams.playlist_id); // This might not work reliably with Selectize
+        statsPlaylistListSelectize.setValue(urlParams.playlist_id, true); // Use Selectize API to set initial value silently
     }
 
     function insertParam(key, value){
@@ -1164,20 +1184,31 @@ jQuery(document).ready(function($) {
         key = encodeURI(key); value = encodeURI(value);
 
         var kvp = document.location.search.substr(1).split('&');
-
-        var i=kvp.length; var x; while(i--){
-            x = kvp[i].split('=');
-
-            if (x[0]==key){
-                x[1] = value;
-                kvp[i] = x.join('=');
-                break;
+        var params = {}; // Use an object to handle params easily
+        for (var i = 0; i < kvp.length; i++) {
+            var x = kvp[i].split('=');
+            if (x[0]) { // Ensure key exists
+                 params[x[0]] = x[1] || ''; // Store existing params
             }
         }
 
-        if(i<0) {kvp[kvp.length] = [key,value].join('=');}
+        params[key] = value; // Add or update the param
 
-        document.location.search = kvp.join('&'); 
+        // Rebuild the query string
+        var new_kvp = [];
+        for (var k in params) {
+             if (params.hasOwnProperty(k)) {
+                 new_kvp.push(k + '=' + params[k]);
+            }
+        }
+
+        // Update location without reload (using History API if needed, or simple redirect)
+        // Simple redirect is easier for this context
+        var new_search = '?' + new_kvp.join('&');
+        // Avoid reload if search string is the same
+        if (window.location.search !== new_search) {
+            window.location.search = new_search;
+        }
     }
 
 
@@ -1210,12 +1241,17 @@ jQuery(document).ready(function($) {
         if(reverse)sortOrder = -1;
         return arr.sort(function(a, b) {
             var x = parseInt(a.find(selector).html(),10); var y =  parseInt(b.find(selector).html(),10);
+            // Handle NaN cases if necessary
+            x = isNaN(x) ? (reverse ? Infinity : -Infinity) : x;
+            y = isNaN(y) ? (reverse ? Infinity : -Infinity) : y;
             return sortOrder * ((x < y) ? -1 : ((x > y) ? 1 : 0));
         });
     }
 
     function convertTime(time){
         if(!time)return '0';
+        time = parseInt(time, 10); // Ensure it's a number
+        if (isNaN(time) || time <= 0) return '0';
 
         if (time < 60) {
             return time+' sec';
@@ -1223,58 +1259,63 @@ jQuery(document).ready(function($) {
         } else if (time >= 60 && time < 3600) {
             var min = Math.floor(time / 60);
             var sec = time % 60;
-        
-            if(min < 10){
-               // min = min.substr(-1);
-            }
-            return min+'.'+sec+' min';
+            if (sec < 10) sec = '0' + sec; // Pad seconds
+            return min+':'+sec+' min'; // Use standard time format
 
         } else if (time >= 3600 && time < 86400) {
-            var hour = Math.floor(time / 60 / 60);
-            var min = Math.floor(time / 60) - (hour * 60);
+            var hour = Math.floor(time / 3600);
+            var min = Math.floor((time % 3600) / 60);
+            if (min < 10) min = '0' + min; // Pad minutes
+            return hour+':'+min+' hr'; // Use standard time format
 
-            if(hour < 10){
-               // hour = hour.substr(-1);
-            }
-            return hour+'.'+min+' hr';
-
-        } else if (time >= 86400 && time) {
-            var day = Math.floor(time / (3600*24));
-
-            if(day < 10){
-                //day = day.substr(-1);
-            }
-            return '~'+day+' days';
+        } else if (time >= 86400) { // Removed upper limit check
+            var day = Math.floor(time / 86400);
+            var hr = Math.floor((time % 86400) / 3600);
+            // Simplify to days if needed, or provide more detail
+            return '~'+day+' day' + (day > 1 ? 's' : '');
         }
+        return '0'; // Fallback
     }
+
 
     function nFormatter(num, digits) {
-        var si = [
-            { value: 1E18, symbol: "E" },
-            { value: 1E15, symbol: "P" },
-            { value: 1E12, symbol: "T" },
-            { value: 1E9,  symbol: "G" },
-            { value: 1E6,  symbol: "M" },
-           // { value: 1E3,  symbol: "k" }
-        ], rx = /\.0+$|(\.[0-9]*[1-9])0+$/, i;
-
-        for (i = 0; i < si.length; i++) {
-            if (num >= si[i].value) {
-                return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
-            }
+      var si = [
+        { value: 1, symbol: "" }, // Keep numbers below 1000 as they are
+        { value: 1E3, symbol: "k" },
+        { value: 1E6, symbol: "M" },
+        { value: 1E9, symbol: "G" },
+        { value: 1E12, symbol: "T" },
+        { value: 1E15, symbol: "P" },
+        { value: 1E18, symbol: "E" }
+      ];
+      var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+      var i;
+      // Iterate backwards to find the largest appropriate symbol
+      for (i = si.length - 1; i > 0; i--) {
+        if (num >= si[i].value) {
+          break;
         }
-        return num.toFixed(digits).replace(rx, "$1");
+      }
+       // Check if num is exactly 0 to avoid potential division by zero or incorrect formatting
+      if (num === 0) {
+        return '0';
+      }
+      // Format the number
+      return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
     }
 
-    function convertCount(num){
 
-        if(!num)return '0';
+    function convertCount(num){ // This seems redundant given nFormatter, but keeping it if used elsewhere
+        num = parseInt(num, 10);
+        if(!num || isNaN(num))return '0';
         if(num < 1000){
             return num;
         } else {
-            return Math.round((num / 1000), 2)+' K';
+             // Use nFormatter for consistency? Or keep simple K format.
+            // return nFormatter(num, 1); // Example using nFormatter
+             return Math.round((num / 1000))+' K'; // Original logic (rounded)
         }
-    } 
+    }
 
     function getUrlParameter(k) {
         var p={};
@@ -1283,8 +1324,9 @@ jQuery(document).ready(function($) {
     };
 
     function isEmpty(str){
-        return str.replace(/^\s+|\s+$/g, '').length == 0;
+         if (typeof str !== 'string') return true; // Handle non-string inputs
+         return str.replace(/^\s+|\s+$/g, '').length === 0;
     }
-	
+
 
 });

@@ -12,14 +12,28 @@ if(isset($_GET['playlist_id'])){//load media
 	$playlist_id = $_GET['playlist_id'];
 
 	//playlist data
-	$playlist_data = $wpdb->get_row($wpdb->prepare("SELECT title, options FROM {$playlist_table} WHERE id = %d", $playlist_id), ARRAY_A);
-	$pl_options = unserialize($playlist_data['options']);
-	$default_playlist_options = mvp_playlist_options();
-	if(!$pl_options){
-		$playlist_options = $default_playlist_options;
-	}else{
-		$playlist_options = $pl_options + $default_playlist_options;
-	}
+$playlist_data = $wpdb->get_row($wpdb->prepare("SELECT title, options FROM {$playlist_table} WHERE id = %d", $playlist_id), ARRAY_A);
+
+// --- Minimal Unserialize Fix ---
+$pl_options_serialized = isset($playlist_data['options']) ? $playlist_data['options'] : null;
+$pl_options_unserialized = null;
+if (!empty($pl_options_serialized) && is_string($pl_options_serialized)) {
+    // Use error suppression just for the check, handle actual result
+    if ($pl_options_serialized === 'b:0;' || @unserialize($pl_options_serialized) !== false) {
+        $pl_options_unserialized = unserialize($pl_options_serialized);
+    }
+}
+// --- End Fix ---
+
+$default_playlist_options = mvp_playlist_options();
+if (!is_array($default_playlist_options)) { $default_playlist_options = []; } // Ensure default is array
+
+// Merge using original '+' logic if $pl_options_unserialized is an array
+if (is_array($pl_options_unserialized)) {
+    $playlist_options = $pl_options_unserialized + $default_playlist_options;
+} else {
+    $playlist_options = $default_playlist_options;
+}
 
 	//media
 	/*$stmt = $wpdb->prepare("SELECT id, disabled, title, options, order_id FROM $media_table WHERE playlist_id = %d 

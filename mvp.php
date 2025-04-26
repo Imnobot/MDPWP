@@ -327,200 +327,321 @@ Author URI: https://codecanyon.net/user/Tean/
 
 	function mvp_play_count(){
 
-		if(isset($_POST['media_id']) && isset($_POST['playlist_id'])){
-
-			$media_id = (int)$_POST["media_id"];
-			$playlist_id = (int)$_POST["playlist_id"];
-			$date = date("Y-m-d");
-			$title = stripslashes($_POST['title']);
-			$thumb = stripslashes($_POST['thumb']);
-			$currentTime = (int)$_POST['currentTime'];
-			$duration = (int)$_POST['duration'];
-			$percentToCountAsPlay = $_POST['percentToCountAsPlay'];
-			$countryData = isset($_POST['countryData']) ? json_decode(stripcslashes($_POST['countryData']), true) : null;
-			$video_url = stripslashes($_POST['video_url']);
-
-			$percent = $duration / (100 / $percentToCountAsPlay);
-			if($currentTime > $percent){
-			    $play_add = 1;
-			} else {
-			    $play_add = 0;
-			}
-
-			global $wpdb;
-		    $statistics_table = $wpdb->prefix . "mvp_statistics";
-		    $statistics_country_table = $wpdb->prefix . "mvp_statistics_country";
-		    $statistics_country_play_table = $wpdb->prefix . "mvp_statistics_country_play";
-		    $statistics_user_table = $wpdb->prefix . "mvp_statistics_user";
-		    $statistics_user_play_table = $wpdb->prefix . "mvp_statistics_user_play";
-
-		    //check if exist
-		    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_table WHERE media_id=%d AND title=%s AND c_date=%s", $media_id, $title, $date));
-
-		    if($wpdb->num_rows == 0){//create entry
-
-				$stmt = $wpdb->query("INSERT INTO $statistics_table (title, c_play, c_time, c_download, c_finish, c_date, media_id, playlist_id) VALUES ('$title', 1, '$currentTime', 0, 0, '$date', '$media_id', '$playlist_id')");
-
-		    }else{//update
-
-		    	$stmt = $wpdb->query($wpdb->prepare("UPDATE $statistics_table SET c_play=c_play+$play_add, c_time=c_time+%d WHERE media_id=%d AND title=%s AND c_date=%s LIMIT 1", $currentTime, $media_id, $title, $date));
-
-		    }
-
-
-		    //country
-		    if(isset($countryData) && !empty($countryData)){
-
-			    $stmt = $wpdb->get_var($wpdb->prepare("SELECT id FROM $statistics_country_table WHERE country_code=%s", $countryData['country_code']));
-
-			  	if($wpdb->num_rows == 0){
-
-			  		$country = $countryData['country'];
-			  		$country_code = $countryData['country_code'];
-			  		$continent = $countryData['continent'];
-
-					$wpdb->query("INSERT INTO $statistics_country_table (country, country_code, continent) VALUES ('$country', '$country_code', '$continent')");
-					$country_id = $wpdb->insert_id;
-			    }else{
-			    	$country_id = $stmt;
-			    }
-
-			    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_country_play_table WHERE media_id=%d AND title=%s AND c_date=%s AND country_id=%d", $media_id, $title, $date, $country_id));
-
-			    if($wpdb->num_rows == 0){
-
-					$wpdb->query("INSERT INTO $statistics_country_play_table (title, thumb, video_url, c_play, c_time, c_date, media_id, playlist_id, country_id) VALUES ('$title', '$thumb', '$video_url', 1, '$currentTime', '$date', '$media_id', '$playlist_id', '$country_id')");
-
-			    }else{//update
-
-			    	$wpdb->query($wpdb->prepare("UPDATE $statistics_country_play_table SET c_play=c_play+$play_add, c_time=c_time+%d WHERE media_id=%d AND title=%s AND c_date=%s AND country_id=%d LIMIT 1", $currentTime, $media_id, $title, $date, $country_id));
-
-			    }
-
-
-		    }
-
-
-		    //user
-
-			if(is_user_logged_in()){
-			    $current_user = wp_get_current_user();
-
-			    $stmt = $wpdb->get_var($wpdb->prepare("SELECT id FROM $statistics_user_table WHERE user_id=%s", $current_user->ID));
-
-			  	if($wpdb->num_rows == 0){
-
-			  		$uid = $current_user->ID;
-			  		$user_display_name = $current_user->display_name;
-			  		$user_role = implode(",", $current_user->roles);
-
-					$wpdb->query("INSERT INTO $statistics_user_table (user_id, user_display_name, user_role) VALUES ('$uid', '$user_display_name', '$user_role')");
-					$user_id = $wpdb->insert_id;
-			    }else{
-			    	$user_id = $stmt;
-			    }
-
-			    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_user_play_table WHERE media_id=%d AND title=%s AND c_date=%s AND user_id=%d", $media_id, $title, $date, $user_id));
-
-			    if($wpdb->num_rows == 0){
-
-					$wpdb->query("INSERT INTO $statistics_user_play_table (title, thumb, video_url, c_play, c_time, c_date, media_id, playlist_id, user_id) VALUES ('$title',  '$thumb', '$video_url', 1, '$currentTime', '$date', '$media_id', '$playlist_id', '$user_id')");
-
-			    }else{//update
-
-			    	$wpdb->query($wpdb->prepare("UPDATE $statistics_user_play_table SET c_play=c_play+$play_add, c_time=c_time+%d WHERE media_id=%d AND title=%s AND c_date=%s AND user_id=%d LIMIT 1", $currentTime, $media_id, $title, $date, $user_id));
-
-			    }
-
-			}
-
-
-		    if($stmt !== false){
-	    		echo json_encode($stmt);
-	    	}
-
-			wp_die();
-
-		}else {
-			wp_die();
+		// Check if required POST variables are set first
+		if (!isset($_POST['media_id'], $_POST['playlist_id'], $_POST['title'], $_POST['thumb'], $_POST['currentTime'], $_POST['duration'], $_POST['percentToCountAsPlay'], $_POST['video_url'])) {
+			 // Optionally send a JSON error, but for a non-AJAX endpoint just dying might be okay depending on context
+			 // wp_send_json_error(['message' => 'Missing required play count data.']);
+			 wp_die('Missing required play count data.');
 		}
+	
+		// --- Sanitize ALL Inputs ---
+		$media_id             = absint($_POST['media_id']);
+		$playlist_id          = absint($_POST['playlist_id']);
+		// Use wp_unslash because WP adds slashes to POST data automatically
+		$title                = sanitize_text_field(wp_unslash($_POST['title']));
+		$thumb                = esc_url_raw(wp_unslash($_POST['thumb'])); // Assuming thumb is a URL
+		$currentTime          = absint($_POST['currentTime']);
+		$duration             = absint($_POST['duration']);
+		$percentToCountAsPlay = absint($_POST['percentToCountAsPlay']); // Assuming percentage is 0-100 integer
+		$video_url            = esc_url_raw(wp_unslash($_POST['video_url'])); // Assuming video_url is a URL
+		$countryData          = isset($_POST['countryData']) ? json_decode(wp_unslash($_POST['countryData']), true) : null;
+		$date                 = current_time('Y-m-d'); // Use WP function for current time based on site settings
+	
+		// Basic validation for percentage
+		if ($percentToCountAsPlay < 0 || $percentToCountAsPlay > 100) {
+			$percentToCountAsPlay = 100; // Default to 100% if invalid value provided
+		}
+		if ($duration <= 0) { // Avoid division by zero
+			$play_add = 0;
+		} else {
+			$percent_threshold = $duration * ($percentToCountAsPlay / 100);
+			$play_add = ($currentTime > $percent_threshold) ? 1 : 0;
+		}
+		// --- End Sanitization ---
+	
+	
+		global $wpdb;
+		// $wpdb->show_errors(); // Keep for debugging if needed, remove for production
+	
+		$statistics_table             = $wpdb->prefix . "mvp_statistics";
+		$statistics_country_table     = $wpdb->prefix . "mvp_statistics_country";
+		$statistics_country_play_table = $wpdb->prefix . "mvp_statistics_country_play";
+		$statistics_user_table        = $wpdb->prefix . "mvp_statistics_user";
+		$statistics_user_play_table   = $wpdb->prefix . "mvp_statistics_user_play";
+	
+		// Check if entry exists for this media, title, and date in the main stats table
+		// Note: Using title in WHERE clause might be inefficient or problematic if titles change. Using media_id only might be better if titles are not strictly unique per ID.
+		// Current logic checks based on media_id, title, and date.
+		$existing_stat_id = $wpdb->get_var($wpdb->prepare(
+			"SELECT id FROM $statistics_table WHERE media_id = %d AND title = %s AND c_date = %s",
+			$media_id, $title, $date
+		));
+	
+		if ($existing_stat_id === null) { // create entry if not found
+			$stmt = $wpdb->query($wpdb->prepare(
+				"INSERT INTO $statistics_table (title, c_play, c_time, c_download, c_finish, c_date, media_id, playlist_id) VALUES (%s, %d, %d, 0, 0, %s, %d, %d)",
+				$title,
+				$play_add, // Only count the play (1) if threshold met, otherwise insert 0 for the first hit
+				$currentTime,
+				$date,
+				$media_id,
+				$playlist_id
+			));
+		} else { // update existing entry
+			// Update play count only if threshold met, always update time
+			$stmt = $wpdb->query($wpdb->prepare(
+				"UPDATE $statistics_table SET c_play = c_play + %d, c_time = c_time + %d WHERE id = %d",
+				$play_add,
+				$currentTime,
+				$existing_stat_id // Use the ID we found for efficiency
+			));
+			// Original query updated based on media_id, title, date - less efficient:
+			// $stmt = $wpdb->query($wpdb->prepare(
+			//     "UPDATE $statistics_table SET c_play = c_play + %d, c_time = c_time + %d WHERE media_id = %d AND title = %s AND c_date = %s LIMIT 1",
+			//     $play_add, $currentTime, $media_id, $title, $date
+			// ));
+		}
+	
+		// --- Country Statistics ---
+		if (is_array($countryData) && !empty($countryData['country_code'])) {
+	
+			// Sanitize country data elements
+			$country_code = sanitize_text_field($countryData['country_code']);
+			$country      = isset($countryData['country']) ? sanitize_text_field($countryData['country']) : '';
+			$continent    = isset($countryData['continent']) ? sanitize_text_field($countryData['continent']) : '';
+	
+			// Find or create country entry
+			$country_id = $wpdb->get_var($wpdb->prepare(
+				"SELECT id FROM $statistics_country_table WHERE country_code = %s", $country_code
+			));
+	
+			if ($country_id === null) {
+				$wpdb->query($wpdb->prepare(
+					"INSERT INTO $statistics_country_table (country, country_code, continent) VALUES (%s, %s, %s)",
+					$country, $country_code, $continent
+				));
+				$country_id = $wpdb->insert_id;
+			}
+	
+			if ($country_id) { // Proceed only if we have a valid country_id
+				 // Check if entry exists for this media, title, date, and country
+				$existing_country_play_id = $wpdb->get_var($wpdb->prepare(
+					"SELECT id FROM $statistics_country_play_table WHERE media_id = %d AND title = %s AND c_date = %s AND country_id = %d",
+					$media_id, $title, $date, $country_id
+				));
+	
+				if ($existing_country_play_id === null) { // Create country play entry
+					$wpdb->query($wpdb->prepare(
+						"INSERT INTO $statistics_country_play_table (title, thumb, video_url, c_play, c_time, c_date, media_id, playlist_id, country_id) VALUES (%s, %s, %s, %d, %d, %s, %d, %d, %d)",
+						$title,
+						$thumb,
+						$video_url,
+						$play_add, // Count play (1) if threshold met, else 0
+						$currentTime,
+						$date,
+						$media_id,
+						$playlist_id,
+						$country_id
+					));
+				} else { // Update country play entry
+					 $wpdb->query($wpdb->prepare(
+						"UPDATE $statistics_country_play_table SET c_play = c_play + %d, c_time = c_time + %d WHERE id = %d",
+						$play_add,
+						$currentTime,
+						$existing_country_play_id
+					));
+					 // Original query updated based on media_id, title, date, country_id - less efficient:
+					 // $wpdb->query($wpdb->prepare(
+					 //    "UPDATE $statistics_country_play_table SET c_play = c_play + %d, c_time = c_time + %d WHERE media_id = %d AND title = %s AND c_date = %s AND country_id = %d LIMIT 1",
+					 //    $play_add, $currentTime, $media_id, $title, $date, $country_id
+					 // ));
+				}
+			}
+		} // End Country Statistics
+	
+		// --- User Statistics ---
+		if (is_user_logged_in()) {
+			$current_user = wp_get_current_user();
+			$wp_user_id = $current_user->ID; // This is the WordPress user ID
+	
+			// Find or create user entry in our stats user table
+			$stats_user_id = $wpdb->get_var($wpdb->prepare(
+				"SELECT id FROM $statistics_user_table WHERE user_id = %d", $wp_user_id
+			));
+	
+			if ($stats_user_id === null) {
+				$user_display_name = sanitize_text_field($current_user->display_name);
+				$user_role = implode(",", array_map('sanitize_key', $current_user->roles)); // Sanitize roles
+	
+				$wpdb->query($wpdb->prepare(
+					"INSERT INTO $statistics_user_table (user_id, user_display_name, user_role) VALUES (%d, %s, %s)",
+					$wp_user_id, $user_display_name, $user_role
+				));
+				$stats_user_id = $wpdb->insert_id; // This is the ID from *our* stats user table
+			}
+	
+			if ($stats_user_id) { // Proceed only if we have a valid stats_user_id
+				// Check if entry exists for this media, title, date, and user
+				$existing_user_play_id = $wpdb->get_var($wpdb->prepare(
+					"SELECT id FROM $statistics_user_play_table WHERE media_id = %d AND title = %s AND c_date = %s AND user_id = %d",
+					$media_id, $title, $date, $stats_user_id
+				));
+	
+				if ($existing_user_play_id === null) { // Create user play entry
+					 $wpdb->query($wpdb->prepare(
+						"INSERT INTO $statistics_user_play_table (title, thumb, video_url, c_play, c_time, c_date, media_id, playlist_id, user_id) VALUES (%s, %s, %s, %d, %d, %s, %d, %d, %d)",
+						$title,
+						$thumb,
+						$video_url,
+						$play_add, // Count play (1) if threshold met, else 0
+						$currentTime,
+						$date,
+						$media_id,
+						$playlist_id,
+						$stats_user_id // Use the ID from our stats user table
+					));
+				} else { // Update user play entry
+					$wpdb->query($wpdb->prepare(
+						"UPDATE $statistics_user_play_table SET c_play = c_play + %d, c_time = c_time + %d WHERE id = %d",
+						$play_add,
+						$currentTime,
+						$existing_user_play_id
+					));
+					 // Original query updated based on media_id, title, date, user_id - less efficient:
+					 // $wpdb->query($wpdb->prepare(
+					 //   "UPDATE $statistics_user_play_table SET c_play = c_play + %d, c_time = c_time + %d WHERE media_id = %d AND title = %s AND c_date = %s AND user_id = %d LIMIT 1",
+					 //   $play_add, $currentTime, $media_id, $title, $date, $stats_user_id
+					 // ));
+				}
+			}
+		} // End User Statistics
+	
+		// Send a minimal success response (or potentially the result of $stmt if needed)
+		// Using wp_send_json_success is better for AJAX, but this endpoint might not strictly be AJAX?
+		// If it's called via JS fetch/XHR, use wp_send_json_*. If it's a simple POST maybe just die.
+		echo json_encode(['status' => 'recorded']); // Minimal response
+	
+		wp_die(); // End execution
 	}
 
 	function mvp_download_count(){
 
-		if(isset($_POST['media_id']) && isset($_POST['playlist_id'])){
-
-			$media_id = (int)$_POST["media_id"];
-			$playlist_id = (int)$_POST["playlist_id"];
-			$date = date("Y-m-d");
-			$title = stripslashes($_POST['title']);
-
-			global $wpdb;
-			$wpdb->show_errors();
-		    $statistics_table = $wpdb->prefix . "mvp_statistics";
-
-		    //check if exist
-		    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_table WHERE media_id=%d AND title=%s AND c_date=%s", $media_id, $title, $date));
-
-		    if($wpdb->num_rows == 0){//create entry
-
-				$stmt = $wpdb->query("INSERT INTO $statistics_table (title, c_play, c_time, c_download, c_finish, c_date, media_id, playlist_id) VALUES ('$title', 0, 0, 1, 0, '$date', '$media_id', '$playlist_id')");
-
-		    }else{//update
-
-		    	$stmt = $wpdb->query($wpdb->prepare("UPDATE $statistics_table SET c_download=c_download+1 WHERE media_id=%d AND title=%s AND c_date=%s LIMIT 1", $media_id, $title, $date));
-
-		    }
-
-		    if($stmt !== false){
-	    		echo json_encode($stmt);
-	    	}
-
-			wp_die();
-
-		}else {
-			wp_die();
+		// Check if required POST variables are set
+		if (!isset($_POST['media_id'], $_POST['playlist_id'], $_POST['title'])) {
+			// Send JSON error if this is definitely an AJAX endpoint
+			// wp_send_json_error(['message' => 'Missing required download count data.']);
+			wp_die('Missing required download count data.');
 		}
-
+	
+		// --- Sanitize Inputs ---
+		$media_id    = absint($_POST['media_id']);
+		$playlist_id = absint($_POST['playlist_id']);
+		// Use wp_unslash because WP adds slashes to POST data automatically
+		$title       = sanitize_text_field(wp_unslash($_POST['title']));
+		$date        = current_time('Y-m-d'); // Use WP function for current time
+		// --- End Sanitization ---
+	
+		global $wpdb;
+		// $wpdb->show_errors(); // Keep for debugging if needed, remove for production
+		$statistics_table = $wpdb->prefix . "mvp_statistics";
+	
+		// Check if entry exists for this media, title, and date
+		$existing_stat_id = $wpdb->get_var($wpdb->prepare(
+			"SELECT id FROM $statistics_table WHERE media_id = %d AND title = %s AND c_date = %s",
+			$media_id, $title, $date
+		));
+	
+		$stmt = false; // Initialize stmt
+	
+		if ($existing_stat_id === null) { // Create entry if not found
+			$stmt = $wpdb->query($wpdb->prepare(
+				"INSERT INTO $statistics_table (title, c_play, c_time, c_download, c_finish, c_date, media_id, playlist_id) VALUES (%s, 0, 0, 1, 0, %s, %d, %d)",
+				$title,
+				$date,
+				$media_id,
+				$playlist_id
+			));
+		} else { // Update existing entry
+			$stmt = $wpdb->query($wpdb->prepare(
+				"UPDATE $statistics_table SET c_download = c_download + 1 WHERE id = %d",
+				$existing_stat_id
+			));
+			// Original less efficient query:
+			// $stmt = $wpdb->query($wpdb->prepare(
+			//     "UPDATE $statistics_table SET c_download = c_download + 1 WHERE media_id = %d AND title = %s AND c_date = %s LIMIT 1",
+			//     $media_id, $title, $date
+			// ));
+		}
+	
+		if ($stmt !== false) {
+			// Use wp_send_json_success if confirmed AJAX, otherwise simple echo might suffice
+			echo json_encode(['status' => 'download recorded']);
+		} else {
+			// Handle potential error, maybe log it
+			echo json_encode(['status' => 'error', 'message' => 'Failed to record download. DB Error: ' . $wpdb->last_error]);
+		}
+	
+		wp_die(); // End execution
 	}
 
 	function mvp_finish_count(){
 
-		if(isset($_POST['media_id']) && isset($_POST['playlist_id'])){
-
-			$media_id = (int)$_POST["media_id"];
-			$playlist_id = (int)$_POST["playlist_id"];
-			$date = date("Y-m-d");
-			$title = stripslashes($_POST['title']);
-
-			global $wpdb;
-			$wpdb->show_errors();
-
-		    $statistics_table = $wpdb->prefix . "mvp_statistics";
-
-		    //check if exist
-		    $wpdb->get_row($wpdb->prepare("SELECT id FROM $statistics_table WHERE media_id=%d AND title=%s AND c_date=%s", $media_id, $title, $date));
-
-		    if($wpdb->num_rows == 0){//create entry
-
-				$stmt = $wpdb->query("INSERT INTO $statistics_table (title, c_play, c_time, c_download, c_finish, c_date, media_id, playlist_id) VALUES ('$title', 0, 0, 0, 1, '$date', '$media_id', '$playlist_id')");
-
-		    }else{//update
-
-		    	$stmt = $wpdb->query($wpdb->prepare("UPDATE $statistics_table SET c_finish=c_finish+1 WHERE media_id=%d AND title=%s AND c_date=%s LIMIT 1", $media_id, $title, $date));
-
-		    }
-
-		    if($stmt !== false){
-	    		echo json_encode($stmt);
-	    	}
-
-			wp_die();
-
-		}else {
-			wp_die();
+		// Check if required POST variables are set
+		if (!isset($_POST['media_id'], $_POST['playlist_id'], $_POST['title'])) {
+			 // Send JSON error if this is definitely an AJAX endpoint
+			// wp_send_json_error(['message' => 'Missing required finish count data.']);
+			wp_die('Missing required finish count data.');
 		}
-
+	
+		// --- Sanitize Inputs ---
+		$media_id    = absint($_POST['media_id']);
+		$playlist_id = absint($_POST['playlist_id']);
+		 // Use wp_unslash because WP adds slashes to POST data automatically
+		$title       = sanitize_text_field(wp_unslash($_POST['title']));
+		$date        = current_time('Y-m-d'); // Use WP function for current time
+		// --- End Sanitization ---
+	
+		global $wpdb;
+		// $wpdb->show_errors(); // Keep for debugging if needed, remove for production
+		$statistics_table = $wpdb->prefix . "mvp_statistics";
+	
+		// Check if entry exists for this media, title, and date
+		$existing_stat_id = $wpdb->get_var($wpdb->prepare(
+			"SELECT id FROM $statistics_table WHERE media_id = %d AND title = %s AND c_date = %s",
+			$media_id, $title, $date
+		));
+	
+		$stmt = false; // Initialize stmt
+	
+		if ($existing_stat_id === null) { // Create entry if not found
+			$stmt = $wpdb->query($wpdb->prepare(
+				"INSERT INTO $statistics_table (title, c_play, c_time, c_download, c_finish, c_date, media_id, playlist_id) VALUES (%s, 0, 0, 0, 1, %s, %d, %d)",
+				$title,
+				$date,
+				$media_id,
+				$playlist_id
+			));
+		} else { // Update existing entry
+			$stmt = $wpdb->query($wpdb->prepare(
+				"UPDATE $statistics_table SET c_finish = c_finish + 1 WHERE id = %d",
+				$existing_stat_id
+			));
+			 // Original less efficient query:
+			// $stmt = $wpdb->query($wpdb->prepare(
+			//     "UPDATE $statistics_table SET c_finish = c_finish + 1 WHERE media_id = %d AND title = %s AND c_date = %s LIMIT 1",
+			//     $media_id, $title, $date
+			// ));
+		}
+	
+		if ($stmt !== false) {
+			// Use wp_send_json_success if confirmed AJAX, otherwise simple echo might suffice
+			echo json_encode(['status' => 'finish recorded']);
+		} else {
+			// Handle potential error
+			echo json_encode(['status' => 'error', 'message' => 'Failed to record finish. DB Error: ' . $wpdb->last_error]);
+		}
+	
+		wp_die(); // End execution
 	}
 
 	function mvp_get_stats($atts){
@@ -598,31 +719,70 @@ Author URI: https://codecanyon.net/user/Tean/
 	function mvp_stat_clear(){
 
 		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
-		}
-
-		if(isset($_POST['playlist_id'])){
-
-			$playlist_id = $_POST["playlist_id"];
-
-			global $wpdb;
-		    $statistics_table = $wpdb->prefix . "mvp_statistics";
-
-	    	if($playlist_id != -1){
-	    		$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$statistics_table} WHERE playlist_id=%d", $playlist_id));
-	    	}else{
-	    		$stmt = $wpdb->query("DELETE FROM {$statistics_table}");
-	    	}
-
-	    	if($stmt !== false){
-	    		echo json_encode("SUCCESS");
-	    	}
-
-		    wp_die();
-
-		}else{
+			wp_send_json_error( 'Invalid security token sent.' );
 			wp_die();
+		}
+	
+		if(isset($_POST['playlist_id'])){
+	
+			$playlist_id = $_POST["playlist_id"];
+	
+			global $wpdb;
+			$wpdb->show_errors(); // Good for debugging, maybe remove in production
+	
+			// Define all relevant stats tables
+			$statistics_table = $wpdb->prefix . "mvp_statistics";
+			$statistics_country_play_table = $wpdb->prefix . "mvp_statistics_country_play";
+			$statistics_user_play_table = $wpdb->prefix . "mvp_statistics_user_play";
+			// Optional: You might also want to clear the base country/user tables if needed,
+			// but usually clearing the 'play' tables is sufficient.
+			// $statistics_country_table = $wpdb->prefix . "mvp_statistics_country";
+			// $statistics_user_table = $wpdb->prefix . "mvp_statistics_user";
+	
+			$success = true; // Flag to track overall success
+	
+			if($playlist_id != -1){ // Clear for a specific playlist
+				$playlist_id = (int)$playlist_id; // Ensure it's an integer
+	
+				// Delete from main stats table
+				$stmt1 = $wpdb->query($wpdb->prepare("DELETE FROM {$statistics_table} WHERE playlist_id=%d", $playlist_id));
+				if ($stmt1 === false) $success = false;
+	
+				// Delete from country play stats table
+				$stmt2 = $wpdb->query($wpdb->prepare("DELETE FROM {$statistics_country_play_table} WHERE playlist_id=%d", $playlist_id));
+				if ($stmt2 === false) $success = false;
+	
+				// Delete from user play stats table
+				$stmt3 = $wpdb->query($wpdb->prepare("DELETE FROM {$statistics_user_play_table} WHERE playlist_id=%d", $playlist_id));
+				if ($stmt3 === false) $success = false;
+	
+			} else { // Clear ALL statistics (playlist_id is -1)
+	
+				// TRUNCATE is generally faster for clearing entire tables
+				$stmt1 = $wpdb->query("TRUNCATE TABLE {$statistics_table}");
+				 if ($stmt1 === false) $success = false;
+	
+				$stmt2 = $wpdb->query("TRUNCATE TABLE {$statistics_country_play_table}");
+				 if ($stmt2 === false) $success = false;
+	
+				$stmt3 = $wpdb->query("TRUNCATE TABLE {$statistics_user_play_table}");
+				if ($stmt3 === false) $success = false;
+	
+				// Optional: Truncate base country/user tables if you want to reset them completely
+				// $wpdb->query("TRUNCATE TABLE {$statistics_country_table}");
+				// $wpdb->query("TRUNCATE TABLE {$statistics_user_table}");
+			}
+	
+			if($success){
+				echo json_encode("SUCCESS");
+			} else {
+				 echo json_encode("ERROR: Failed to clear all statistics tables. Check server error logs."); // Provide more specific error if needed
+			}
+	
+			wp_die();
+	
+		}else{
+			wp_die('Playlist ID not specified.'); // Give a clearer error
 		}
 	}
 
@@ -1023,7 +1183,9 @@ Author URI: https://codecanyon.net/user/Tean/
 		add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Ad manager", MVP_CAPABILITY, 'mvp_ad_manager', 'mvp_ad_manager_page');
 		add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Shortcodes", MVP_CAPABILITY, 'mvp_shortcodes', 'mvp_shortcodes_page');
 		add_submenu_page('mvp_settings', "Ultimate Media Gallery", 'Statistics', MVP_CAPABILITY, 'mvp_statistics', 'mvp_statistics_page');
-		add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Demo", MVP_CAPABILITY, 'mvp_demo', 'mvp_demo_page');
+		// --- REMOVED DEMO START ---
+		//add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Demo", MVP_CAPABILITY, 'mvp_demo', 'mvp_demo_page');
+		// --- REMOVED DEMO END ---
 
 	}
 
@@ -1153,6 +1315,8 @@ Author URI: https://codecanyon.net/user/Tean/
 
 	}
 
+	// --- REMOVED DEMO START ---
+	/*
 	function mvp_demo_page(){
 
 		global $wpdb;
@@ -1160,6 +1324,8 @@ Author URI: https://codecanyon.net/user/Tean/
 
 		include("includes/demo.php");
 	}
+	*/
+	// --- REMOVED DEMO END ---
 
 
 
@@ -1263,11 +1429,15 @@ Author URI: https://codecanyon.net/user/Tean/
 
 	        break;
 
+			// --- REMOVED DEMO START ---
+	        /*
 	        case get_plugin_page_hookname( 'mvp_demo', 'mvp_settings' ):
 
 	        	wp_enqueue_script("mvp-admin", plugins_url('/js/admin_demo.js', __FILE__), array('jquery'));
 
 	        break;
+	        */
+			// --- REMOVED DEMO END ---
 	    }
 
 
@@ -1317,57 +1487,159 @@ Author URI: https://codecanyon.net/user/Tean/
 		wp_localize_script('mvp', 'mvp_data', array('ajax_url' => admin_url( 'admin-ajax.php')));
 
 	}
+	/**
+ * Recursively sanitizes an array or value.
+ * Uses appropriate sanitization based on expected data type (heuristic).
+ * PRESERVES ORIGINAL KEY CASING.
+ *
+ * @param mixed $data The data to sanitize (string, array, etc.).
+ * @return mixed Sanitized data.
+ */
+function mvp_sanitize_options_recursive( $data ) {
+    if ( is_array( $data ) ) {
+        // Recursively sanitize array elements
+        // *** Keep original keys ***
+        foreach ( $data as $key => $value ) {
+            // Sanitize the value, but use the original key
+            $data[ $key ] = mvp_sanitize_options_recursive( $value );
+        }
+        return $data;
+    } elseif ( is_object( $data ) ) {
+        // Recursively sanitize object properties
+        // *** Keep original keys ***
+        $vars = get_object_vars( $data );
+        foreach ( $vars as $key => $value ) {
+            // Sanitize the value, but use the original key
+            $data->$key = mvp_sanitize_options_recursive( $value );
+        }
+        return $data;
+    } elseif ( is_string( $data ) ) {
+        // Determine sanitization based on context (this is tricky without knowing all options)
+        // Heuristic: If it looks like a URL, sanitize as URL. If it might contain HTML, use wp_kses_post. Otherwise, sanitize_text_field.
+        // This needs refinement based on the specific settings fields expected.
 
+        // Use wp_check_invalid_utf8 to prevent potential issues, then sanitize
+        $data = wp_check_invalid_utf8( $data );
+
+        // Basic check for common script/event handlers - strip if found (adjust list as needed)
+        // This is a basic attempt, not foolproof XSS protection.
+        if ( preg_match( '/<(script|style|iframe|object|embed)/i', $data ) || preg_match( '/(on[a-z]+)=/i', $data ) ) {
+             // If it contains potentially dangerous tags or inline event handlers, strip all tags.
+             // Consider wp_kses() with specific allowed tags if some HTML is needed.
+             return strip_tags( $data );
+        } elseif ( filter_var( $data, FILTER_VALIDATE_URL ) ) {
+             // Allow valid URLs
+            return esc_url_raw( $data );
+        } elseif ( preg_match( '/^rgba?\([\d.,\s]+\)$/i', $data ) || preg_match('/^#([a-f0-9]{3}){1,2}$/i', $data) ) {
+             // Allow CSS color values (basic check)
+             return sanitize_text_field( $data ); // Sanitize just in case, but allows format
+        } elseif ( preg_match( '/<[a-z][\s\S]*>/i', $data ) ) {
+            // If it seems to contain general HTML (and didn't match dangerous tags above)
+            // Use wp_kses_post for general content HTML.
+             // Ensure this allows necessary HTML for specific fields if any.
+            return wp_kses_post( $data );
+        } else {
+            // Default fallback for plain text, CSS classes, selectors etc.
+            return sanitize_text_field( $data );
+        }
+    } elseif ( is_numeric( $data ) ) {
+         // Allow numbers (integers, floats)
+         return $data;
+    } elseif ( is_bool( $data ) ) {
+        // Allow booleans
+        return $data;
+    } else {
+        // Handle other types (null, etc.) - return as is
+        return $data;
+    }
+}
 	//############################################//
 	/* global */
 	//############################################//
 
 	function mvp_save_global_options(){
 
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
+		// 1. Security Check (Nonce)
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security', false ) ) { // Check nonce, don't die yet
+			wp_send_json_error( ['message' => 'Invalid security token sent.'], 403 );
+			// wp_die() is called by wp_send_json_error
 		}
-
-		if(isset($_POST['options'])){
-
-			$settings = json_decode(stripcslashes($_POST['options']), true);
-
-			global $wpdb;
-			$wpdb->show_errors();
-		    $settings_table = $wpdb->prefix . "mvp_settings";
-
-			$id = $wpdb->get_row("SELECT id FROM {$settings_table}");
-		    if($wpdb->num_rows > 0){
-
-		    	$stmt = $wpdb->update(
-			    	$settings_table,
-					array('options' => serialize($settings)),
-					array('id' => 0),
-					array('%s'),
-					array('%d')
-			    );
-
-		    }else{
-
-		    	$stmt = $wpdb->insert(
-			    	$settings_table,
-					array('options' => serialize($settings)),
-					array('%s')
-			    );
-
-		    }
-
-			if($stmt !== false){
-	    		echo json_encode($stmt);
-	    	}
-
-	    	wp_die();
-
-	    }else{
-			wp_die();
+	
+		// 2. Capability Check
+		if ( ! current_user_can( MVP_CAPABILITY ) ) {
+			wp_send_json_error( ['message' => 'You do not have permission to save settings.'], 403 );
 		}
-
+	
+		// 3. Check if options data exists
+		if (!isset($_POST['options'])) {
+			wp_send_json_error( ['message' => 'No options data received.'], 400 );
+		}
+	
+		// 4. Decode and Sanitize Options
+		// Use wp_unslash as WP automatically adds slashes to POST data
+		$raw_options_json = wp_unslash( $_POST['options'] );
+		$decoded_options = json_decode( $raw_options_json, true ); // Decode as associative array
+	
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			wp_send_json_error( ['message' => 'Invalid JSON data received: ' . json_last_error_msg()], 400 );
+		}
+	
+		if ( !is_array($decoded_options) ) {
+			 wp_send_json_error( ['message' => 'Decoded options are not an array.'], 400 );
+		}
+	
+		// Sanitize the entire options array recursively
+		$sanitized_settings = mvp_sanitize_options_recursive( $decoded_options );
+	
+		// Note: The recursive sanitizer is generic. If specific fields need very specific sanitization
+		// (e.g., only allowing certain HTML tags, ensuring a value is 'on' or 'off'),
+		// you might need to add targeted sanitization *after* the recursive call for those fields.
+		// Example: $sanitized_settings['specific_field'] = ($sanitized_settings['specific_field'] === 'on') ? 'on' : 'off';
+	
+	
+		// 5. Database Interaction
+		global $wpdb;
+		// $wpdb->show_errors(); // Remove for production
+		$settings_table = $wpdb->prefix . "mvp_settings";
+	
+		// Serialize the *sanitized* settings for storage
+		$options_to_save = serialize( $sanitized_settings );
+	
+		// Check if settings row exists (assuming ID '0' is always used for global settings)
+		$existing_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$settings_table} WHERE id = %d", 0 ) );
+	
+		$stmt = false;
+		if ( $existing_id !== null ) {
+			// Update existing settings
+			$stmt = $wpdb->update(
+				$settings_table,
+				['options' => $options_to_save], // Data
+				['id' => 0],                     // Where
+				['%s'],                          // Format of data
+				['%d']                           // Format of where
+			);
+		} else {
+			// Insert new settings row (should only happen once ideally)
+			$stmt = $wpdb->insert(
+				$settings_table,
+				[
+					'id' => 0, // Explicitly set ID 0
+					'options' => $options_to_save
+				],
+				[
+					'%d', // id format
+					'%s'  // options format
+				]
+			);
+		}
+	
+		// 6. Send Response
+		if ($stmt !== false) {
+			wp_send_json_success( ['message' => 'Settings saved successfully.'] );
+		} else {
+			wp_send_json_error( ['message' => 'Database error: Could not save settings. ' . $wpdb->last_error], 500 );
+		}
+		// wp_die() is called by wp_send_json_success/error
 	}
 
 	//############################################//
@@ -1376,244 +1648,426 @@ Author URI: https://codecanyon.net/user/Tean/
 
 	function mvp_duplicate_player(){
 
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
+		// 1. Security Check (Nonce)
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security', false ) ) {
+			wp_send_json_error( ['message' => 'Invalid security token sent.'], 403 );
 		}
-
-		if(isset($_POST['title']) && isset($_POST['player_id'])){
-
-			$player_id = $_POST['player_id'];
-			$title = stripslashes($_POST['title']);
-
-			global $wpdb;
-			$player_table = $wpdb->prefix . "mvp_players";
-
-			$stmt = $wpdb->prepare("SELECT preset, options, custom_css, custom_js FROM {$player_table} WHERE id = %d", $player_id);//get player options
-
-			if($stmt !== false){
-
-				$result = $wpdb->get_row($stmt, ARRAY_A);
-
-			    $stmt = $wpdb->insert(//copy player
-			    	$player_table,
-					array(
-						'title' => $title,
-						'preset' => $result['preset'],
-						'options' => $result['options'],
-						'custom_css' => $result['custom_css'],
-						'custom_js' => $result['custom_js']
-					),
-					array(
-						'%s',
-						'%s',
-						'%s',
-						'%s',
-						'%s'
-					)
-			    );
-
-			    if($stmt !== false){
-		    		echo json_encode($wpdb->insert_id);
-		    	}
-
-			}
-
-		    wp_die();
-
-		}else{
-			wp_die();
+	
+		// 2. Capability Check
+		if ( ! current_user_can( MVP_CAPABILITY ) ) {
+			wp_send_json_error( ['message' => 'You do not have permission to duplicate players.'], 403 );
 		}
-
+	
+		// 3. Validate Inputs
+		if (!isset($_POST['title']) || !isset($_POST['player_id'])) {
+			wp_send_json_error( ['message' => 'Missing required fields (title or player_id).'], 400 );
+		}
+	
+		// Sanitize inputs
+		$new_title = sanitize_text_field(wp_unslash($_POST['title']));
+		$player_id = absint($_POST['player_id']); // Source player ID
+	
+		if (empty(trim($new_title))) {
+			wp_send_json_error( ['message' => 'New player title cannot be empty.'], 400 );
+		}
+		if ($player_id <= 0) {
+			 wp_send_json_error( ['message' => 'Invalid source Player ID provided.'], 400 );
+		}
+	
+		// 4. Database Interaction
+		global $wpdb;
+		// $wpdb->show_errors(); // Remove for production
+		$player_table = $wpdb->prefix . "mvp_players";
+	
+		// Fetch the source player data securely
+		// Use prepare even for SELECT for consistency and potential future benefit
+		$source_player = $wpdb->get_row( $wpdb->prepare(
+			"SELECT preset, options, custom_css, custom_js FROM {$player_table} WHERE id = %d",
+			$player_id
+		), ARRAY_A ); // Get as associative array
+	
+		if (!$source_player) {
+			wp_send_json_error( ['message' => 'Source player not found.'], 404 );
+		}
+	
+		// Prepare data for insertion (preset and options are assumed safe from the DB)
+		// custom_css and custom_js are trickier. If they allow arbitrary JS/CSS, they ARE a potential XSS vector.
+		// If they are meant to be pure CSS/JS, maybe skip sanitization assuming admin knows what they are doing.
+		// For added security, you *could* try to sanitize them, but it's complex.
+		// Let's assume for now they are copied as-is, relying on the admin's input being trusted.
+		$preset     = $source_player['preset']; // Assumed safe key from DB
+		$options    = $source_player['options']; // Serialized string from DB, assumed safe
+		$custom_css = $source_player['custom_css']; // Potential XSS if malformed CSS/HTML allowed
+		$custom_js  = $source_player['custom_js']; // Potential XSS if malformed JS/HTML allowed
+	
+		// Insert the new (duplicated) player
+		$inserted = $wpdb->insert(
+			$player_table,
+			[
+				'title'      => $new_title, // Sanitized new title
+				'preset'     => $preset,
+				'options'    => $options,
+				'custom_css' => $custom_css,
+				'custom_js'  => $custom_js
+			],
+			[
+				'%s', // title
+				'%s', // preset
+				'%s', // options (serialized string)
+				'%s', // custom_css (text/longtext)
+				'%s'  // custom_js (text/longtext)
+			]
+		);
+	
+		// 5. Send Response
+		if ($inserted !== false) {
+			wp_send_json_success( [
+				'message' => 'Player duplicated successfully.',
+				'new_player_id' => $wpdb->insert_id
+			] );
+		} else {
+			wp_send_json_error( ['message' => 'Database error: Could not duplicate player. ' . $wpdb->last_error], 500 );
+		}
+		// wp_die() is called by wp_send_json_success/error
 	}
 
 	function mvp_create_player(){
 
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    // Send a proper JSON error response
-		    wp_send_json_error( ['message' => 'Invalid security token sent.'] , 403 ); // Added status code
-		    // wp_die() is called by wp_send_json_error
+		// 1. Security Check (Nonce)
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security', false ) ) {
+			wp_send_json_error( ['message' => 'Invalid security token sent.'], 403 );
 		}
-
-		// Check if required fields are set AND title is not empty
-		if(isset($_POST['title']) && !empty(trim($_POST['title'])) && isset($_POST['preset'])){
-
-			$title = stripslashes($_POST['title']);
-		    $received_preset = $_POST['preset']; // Get the preset sent from the browser
-
-		    $default_options = mvp_player_options();
-            $all_preset_options = mvp_player_options_preset(); // Get all available presets array
-            $valid_preset_keys = array_keys($all_preset_options); // Get valid preset names
-
-            // *** START VALIDATION ***
-            // Define a safe default preset key (MAKE SURE 'minimal' EXISTS in mvp_player_options_preset!)
-            $default_preset_key = 'minimal';
-
-            // Check if the default key itself is valid, if not, try to use the first available key
-            if (!in_array($default_preset_key, $valid_preset_keys)) {
-                 if (!empty($valid_preset_keys)) {
-                     $default_preset_key = $valid_preset_keys[0]; // Fallback to the first defined preset
-                 } else {
-                    // This should not happen if mvp_player_options_preset() is defined correctly
-                    wp_send_json_error( ['message' => 'Configuration error: No valid player presets found.'], 500 );
-                 }
-            }
-
-            // Check if the received preset is valid. If not, use the default.
-            if (in_array($received_preset, $valid_preset_keys)) {
-                $preset = $received_preset; // Use the valid received preset
-            } else {
-                 // Optional: Log this issue for debugging
-                 // error_log("MVP Plugin Warning: Invalid or empty preset ('" . esc_html($received_preset) . "') received during player creation. Defaulting to '" . esc_html($default_preset_key) . "'.");
-                 $preset = $default_preset_key; // Use the default preset
-            }
-            // *** END VALIDATION ***
-
-            // Now $preset is guaranteed to be a valid key, so getting $preset_options is safe
-		    $preset_options = $all_preset_options[$preset];
-
-            // $preset_options is now guaranteed to be an array, so array_replace is safe
-			$options = array_replace($default_options, $preset_options);
-
-			global $wpdb;
-			$player_table = $wpdb->prefix . "mvp_players";
-
-			$stmt = $wpdb->insert(
-		    	$player_table,
-				array(
-					'title' => $title,
-					'preset' => $preset, // Store the *actual* preset used (validated or default)
-					'options' => serialize($options)
-				),
-				array(
-					'%s', // title
-					'%s', // preset name
-					'%s'  // serialized options
-				)
-		    );
-
-		    if($stmt !== false){
-                // Send success response with the new ID
-	    		wp_send_json_success( ['new_player_id' => $wpdb->insert_id] );
-	    	} else {
-                // Send specific error if insert fails
-                wp_send_json_error( ['message' => 'Database error: Could not save the new player. ' . $wpdb->last_error] , 500 );
-            }
-		    // wp_die() is called by wp_send_json_success/error
-
-		}else{
-            // Send specific error if required data is missing
-             $missing_fields = [];
-             if (!isset($_POST['title']) || empty(trim($_POST['title']))) $missing_fields[] = 'title';
-             if (!isset($_POST['preset'])) $missing_fields[] = 'preset';
-             wp_send_json_error( ['message' => 'Missing required information: ' . implode(', ', $missing_fields)], 400 ); // Bad Request
-			 // wp_die() is called by wp_send_json_error
+	
+		// 2. Capability Check
+		if ( ! current_user_can( MVP_CAPABILITY ) ) {
+			wp_send_json_error( ['message' => 'You do not have permission to create players.'], 403 );
 		}
-	} // End function mvp_create_player
+	
+		// 3. Validate Inputs
+		if (!isset($_POST['title']) || !isset($_POST['preset'])) {
+			wp_send_json_error( ['message' => 'Missing required fields (title or preset).'], 400 );
+		}
+	
+		// Sanitize inputs
+		$title = sanitize_text_field(wp_unslash($_POST['title']));
+		$received_preset = sanitize_key(wp_unslash($_POST['preset'])); // Presets should be simple keys
+	
+		if (empty(trim($title))) {
+			wp_send_json_error( ['message' => 'Player title cannot be empty.'], 400 );
+		}
+	
+		// 4. Prepare Player Options (Validate Preset)
+		$default_options = mvp_player_options(); // Assuming this returns an array of defaults
+		$all_preset_options = mvp_player_options_preset(); // Assuming this returns an array like ['preset_key' => [options], ...]
+	
+		if (!is_array($default_options) || !is_array($all_preset_options)) {
+			 wp_send_json_error( ['message' => 'Internal configuration error: Invalid player options or presets defined.'], 500 );
+		}
+	
+		$valid_preset_keys = array_keys($all_preset_options);
+	
+		// Define a safe default preset key
+		$default_preset_key = 'minimal'; // Make sure 'minimal' exists in your presets!
+		if (!in_array($default_preset_key, $valid_preset_keys)) {
+			 // Fallback to the first available preset if 'minimal' doesn't exist
+			 $default_preset_key = !empty($valid_preset_keys) ? $valid_preset_keys[0] : null;
+		}
+	
+		 if (!$default_preset_key) {
+			// This should not happen if mvp_player_options_preset() is defined correctly
+			wp_send_json_error( ['message' => 'Configuration error: No valid player presets found.'], 500 );
+		 }
+	
+		// Check if the received preset is valid. If not, use the default.
+		if (!empty($received_preset) && in_array($received_preset, $valid_preset_keys)) {
+			$preset_key_to_use = $received_preset; // Use the valid received preset
+		} else {
+			 // Optional: Log this issue for debugging
+			 error_log("MVP Plugin Warning: Invalid or empty preset ('" . esc_html($received_preset) . "') received during player creation. Defaulting to '" . esc_html($default_preset_key) . "'.");
+			 $preset_key_to_use = $default_preset_key; // Use the default preset
+		}
+	
+		// Get the options for the chosen preset
+		$preset_options = $all_preset_options[$preset_key_to_use];
+	
+		// Merge default options with preset options (preset overrides defaults)
+		// Use array_replace_recursive if you want deeper merging for nested options
+		$options = array_replace($default_options, $preset_options);
+	
+		// 5. Database Interaction
+		global $wpdb;
+		// $wpdb->show_errors(); // Remove for production
+		$player_table = $wpdb->prefix . "mvp_players";
+	
+		// Serialize the final options array for storage
+		$options_to_save = serialize( $options ); // No need to sanitize here, as we constructed the array from known defaults and presets
+	
+		// Insert the new player
+		$stmt = $wpdb->insert(
+			$player_table,
+			[
+				'title'   => $title,            // Sanitized title
+				'preset'  => $preset_key_to_use, // Validated preset key
+				'options' => $options_to_save    // Serialized options
+			],
+			[
+				'%s', // title
+				'%s', // preset name
+				'%s'  // serialized options
+			]
+		);
+	
+		// 6. Send Response
+		if ($stmt !== false) {
+			// Send success response with the new ID
+			wp_send_json_success( [
+				'message' => 'Player created successfully.',
+				'new_player_id' => $wpdb->insert_id
+			] );
+		} else {
+			// Send specific error if insert fails
+			wp_send_json_error( ['message' => 'Database error: Could not save the new player. ' . $wpdb->last_error], 500 );
+		}
+		// wp_die() is called by wp_send_json_success/error
+	}
 
 	function mvp_edit_player_title(){
 
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
+		// 1. Security Check (Nonce)
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security', false ) ) {
+			wp_send_json_error( ['message' => 'Invalid security token sent.'], 403 );
 		}
-
-		if(isset($_POST['title']) && isset($_POST['id'])){
-
-			$title = stripcslashes($_POST["title"]);
-			$id = $_POST["id"];
-
-			global $wpdb;
-		    $player_table = $wpdb->prefix . "mvp_players";
-
-		    $wpdb->update(
-		    	$player_table,
-				array(
-					'title' => $title
-				),
-				array('id' => $id),
-				array(
-					'%s'
-				),
-				array(
-					'%d'
-				)
-		    );
-
-		    wp_die();
-
-		}else{
-			wp_die();
+	
+		// 2. Capability Check
+		if ( ! current_user_can( MVP_CAPABILITY ) ) {
+			wp_send_json_error( ['message' => 'You do not have permission to edit player titles.'], 403 );
 		}
+	
+		// 3. Validate Inputs
+		if (!isset($_POST['title']) || !isset($_POST['id'])) {
+			wp_send_json_error( ['message' => 'Missing required fields (title or ID).'], 400 );
+		}
+	
+		// Sanitize inputs
+		// Use wp_unslash as WP automatically adds slashes to POST data
+		$title = sanitize_text_field(wp_unslash($_POST['title']));
+		$id    = absint($_POST['id']); // Ensure ID is an integer
+	
+		if (empty(trim($title))) {
+			wp_send_json_error( ['message' => 'Player title cannot be empty.'], 400 );
+		}
+		if ($id <= 0) {
+			 wp_send_json_error( ['message' => 'Invalid Player ID provided.'], 400 );
+		}
+	
+		// 4. Database Interaction
+		global $wpdb;
+		// $wpdb->show_errors(); // Remove for production
+		$player_table = $wpdb->prefix . "mvp_players";
+	
+		// Update the player title
+		$updated = $wpdb->update(
+			$player_table,
+			[
+				'title' => $title // Sanitized title
+			],
+			['id' => $id],      // Where clause
+			['%s'],             // Format for data (%s for title)
+			['%d']              // Format for where clause (%d for id)
+		);
+	
+		// 5. Send Response
+		if ($updated !== false) {
+			// $updated will be the number of rows affected (0 or 1) or false on error.
+			wp_send_json_success( ['message' => 'Player title updated successfully.'] );
+		} else {
+			wp_send_json_error( ['message' => 'Database error: Could not update player title. ' . $wpdb->last_error], 500 );
+		}
+		// wp_die() is called by wp_send_json_success/error
 	}
 
 	function mvp_delete_player(){
 
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
+		// 1. Security Check (Nonce)
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security', false ) ) {
+			wp_send_json_error( ['message' => 'Invalid security token sent.'], 403 );
 		}
-
-		if(isset($_POST['player_id'])){
-
-			$player_id = $_POST['player_id'];
-
-			global $wpdb;
-			$wpdb->show_errors();
-		    $player_table = $wpdb->prefix . "mvp_players";
-
-			$ids = explode(',',$player_id);
-			$in = implode(',', array_fill(0, count($ids), '%d'));
-
-		    $stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$player_table} WHERE id IN ($in)", $ids));
-
-			if($stmt !== false){
-	    		echo json_encode($stmt);
-	    	}
-
-	    	wp_die();
-
-		}else{
-			wp_die();
+	
+		// 2. Capability Check
+		if ( ! current_user_can( MVP_CAPABILITY ) ) {
+			wp_send_json_error( ['message' => 'You do not have permission to delete players.'], 403 );
 		}
+	
+		// 3. Validate Inputs
+		if (!isset($_POST['player_id'])) {
+			wp_send_json_error( ['message' => 'No Player ID(s) provided.'], 400 );
+		}
+	
+		// Sanitize the input: comma-separated IDs
+		// Use wp_unslash as WP automatically adds slashes to POST data
+		$raw_ids = wp_unslash($_POST['player_id']);
+		$id_array = explode(',', $raw_ids);
+	
+		// Sanitize each ID in the array to ensure they are integers
+		$sanitized_ids = array_map('absint', $id_array);
+	
+		// Filter out any potential zero or negative IDs resulting from sanitization
+		$valid_ids = array_filter($sanitized_ids, function($id) {
+			return $id > 0;
+		});
+	
+		if (empty($valid_ids)) {
+			wp_send_json_error( ['message' => 'No valid Player IDs provided for deletion.'], 400 );
+		}
+	
+		// 4. Database Interaction
+		global $wpdb;
+		// $wpdb->show_errors(); // Remove for production
+		$player_table = $wpdb->prefix . "mvp_players";
+	
+		// Prepare the IN clause securely
+		// How many IDs are there?
+		$id_count = count($valid_ids);
+		// Prepare the placeholders for the IN clause (%d, %d, %d...)
+		$id_placeholders = implode(', ', array_fill(0, $id_count, '%d'));
+	
+		// Construct the full SQL query using prepare
+		$sql = $wpdb->prepare(
+			"DELETE FROM {$player_table} WHERE id IN ($id_placeholders)",
+			$valid_ids // Pass the array of sanitized IDs as arguments to prepare
+		);
+	
+		// Execute the deletion
+		$deleted = $wpdb->query($sql);
+	
+		// 5. Send Response
+		if ($deleted !== false) {
+			// $deleted contains the number of rows affected
+			wp_send_json_success( ['message' => sprintf('%d player(s) deleted successfully.', $deleted)] );
+		} else {
+			wp_send_json_error( ['message' => 'Database error: Could not delete player(s). ' . $wpdb->last_error], 500 );
+		}
+		// wp_die() is called by wp_send_json_success/error
 	}
 
 	function mvp_save_player_options(){
 
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
+		// 1. Security Check (Nonce)
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security', false ) ) {
+			wp_send_json_error( ['message' => 'Invalid security token sent.'], 403 );
 		}
-
-		if(isset($_POST['player_id'])){
-
-			$player_id = $_POST['player_id'];
-
-			global $wpdb;
-			$wpdb->show_errors();
-		    $player_table = $wpdb->prefix . "mvp_players";
-
-			$custom_css = !mvp_nullOrEmpty($_POST['custom_css']) ? $_POST['custom_css'] : NULL;
-			$custom_js = !mvp_nullOrEmpty($_POST['custom_js']) ? $_POST['custom_js'] : NULL;
-			$player_options = json_decode(stripcslashes($_POST['player_options']), true);
-
-			$stmt = $wpdb->update(
-		    	$player_table,
-				array('options' => serialize($player_options), 'custom_css' => $custom_css, 'custom_js' => $custom_js),
-				array('id' => $player_id),
-				array('%s','%s','%s'),
-				array('%d')
-		    );
-
-			if($stmt !== false){
-	    		echo json_encode($stmt);
-	    	}
-
-	    	wp_die();
-
-		}else{
-			wp_die();
+	
+		// 2. Capability Check
+		if ( ! current_user_can( MVP_CAPABILITY ) ) {
+			wp_send_json_error( ['message' => 'You do not have permission to save player options.'], 403 );
 		}
+	
+		// 3. Validate Inputs
+		if (!isset($_POST['player_id']) || !isset($_POST['player_options'])) {
+			wp_send_json_error( ['message' => 'Missing required fields (player_id or player_options).'], 400 );
+		}
+	
+		// Sanitize player ID
+		$player_id = absint($_POST['player_id']);
+		if ($player_id <= 0) {
+			 wp_send_json_error( ['message' => 'Invalid Player ID provided.'], 400 );
+		}
+	
+		// --- DEBUGGING: Log raw POST data ---
+		// error_log('MVP Debug SAVE OPTIONS - Raw POST: ' . print_r($_POST, true));
+		// ---
+	
+		// 4. Decode and Sanitize Options
+		$raw_options_json = wp_unslash( $_POST['player_options'] );
+		$decoded_options = json_decode( $raw_options_json, true ); // Decode as associative array
+	
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			wp_send_json_error( ['message' => 'Invalid JSON data for options received: ' . json_last_error_msg()], 400 );
+		}
+		if ( !is_array($decoded_options) ) {
+			 wp_send_json_error( ['message' => 'Decoded player options are not an array.'], 400 );
+		}
+	
+		// --- DEBUGGING: Log Decoded Options ---
+		if (defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+			error_log('MVP Debug SAVE OPTIONS (' . $player_id . ') - Decoded Options: ' . print_r($decoded_options, true));
+		}
+		// ---
+	
+		// Sanitize the options array recursively
+		$sanitized_player_options = mvp_sanitize_options_recursive( $decoded_options );
+	
+		// --- DEBUGGING: Log Sanitized Options ---
+		 if (defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+			error_log('MVP Debug SAVE OPTIONS (' . $player_id . ') - Sanitized Options: ' . print_r($sanitized_player_options, true));
+		}
+		// ---
+	
+		// Serialize the *sanitized* options
+		$options_to_save = serialize( $sanitized_player_options );
+	
+		// --- DEBUGGING: Log Serialized Options ---
+		if (defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+			error_log('MVP Debug SAVE OPTIONS (' . $player_id . ') - Serialized for DB: ' . $options_to_save);
+		}
+		// ---
+	
+		// 5. Handle Custom CSS and JS
+		$custom_css = isset($_POST['custom_css']) ? wp_unslash($_POST['custom_css']) : null;
+		$custom_js  = isset($_POST['custom_js']) ? wp_unslash($_POST['custom_js']) : null;
+		$custom_css = ( $custom_css === '' ) ? '' : $custom_css;
+		$custom_js  = ( $custom_js === '' ) ? '' : $custom_js;
+	
+		 // --- DEBUGGING: Log Custom CSS/JS ---
+		if (defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+			error_log('MVP Debug SAVE OPTIONS (' . $player_id . ') - Custom CSS: ' . $custom_css);
+			error_log('MVP Debug SAVE OPTIONS (' . $player_id . ') - Custom JS: ' . $custom_js);
+		}
+		// ---
+	
+	
+		// 6. Database Interaction
+		global $wpdb;
+		// $wpdb->show_errors(); // Keep enabled for debugging if needed
+		$player_table = $wpdb->prefix . "mvp_players";
+	
+		// Update the player data
+		$updated = $wpdb->update(
+			$player_table,
+			[
+				'options'    => $options_to_save,
+				'custom_css' => $custom_css,
+				'custom_js'  => $custom_js
+			],
+			['id' => $player_id], // Where clause
+			[
+				'%s', // options format
+				'%s', // custom_css format
+				'%s'  // custom_js format
+			],
+			['%d']    // Where format
+		);
+	
+		 // --- DEBUGGING: Log Update Result ---
+		if (defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+			error_log('MVP Debug SAVE OPTIONS (' . $player_id . ') - \$wpdb->update result: ' . print_r($updated, true));
+			if ($updated === false) {
+				 error_log('MVP Debug SAVE OPTIONS (' . $player_id . ') - DB Error: ' . $wpdb->last_error);
+			}
+		}
+		// ---
+	
+		// 7. Send Response
+		if ($updated !== false) {
+			// Send a more informative success message including rows affected
+			wp_send_json_success( [
+				'message' => 'Player options save executed.',
+				'rows_affected' => $updated // Will be 0 if data hasn't changed, 1 if changed, false on error
+			] );
+		} else {
+			wp_send_json_error( ['message' => 'Database error: Could not save player options. ' . $wpdb->last_error], 500 );
+		}
+		// wp_die() is called by wp_send_json_success/error
 	}
 
 	//############################################//
@@ -1622,184 +2076,313 @@ Author URI: https://codecanyon.net/user/Tean/
 
 	function mvp_create_playlist(){
 
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
+		// 1. Security Check (Nonce)
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security', false ) ) {
+			wp_send_json_error( ['message' => 'Invalid security token sent.'], 403 );
 		}
-
-		if(isset($_POST['title'])){
-
-			$title = stripslashes($_POST['title']);
-
-			global $wpdb;
-			$playlist_table = $wpdb->prefix . "mvp_playlists";
-
-		    $stmt = $wpdb->insert(
-		    	$playlist_table,
-				array(
-					'title' => $title,
-				),
-				array(
-					'%s','%s'
-				)
-		    );
-
-		    $lastid = $wpdb->insert_id;
-
-		    if(isset($_POST['media_id'])){//from stats
-
-		    	$media_id = $_POST['media_id'];
-				$_ids = explode('_', $media_id);
-
-				$ids = array();
-				foreach($_ids as $id){
-		            $ids[] = array("id" => $id);
-		        }
-
-				mvp_duplicatePlaylist(null, $lastid, $ids, "playlist_id");
-
-		    }else{
-
-		    	if($stmt !== false){
-		    		echo json_encode($lastid);
-		    	}
-
-		    }
-
-		    wp_die();
-
-		}else{
-			wp_die();
+	
+		// 2. Capability Check
+		if ( ! current_user_can( MVP_CAPABILITY ) ) {
+			wp_send_json_error( ['message' => 'You do not have permission to create playlists.'], 403 );
 		}
+	
+		// 3. Validate Inputs
+		if (!isset($_POST['title'])) {
+			wp_send_json_error( ['message' => 'Missing required field (title).'], 400 );
+		}
+	
+		// Sanitize inputs
+		$title = sanitize_text_field(wp_unslash($_POST['title']));
+		if (empty(trim($title))) {
+			wp_send_json_error( ['message' => 'Playlist title cannot be empty.'], 400 );
+		}
+	
+		// 4. Database Interaction
+		global $wpdb;
+		// $wpdb->show_errors(); // Remove for production
+		$playlist_table = $wpdb->prefix . "mvp_playlists";
+	
+		// Insert the new playlist (options are typically NULL or empty on creation)
+		$inserted = $wpdb->insert(
+			$playlist_table,
+			[
+				'title'   => $title, // Sanitized title
+				'options' => null     // Start with null options
+			],
+			[
+				'%s', // title format
+				'%s'  // options format (even if null, specify string)
+			]
+		);
+	
+		// 5. Handle Response / Optional Media Copying
+		if ($inserted === false) {
+			 wp_send_json_error( ['message' => 'Database error: Could not create playlist. ' . $wpdb->last_error], 500 );
+		}
+	
+		$lastid = $wpdb->insert_id;
+	
+		// Handle optional media copying (needs sanitization if used)
+		if (isset($_POST['media_id']) && !empty($_POST['media_id'])) {
+			// This part involves copying media based on potentially complex IDs (e.g., "1_5_10")
+			// It calls mvp_duplicatePlaylist which we haven't reviewed/secured yet.
+			// Sanitize the incoming media_id string first.
+			// Assuming it's underscore-separated integers.
+			$raw_media_ids = wp_unslash($_POST['media_id']);
+			$_ids_raw = explode('_', $raw_media_ids);
+			$_ids_sanitized = array_map('absint', $_ids_raw);
+			$valid_media_ids = array_filter($_ids_sanitized, function($id) { return $id > 0; });
+	
+			if (!empty($valid_media_ids)) {
+				// Reformat for mvp_duplicatePlaylist expectation (array of arrays)
+				 $ids_for_duplication = array_map(function($id) { return ["id" => $id]; }, $valid_media_ids);
+	
+				// Call the duplication function (ensure mvp_duplicatePlaylist is also secured later)
+				// We need to check the return value of mvp_duplicatePlaylist if it's modified to indicate success/failure
+				 mvp_duplicatePlaylist(null, $lastid, $ids_for_duplication, "playlist_id"); // "playlist_id" tells it to echo json response
+	
+				 // Note: mvp_duplicatePlaylist currently calls wp_die() itself, so execution might end there.
+				 // It would be better if it returned a status and we handled the final response here.
+				 // Assuming it echoes the $lastid on success as per current logic:
+				 exit; // Exit after mvp_duplicatePlaylist handles the response
+	
+			} else {
+				// If media IDs were provided but none were valid, send success for playlist creation but maybe a notice
+				 wp_send_json_success( [
+					'message' => 'Playlist created, but invalid media IDs provided for duplication.',
+					'new_playlist_id' => $lastid
+				] );
+			}
+	
+		} else {
+			// Standard success response if no media copying was requested
+			wp_send_json_success( [
+				'message' => 'Playlist created successfully.',
+				'new_playlist_id' => $lastid
+			] );
+		}
+		 // wp_die() is called by wp_send_json_success/error or mvp_duplicatePlaylist
 	}
 
 	function mvp_save_playlist_options(){
 
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
+		// 1. Security Check (Nonce)
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security', false ) ) {
+			wp_send_json_error( ['message' => 'Invalid security token sent.'], 403 );
 		}
-
-		if(isset($_POST['playlist_id'])){
-
-			$playlist_id = $_POST['playlist_id'];
-
-			global $wpdb;
-			$wpdb->show_errors();
-		    $playlist_table = $wpdb->prefix . "mvp_playlists";
-
-		    $playlist_options = json_decode(stripcslashes($_POST['playlist_options']), true);
-
-		    $stmt = $wpdb->update(
-		    	$playlist_table,
-				array('options' => serialize($playlist_options)),
-				array('id' => $playlist_id),
-				array('%s'),
-				array('%d')
-		    );
-
-	    	echo json_encode('SUCCESS');
-
-	    	wp_die();
-
-		}else{
-			wp_die();
+	
+		// 2. Capability Check
+		if ( ! current_user_can( MVP_CAPABILITY ) ) {
+			wp_send_json_error( ['message' => 'You do not have permission to save playlist options.'], 403 );
 		}
+	
+		// 3. Validate Inputs
+		if (!isset($_POST['playlist_id']) || !isset($_POST['playlist_options'])) {
+			wp_send_json_error( ['message' => 'Missing required fields (playlist_id or playlist_options).'], 400 );
+		}
+	
+		// Sanitize playlist ID
+		$playlist_id = absint($_POST['playlist_id']);
+		if ($playlist_id <= 0) {
+			 wp_send_json_error( ['message' => 'Invalid Playlist ID provided.'], 400 );
+		}
+	
+		// 4. Decode and Sanitize Options
+		$raw_options_json = wp_unslash( $_POST['playlist_options'] );
+		$decoded_options = json_decode( $raw_options_json, true ); // Decode as associative array
+	
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			wp_send_json_error( ['message' => 'Invalid JSON data for options received: ' . json_last_error_msg()], 400 );
+		}
+		 if ( !is_array($decoded_options) ) {
+			 wp_send_json_error( ['message' => 'Decoded playlist options are not an array.'], 400 );
+		}
+	
+		// Sanitize the options array recursively (using the helper function with preserved keys)
+		$sanitized_playlist_options = mvp_sanitize_options_recursive( $decoded_options );
+	
+		// Serialize the *sanitized* options
+		$options_to_save = serialize( $sanitized_playlist_options );
+	
+		 // --- DEBUGGING (Optional) ---
+		// if (defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+		//    error_log('MVP Debug SAVE PLAYLIST OPTIONS (' . $playlist_id . ') - Sanitized: ' . print_r($sanitized_playlist_options, true));
+		//    error_log('MVP Debug SAVE PLAYLIST OPTIONS (' . $playlist_id . ') - Serialized: ' . $options_to_save);
+		//}
+		// ---
+	
+		// 5. Database Interaction
+		global $wpdb;
+		// $wpdb->show_errors(); // Remove for production
+		$playlist_table = $wpdb->prefix . "mvp_playlists";
+	
+		// Update the playlist options
+		$updated = $wpdb->update(
+			$playlist_table,
+			[
+				'options' => $options_to_save // Serialized sanitized options
+			],
+			['id' => $playlist_id], // Where clause
+			['%s'],                 // Format for data
+			['%d']                  // Format for where
+		);
+	
+		// 6. Send Response
+		if ($updated !== false) {
+			wp_send_json_success( [
+				'message' => 'Playlist options saved successfully.',
+				'rows_affected' => $updated
+				] );
+		} else {
+			wp_send_json_error( ['message' => 'Database error: Could not save playlist options. ' . $wpdb->last_error], 500 );
+		}
+		 // wp_die() is called by wp_send_json_success/error
 	}
 
 	function mvp_edit_playlist_title(){
 
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
+		// 1. Security Check (Nonce)
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security', false ) ) {
+			wp_send_json_error( ['message' => 'Invalid security token sent.'], 403 );
 		}
-
-		if(isset($_POST['title']) && isset($_POST['id'])){
-
-			$title = stripcslashes($_POST["title"]);
-			$id = $_POST["id"];
-
-			global $wpdb;
-		    $playlist_table = $wpdb->prefix . "mvp_playlists";
-
-		    $wpdb->update(
-		    	$playlist_table,
-				array(
-					'title' => $title
-				),
-				array('id' => $id),
-				array(
-					'%s'
-				),
-				array(
-					'%d'
-				)
-		    );
-
-		    wp_die();
-
-		}else{
-			wp_die();
+	
+		// 2. Capability Check
+		if ( ! current_user_can( MVP_CAPABILITY ) ) {
+			wp_send_json_error( ['message' => 'You do not have permission to edit playlist titles.'], 403 );
 		}
+	
+		// 3. Validate Inputs
+		if (!isset($_POST['title']) || !isset($_POST['id'])) {
+			wp_send_json_error( ['message' => 'Missing required fields (title or id).'], 400 );
+		}
+	
+		// Sanitize inputs
+		$title = sanitize_text_field(wp_unslash($_POST['title']));
+		$id    = absint($_POST['id']); // Ensure ID is an integer
+	
+		if (empty(trim($title))) {
+			wp_send_json_error( ['message' => 'Playlist title cannot be empty.'], 400 );
+		}
+		 if ($id <= 0) {
+			 wp_send_json_error( ['message' => 'Invalid Playlist ID provided.'], 400 );
+		}
+	
+		// 4. Database Interaction
+		global $wpdb;
+		// $wpdb->show_errors(); // Remove for production
+		$playlist_table = $wpdb->prefix . "mvp_playlists";
+	
+		// Update the playlist title
+		$updated = $wpdb->update(
+			$playlist_table,
+			[
+				'title' => $title // Sanitized title
+			],
+			['id' => $id],      // Where clause
+			['%s'],             // Format for data
+			['%d']              // Format for where
+		);
+	
+		// 5. Send Response
+		if ($updated !== false) {
+			wp_send_json_success( ['message' => 'Playlist title updated successfully.'] );
+		} else {
+			wp_send_json_error( ['message' => 'Database error: Could not update playlist title. ' . $wpdb->last_error], 500 );
+		}
+		// wp_die() is called by wp_send_json_success/error
 	}
 
 	function mvp_delete_playlist(){
 
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security' ) ) {
-		    wp_send_json_error( 'Invalid security token sent.' );
-		    wp_die();
+		// 1. Security Check (Nonce)
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'security', false ) ) {
+			wp_send_json_error( ['message' => 'Invalid security token sent.'], 403 );
 		}
-
-		if(isset($_POST['playlist_id'])){
-
-			$playlist_id = $_POST['playlist_id'];
-			$ids = explode(',',$playlist_id);
-			$in = implode(',', array_fill(0, count($ids), '%d'));
-
-			global $wpdb;
-			$wpdb->show_errors();
-		    $playlist_table = $wpdb->prefix . "mvp_playlists";
-		    $media_table = $wpdb->prefix . "mvp_media";
-		    $statistics_table = $wpdb->prefix . "mvp_statistics";
-		    $ad_table = $wpdb->prefix . "mvp_ad";
-			$annotation_table = $wpdb->prefix . "mvp_annotation";
-			$path_table = $wpdb->prefix . "mvp_path";
-			$subtitle_table = $wpdb->prefix . "mvp_subtitle";
-			$watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
-
-		    //path
-	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$path_table} WHERE playlist_id IN ($in)", $ids));
-
-	    	//sub
-	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$subtitle_table} WHERE playlist_id IN ($in)", $ids));
-
-	    	//ad
-	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$ad_table} WHERE playlist_id IN ($in)", $ids));
-
-	    	//ann
-	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$annotation_table} WHERE playlist_id IN ($in)", $ids));
-
-	    	//media
-	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$media_table} WHERE playlist_id IN ($in)", $ids));
-
-	    	//watched perc
-	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$watched_percentage_table} WHERE playlist_id IN ($in)", $ids));
-
-	    	//stat
-	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$statistics_table} WHERE playlist_id IN ($in)", $ids));
-
-	    	//playlist
-	    	$stmt = $wpdb->query($wpdb->prepare("DELETE FROM {$playlist_table} WHERE id IN ($in)", $ids));
-
-			if($stmt !== false){
-	    		echo json_encode($stmt);
-	    	}
-
-	    	wp_die();
-
-		}else{
-			wp_die();
+	
+		// 2. Capability Check
+		if ( ! current_user_can( MVP_CAPABILITY ) ) {
+			wp_send_json_error( ['message' => 'You do not have permission to delete playlists.'], 403 );
 		}
+	
+		// 3. Validate Inputs
+		if (!isset($_POST['playlist_id'])) {
+			wp_send_json_error( ['message' => 'No Playlist ID(s) provided.'], 400 );
+		}
+	
+		// Sanitize the input: comma-separated IDs
+		$raw_ids = wp_unslash($_POST['playlist_id']);
+		$id_array = explode(',', $raw_ids);
+		$sanitized_ids = array_map('absint', $id_array);
+		$valid_ids = array_filter($sanitized_ids, function($id) { return $id > 0; });
+	
+		if (empty($valid_ids)) {
+			wp_send_json_error( ['message' => 'No valid Playlist IDs provided for deletion.'], 400 );
+		}
+	
+		// 4. Database Interaction
+		global $wpdb;
+		// $wpdb->show_errors(); // Remove for production
+		$playlist_table = $wpdb->prefix . "mvp_playlists";
+		$media_table = $wpdb->prefix . "mvp_media";
+		$statistics_table = $wpdb->prefix . "mvp_statistics";
+		$statistics_country_play_table = $wpdb->prefix . "mvp_statistics_country_play"; // Added
+		$statistics_user_play_table = $wpdb->prefix . "mvp_statistics_user_play"; // Added
+		$ad_table = $wpdb->prefix . "mvp_ad";
+		$annotation_table = $wpdb->prefix . "mvp_annotation";
+		$path_table = $wpdb->prefix . "mvp_path";
+		$subtitle_table = $wpdb->prefix . "mvp_subtitle";
+		$watched_percentage_table = $wpdb->prefix . "mvp_watched_percentage";
+	
+		// Prepare the IN clause securely for playlist IDs
+		$id_count = count($valid_ids);
+		$id_placeholders = implode(', ', array_fill(0, $id_count, '%d'));
+	
+		// Start Transaction (recommended for multi-table deletes)
+		$wpdb->query('START TRANSACTION');
+		$success = true; // Track success across all queries
+	
+		// Define tables to delete from based on playlist_id
+		$tables_to_delete = [
+			$path_table,
+			$subtitle_table,
+			$ad_table, // Deletes ads linked ONLY to these playlists (media or playlist level)
+			$annotation_table, // Deletes annotations linked ONLY to these playlists (media or playlist level)
+			$media_table,
+			$watched_percentage_table,
+			$statistics_table,
+			$statistics_country_play_table, // Added
+			$statistics_user_play_table,   // Added
+			$playlist_table // Delete the playlist itself last
+		];
+	
+		 // Loop through tables and delete associated records
+		 foreach ($tables_to_delete as $table_name) {
+			$column_to_check = ($table_name === $playlist_table) ? 'id' : 'playlist_id'; // Check 'id' for the main playlist table
+	
+			// Prepare and execute the delete query
+			$sql = $wpdb->prepare(
+				"DELETE FROM {$table_name} WHERE {$column_to_check} IN ($id_placeholders)",
+				$valid_ids
+			);
+			$result = $wpdb->query($sql);
+	
+			if ($result === false) {
+				$success = false;
+				error_log("MVP Delete Playlist Error: Failed to delete from {$table_name}. Error: " . $wpdb->last_error); // Log error
+				break; // Stop deletion process on first error
+			}
+		}
+	
+	
+		// 5. Commit or Rollback Transaction and Send Response
+		if ($success) {
+			$wpdb->query('COMMIT');
+			wp_send_json_success( ['message' => sprintf('%d playlist(s) and associated data deleted successfully.', $id_count)] );
+		} else {
+			$wpdb->query('ROLLBACK');
+			wp_send_json_error( ['message' => 'Database error occurred during deletion. Some data might not have been deleted. Check error log. Error: ' . $wpdb->last_error], 500 );
+		}
+		 // wp_die() is called by wp_send_json_success/error
 	}
 
 	function mvp_duplicate_playlist(){
@@ -3546,7 +4129,7 @@ Author URI: https://codecanyon.net/user/Tean/
 				    	$response["response"] = "ERROR";
             			$response["error"] = "No player file inside archive!";
             			echo json_encode( $response );
-						die();
+						wp_die();
 				    }
 
 				    $arr = array('player' => MVP_FILE_DIR_URL . '/plzip/' . "mvp_players".'.csv');
