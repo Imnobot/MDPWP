@@ -1,10 +1,10 @@
 <?php
 
 /*
-Plugin Name: Ultimate Media Gallery for WordPress
+Plugin Name: Ultimate Media Video Player
 Plugin URI: https://codecanyon.net/user/Tean/portfolio
-Description: Ultimate Media Gallery for WordPress
-Version: 7.5
+Description: Ultimate Media Video Player
+Version: 7.5 MOD
 Author: Tean
 Author URI: https://codecanyon.net/user/Tean/
 */
@@ -1175,18 +1175,23 @@ Author URI: https://codecanyon.net/user/Tean/
 
 	function mvp_admin_menu(){
 
-		add_menu_page("Ultimate Media Gallery Player manager", "Ultimate Media Gallery", MVP_CAPABILITY, "mvp_settings", "mvp_settings_page", 'dashicons-playlist-video');
-
-		add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Global Settings", MVP_CAPABILITY, 'mvp_settings');
-		add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Player manager", MVP_CAPABILITY, 'mvp_player_manager', "mvp_player_manager_page");
-		add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Playlist manager", MVP_CAPABILITY, 'mvp_playlist_manager', 'mvp_playlist_manager_page');
-		add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Ad manager", MVP_CAPABILITY, 'mvp_ad_manager', 'mvp_ad_manager_page');
-		add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Shortcodes", MVP_CAPABILITY, 'mvp_shortcodes', 'mvp_shortcodes_page');
-		add_submenu_page('mvp_settings', "Ultimate Media Gallery", 'Statistics', MVP_CAPABILITY, 'mvp_statistics', 'mvp_statistics_page');
-		// --- REMOVED DEMO START ---
-		//add_submenu_page("mvp_settings", "Ultimate Media Gallery", "Demo", MVP_CAPABILITY, 'mvp_demo', 'mvp_demo_page');
-		// --- REMOVED DEMO END ---
-
+		add_menu_page(
+			"UM Video Player Manager",       // You might want to update the Page Title too
+			"UM Video Player",             // <-- New Menu Title
+			MVP_CAPABILITY,
+			"mvp_settings",                // Keep slug the same unless you want to break URLs
+			"mvp_settings_page",
+			'dashicons-playlist-video'
+		);
+	
+		// Update the $page_title (2nd arg) in submenus for consistency
+		add_submenu_page("mvp_settings", "UM Video Player", "Global Settings", MVP_CAPABILITY, 'mvp_settings');
+		add_submenu_page("mvp_settings", "UM Video Player", "Player manager", MVP_CAPABILITY, 'mvp_player_manager', "mvp_player_manager_page");
+		add_submenu_page("mvp_settings", "UM Video Player", "Playlist manager", MVP_CAPABILITY, 'mvp_playlist_manager', 'mvp_playlist_manager_page');
+		add_submenu_page("mvp_settings", "UM Video Player", "Ad manager", MVP_CAPABILITY, 'mvp_ad_manager', 'mvp_ad_manager_page');
+		add_submenu_page("mvp_settings", "UM Video Player", "Shortcodes", MVP_CAPABILITY, 'mvp_shortcodes', 'mvp_shortcodes_page');
+		add_submenu_page('mvp_settings', "UM Video Player", 'Statistics', MVP_CAPABILITY, 'mvp_statistics', 'mvp_statistics_page');
+			
 	}
 
 	function mvp_settings_page(){
@@ -5004,151 +5009,163 @@ function mvp_sanitize_options_recursive( $data ) {
      * AJAX handler to export selected playlists as JSON.
      */
     function mvp_export_playlists_json() {
-        // 1. Security Checks
-        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'mvp-security-nonce')) {
-            // Send error as JSON, more appropriate for direct AJAX calls if the form submission fails
-            // However, since this is triggered by a form submit for download, direct output or wp_die might also occur.
-            // For consistency, let's stick to wp_send_json_error for potential future JS fetch calls.
-            status_header(403); // Set HTTP status code
-            echo wp_json_encode(['success' => false, 'data' => ['message' => 'Invalid security token sent.']]);
-            wp_die();
-        }
-        if (!current_user_can(MVP_CAPABILITY)) {
-            status_header(403);
-            echo wp_json_encode(['success' => false, 'data' => ['message' => 'You do not have permission to export playlists.']]);
-            wp_die();
-        }
-        if (!isset($_POST['playlist_ids']) || !is_array($_POST['playlist_ids'])) {
-            status_header(400);
-            echo wp_json_encode(['success' => false, 'data' => ['message' => 'No playlist IDs provided.']]);
-            wp_die();
-        }
-
-        $playlist_ids = array_map('intval', $_POST['playlist_ids']); // Sanitize IDs
-        if (empty($playlist_ids)) {
-            status_header(400);
-            echo wp_json_encode(['success' => false, 'data' => ['message' => 'No valid playlist IDs provided.']]);
-            wp_die();
-        }
-
-        // 2. Database Access
-        global $wpdb;
-        $playlist_table = $wpdb->prefix . "mvp_playlists";
-        $media_table = $wpdb->prefix . "mvp_media";
-        $path_table = $wpdb->prefix . "mvp_path";
-        $subtitle_table = $wpdb->prefix . "mvp_subtitle";
-        $ad_table = $wpdb->prefix . "mvp_ad";
-        $annotation_table = $wpdb->prefix . "mvp_annotation";
-
-        $export_data = [
-            'version'     => '1.0-mvp-json',
-            'exported_at' => gmdate('c'), // ISO 8601 format (UTC)
-            'playlists'   => [],
-        ];
-
-        // 3. Loop through requested playlists
-        foreach ($playlist_ids as $playlist_id) {
-            $playlist_row = $wpdb->get_row($wpdb->prepare("SELECT title, options FROM {$playlist_table} WHERE id = %d", $playlist_id), ARRAY_A);
-
-            if (!$playlist_row) {
-                continue; // Skip if playlist not found
-            }
-
-            $playlist_options = maybe_unserialize($playlist_row['options']);
-            if (!is_array($playlist_options)) { // Ensure options is an array/object
-                 $playlist_options = [];
-            }
-
-
-            $playlist_export_item = [
-                'title'   => $playlist_row['title'],
-                'options' => $playlist_options,
-                'media'   => [],
-            ];
-
-            // 4. Fetch media for this playlist
-            $media_rows = $wpdb->get_results($wpdb->prepare("SELECT id, title, options, order_id FROM {$media_table} WHERE playlist_id = %d ORDER BY order_id ASC", $playlist_id), ARRAY_A);
-
-            if ($media_rows) {
-                foreach ($media_rows as $media_row) {
-                    $media_id = $media_row['id']; // This is the OLD media ID
-                    $media_options = maybe_unserialize($media_row['options']);
-                     if (!is_array($media_options)) {
-                         $media_options = [];
-                     }
-
-                    $media_export_item = [
-                        'title'       => $media_row['title'], // Include the title!
-                        'order_id'    => (int) $media_row['order_id'],
-                        'options'     => $media_options,
-                        'paths'       => [],
-                        'subtitles'   => [],
-                        'ads'         => [],
-                        'annotations' => [],
-                    ];
-
-                    // 5. Fetch related data for this media item
-                    // Paths
-                    $path_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$path_table} WHERE media_id = %d", $media_id), ARRAY_A);
-                    if ($path_rows) {
-                        foreach ($path_rows as $path_row) {
-                            $path_options = maybe_unserialize($path_row['options']);
-                            if (is_array($path_options)) {
-                                 $media_export_item['paths'][] = ['options' => $path_options];
-                            }
-                        }
-                    }
-
-                    // Subtitles
-                    $subtitle_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$subtitle_table} WHERE media_id = %d", $media_id), ARRAY_A);
-                    if ($subtitle_rows) {
-                        foreach ($subtitle_rows as $subtitle_row) {
-                             $subtitle_options = maybe_unserialize($subtitle_row['options']);
-                             if (is_array($subtitle_options)) {
-                                $media_export_item['subtitles'][] = ['options' => $subtitle_options];
-                             }
-                        }
-                    }
-
-                    // Ads (associated with media, not global ads)
-                     $ad_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$ad_table} WHERE media_id = %d AND ad_id IS NULL", $media_id), ARRAY_A);
-                     if ($ad_rows) {
-                        foreach ($ad_rows as $ad_row) {
-                             $ad_options = maybe_unserialize($ad_row['options']);
-                             if (is_array($ad_options)) {
-                                $media_export_item['ads'][] = ['options' => $ad_options];
-                             }
-                        }
-                    }
-
-                    // Annotations (associated with media, not global ads)
-                     $annotation_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$annotation_table} WHERE media_id = %d AND ad_id IS NULL", $media_id), ARRAY_A);
-                     if ($annotation_rows) {
-                        foreach ($annotation_rows as $annotation_row) {
-                             $annotation_options = maybe_unserialize($annotation_row['options']);
-                             if (is_array($annotation_options)) {
-                                 $media_export_item['annotations'][] = ['options' => $annotation_options];
-                             }
-                        }
-                    }
-
-                    $playlist_export_item['media'][] = $media_export_item;
-                } // end foreach media_row
-            } // end if media_rows
-
-            $export_data['playlists'][] = $playlist_export_item;
-        } // end foreach playlist_ids
-
-        // 6. Send JSON Response for Download
-        $filename = 'mvp_playlists_export_' . date('Y-m-d_His') . '.json';
-        header('Content-Type: application/json; charset=utf-8'); // Ensure UTF-8
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Pragma: no-cache');
-        header("Expires: 0"); // Prevents caching
-        echo wp_json_encode($export_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); // Use wp_json_encode for better WP integration, ensure unicode is not escaped
-        wp_die(); // Important for AJAX handlers / direct output
-
-    }
+		// 1. Security Checks (Nonce first, then Capability)
+		// Use check_ajax_referer for AJAX actions
+		if ( ! check_ajax_referer( 'mvp-security-nonce', 'nonce', false ) ) { // Check nonce passed in POST data under the name 'nonce'
+			wp_send_json_error( ['message' => 'Invalid security token sent.'], 403 );
+			wp_die(); // wp_send_json_* includes wp_die()
+		}
+		if (!current_user_can(MVP_CAPABILITY)) {
+			wp_send_json_error( ['message' => 'You do not have permission to export playlists.'], 403 );
+			wp_die();
+		}
+		if (!isset($_POST['playlist_ids']) || !is_array($_POST['playlist_ids'])) {
+			wp_send_json_error( ['message' => 'No playlist IDs provided.'], 400 );
+			wp_die();
+		}
+	
+		$playlist_ids_raw = $_POST['playlist_ids']; // No need to unslash AJAX data usually
+		$playlist_ids = array_map('intval', $playlist_ids_raw); // Sanitize IDs
+		$valid_playlist_ids = array_filter($playlist_ids, function($id) { return $id > 0; });
+	
+	
+		if (empty($valid_playlist_ids)) {
+			wp_send_json_error( ['message' => 'No valid playlist IDs provided.'], 400 );
+			wp_die();
+		}
+	
+		// 2. Database Access
+		global $wpdb;
+		$playlist_table = $wpdb->prefix . "mvp_playlists";
+		$media_table = $wpdb->prefix . "mvp_media";
+		$path_table = $wpdb->prefix . "mvp_path";
+		$subtitle_table = $wpdb->prefix . "mvp_subtitle";
+		$ad_table = $wpdb->prefix . "mvp_ad";
+		$annotation_table = $wpdb->prefix . "mvp_annotation";
+	
+		$playlists_data_to_export = []; // Array to hold data for each playlist file
+	
+		// 3. Loop through requested playlists
+		foreach ($valid_playlist_ids as $playlist_id) {
+			$playlist_row = $wpdb->get_row($wpdb->prepare("SELECT title, options FROM {$playlist_table} WHERE id = %d", $playlist_id), ARRAY_A);
+	
+			if (!$playlist_row) {
+				// Optionally log skipped playlist
+				// error_log("MVP Export JSON: Playlist ID {$playlist_id} not found, skipping.");
+				continue; // Skip if playlist not found
+			}
+	
+			$playlist_options = maybe_unserialize($playlist_row['options']);
+			if (!is_array($playlist_options)) { // Ensure options is an array/object
+				 $playlist_options = [];
+			}
+	
+			$playlist_title = $playlist_row['title'];
+	
+			// --- Build the export structure for THIS playlist ---
+			$single_playlist_export_structure = [
+				'version'     => '1.0-mvp-json-single', // Indicate single playlist export format
+				'exported_at' => gmdate('c'),
+				'playlist'    => [ // Wrap the single playlist data
+					'title'   => $playlist_title,
+					'options' => $playlist_options,
+					'media'   => [],
+				]
+			];
+			// --- End structure definition ---
+	
+	
+			// 4. Fetch media for this playlist
+			$media_rows = $wpdb->get_results($wpdb->prepare("SELECT id, title, options, order_id FROM {$media_table} WHERE playlist_id = %d ORDER BY order_id ASC", $playlist_id), ARRAY_A);
+	
+			if ($media_rows) {
+				foreach ($media_rows as $media_row) {
+					$media_id = $media_row['id']; // This is the OLD media ID
+					$media_options = maybe_unserialize($media_row['options']);
+					 if (!is_array($media_options)) {
+						 $media_options = [];
+					 }
+	
+					$media_export_item = [
+						'title'       => $media_row['title'], // Include the title!
+						'order_id'    => (int) $media_row['order_id'],
+						'options'     => $media_options,
+						'paths'       => [],
+						'subtitles'   => [],
+						'ads'         => [],
+						'annotations' => [],
+					];
+	
+					// 5. Fetch related data for this media item (Paths, Subs, Ads, Annotations)
+					// Paths
+					$path_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$path_table} WHERE media_id = %d", $media_id), ARRAY_A);
+					if ($path_rows) {
+						foreach ($path_rows as $path_row) {
+							$path_options = maybe_unserialize($path_row['options']);
+							if (is_array($path_options)) {
+								 $media_export_item['paths'][] = ['options' => $path_options];
+							}
+						}
+					}
+					// Subtitles
+					$subtitle_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$subtitle_table} WHERE media_id = %d", $media_id), ARRAY_A);
+					if ($subtitle_rows) {
+						foreach ($subtitle_rows as $subtitle_row) {
+							 $subtitle_options = maybe_unserialize($subtitle_row['options']);
+							 if (is_array($subtitle_options)) {
+								$media_export_item['subtitles'][] = ['options' => $subtitle_options];
+							 }
+						}
+					}
+					// Ads (associated with media)
+					 $ad_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$ad_table} WHERE media_id = %d AND ad_id IS NULL", $media_id), ARRAY_A);
+					 if ($ad_rows) {
+						foreach ($ad_rows as $ad_row) {
+							 $ad_options = maybe_unserialize($ad_row['options']);
+							 if (is_array($ad_options)) {
+								$media_export_item['ads'][] = ['options' => $ad_options];
+							 }
+						}
+					}
+					// Annotations (associated with media)
+					 $annotation_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$annotation_table} WHERE media_id = %d AND ad_id IS NULL", $media_id), ARRAY_A);
+					 if ($annotation_rows) {
+						foreach ($annotation_rows as $annotation_row) {
+							 $annotation_options = maybe_unserialize($annotation_row['options']);
+							 if (is_array($annotation_options)) {
+								 $media_export_item['annotations'][] = ['options' => $annotation_options];
+							 }
+						}
+					}
+					// --- End Fetching Related Data ---
+	
+					$single_playlist_export_structure['playlist']['media'][] = $media_export_item;
+	
+				} // end foreach media_row
+			} // end if media_rows
+	
+	
+			// Encode the data for *this* playlist into a JSON string
+			$playlist_json_content = wp_json_encode($single_playlist_export_structure, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+	
+			// Add this playlist's data to the main array for the response
+			$playlists_data_to_export[] = [
+				'title' => $playlist_title, // Original title for filename generation
+				'json_data' => $playlist_json_content
+			];
+	
+		} // end foreach valid_playlist_ids
+	
+		// 6. Send JSON Response containing data for all requested playlists
+		if (empty($playlists_data_to_export)) {
+			 wp_send_json_error( ['message' => 'No valid playlists found for the selected IDs.'], 404 );
+		} else {
+			 wp_send_json_success( $playlists_data_to_export ); // Send the array of playlist data objects
+		}
+	
+		wp_die(); // Should be called by wp_send_json_* anyway
+	
+	}
 
 
     /**
