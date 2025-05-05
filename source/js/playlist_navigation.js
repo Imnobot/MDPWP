@@ -1,1 +1,686 @@
-function _0x51fb(_0x176391,_0x245d3f){var _0x5bf2af=_0x5bf2();return _0x51fb=function(_0x51fb8e,_0x54951c){_0x51fb8e=_0x51fb8e-0x1c9;var _0xa5014f=_0x5bf2af[_0x51fb8e];return _0xa5014f;},_0x51fb(_0x176391,_0x245d3f);}(function(_0x20ce5a,_0x40fcc1){var _0x5b396b=_0x51fb,_0x47af6c=_0x20ce5a();while(!![]){try{var _0x24f83c=parseInt(_0x5b396b(0x1ca))/0x1+parseInt(_0x5b396b(0x239))/0x2+-parseInt(_0x5b396b(0x245))/0x3+-parseInt(_0x5b396b(0x1f0))/0x4+parseInt(_0x5b396b(0x1d5))/0x5*(parseInt(_0x5b396b(0x218))/0x6)+parseInt(_0x5b396b(0x1e1))/0x7*(-parseInt(_0x5b396b(0x23f))/0x8)+-parseInt(_0x5b396b(0x208))/0x9*(-parseInt(_0x5b396b(0x234))/0xa);if(_0x24f83c===_0x40fcc1)break;else _0x47af6c['push'](_0x47af6c['shift']());}catch(_0x111a08){_0x47af6c['push'](_0x47af6c['shift']());}}}(_0x5bf2,0x84f96),function(_0x2fde50,_0x26b4bc){'use strict';var _0x4680a3=_0x51fb;var _0x395e0b=function(_0x5f4b2d){var _0x31b4ba=_0x51fb,_0x10974b=this,_0x1e599a=MVPUtils[_0x31b4ba(0x220)](),_0x59345e='ontouchstart'in _0x2fde50,_0x556f56=_0x5f4b2d[_0x31b4ba(0x229)],_0x2e95d0=_0x5f4b2d[_0x31b4ba(0x202)],_0x2698b5=_0x5f4b2d[_0x31b4ba(0x242)],_0x499db5=_0x5f4b2d[_0x31b4ba(0x21d)],_0x2dc795=_0x5f4b2d[_0x31b4ba(0x1eb)],_0x2f09fb=_0x2e95d0[_0x31b4ba(0x1fe)]('.mvp-nav-backward'),_0x5abaed=_0x2e95d0[_0x31b4ba(0x1fe)](_0x31b4ba(0x1f4)),_0x3fbc4e,_0x71f813=_0x5f4b2d[_0x31b4ba(0x240)],_0x312cc7=_0x5f4b2d[_0x31b4ba(0x1d8)],_0x4ce18f=_0x5f4b2d[_0x31b4ba(0x243)],_0x48dab8=_0x5f4b2d[_0x31b4ba(0x210)],_0x42e76d=!![],_0x48b5cf,_0x29027a,_0x1fa2de,_0x11696b;function _0x467c25(_0x3d3d77){var _0x3105a6=_0x31b4ba,_0x7f7c44;return _0x26b4bc[_0x3105a6(0x20d)](_0x26b4bc(_0x3105a6(0x21c)),function(){var _0x33db82=_0x3105a6;if(_0x26b4bc(this)[_0x33db82(0x1fd)]('href')[_0x33db82(0x233)]()[_0x33db82(0x20f)](_0x3d3d77[_0x33db82(0x233)]())>-0x1)return _0x7f7c44=!![],![];}),_0x7f7c44;}function _0x2a0f09(_0x4694fe){var _0xcdd6a7=_0x31b4ba,_0x5540ed=document['createElement']('link');_0x5540ed[_0xcdd6a7(0x212)](_0xcdd6a7(0x1f6),_0xcdd6a7(0x22d)),_0x5540ed['setAttribute'](_0xcdd6a7(0x206),_0xcdd6a7(0x23b)),_0x5540ed[_0xcdd6a7(0x212)](_0xcdd6a7(0x203),_0x4694fe),_0x26b4bc('head')[_0xcdd6a7(0x1e8)](_0x5540ed);}this[_0x31b4ba(0x235)]=function(){var _0x54bace=_0x31b4ba;if(_0x312cc7==_0x54bace(0x1d7)){if(_0x2fde50[_0x54bace(0x226)]){var _0x3b7f54=setInterval(function(){var _0x350f14=_0x54bace;if(!_0x2fde50[_0x350f14(0x226)]){clearInterval(_0x3b7f54),_0x10974b[_0x350f14(0x235)]();return;}},0x64);return;}if(_0x5f4b2d[_0x54bace(0x227)]==_0x54bace(0x225)){if(!_0x11696b&&!_0x467c25(_0x54bace(0x225))){if(!MVPUtils[_0x54bace(0x22f)](_0x5f4b2d[_0x54bace(0x1e2)]))var _0x1cbf26=MVPUtils[_0x54bace(0x1cb)](_0x5f4b2d['sourcePath']+_0x5f4b2d[_0x54bace(0x1e2)]);else var _0x1cbf26=_0x5f4b2d[_0x54bace(0x1e2)];_0x2a0f09(_0x1cbf26),_0x11696b=!![];}if(typeof mCustomScrollbar===_0x54bace(0x1fb)){_0x2fde50[_0x54bace(0x226)]=!![];var _0x6cd278=document['createElement'](_0x54bace(0x219));_0x6cd278[_0x54bace(0x1f6)]='text/javascript';if(!MVPUtils[_0x54bace(0x22f)](_0x5f4b2d[_0x54bace(0x205)]))var _0x1cbf26=MVPUtils['qualifyURL'](_0x5f4b2d[_0x54bace(0x1d6)]+_0x5f4b2d[_0x54bace(0x205)]);else var _0x1cbf26=_0x5f4b2d[_0x54bace(0x205)];_0x6cd278[_0x54bace(0x23a)]=_0x1cbf26,_0x6cd278[_0x54bace(0x1fa)]=_0x6cd278['onreadystatechange']=function(){var _0x1c0de1=_0x54bace;(!this['readyState']||this[_0x1c0de1(0x22a)]=='complete')&&(_0x10974b['checkPlaylistNavigation'](),_0x2fde50[_0x1c0de1(0x226)]=![]);},_0x6cd278[_0x54bace(0x209)]=function(){var _0x254f5e=_0x54bace;alert(_0x254f5e(0x1ed)+this[_0x254f5e(0x23a)]);};var _0x5063ea=document[_0x54bace(0x1ce)](_0x54bace(0x219))[0x0];_0x5063ea[_0x54bace(0x1cd)][_0x54bace(0x230)](_0x6cd278,_0x5063ea);return;}var _0x133af1=_0x71f813=='h'?'x':'y';_0x499db5[_0x54bace(0x1cf)]({'axis':_0x133af1,'theme':_0x5f4b2d[_0x54bace(0x224)],'scrollInertia':0x0,'scrollButtons':{'enable':!![]},'mouseWheel':{'normalizeDelta':!![],'deltaFactor':0x32,'preventDefault':!![]},'keyboard':{'enable':![]},'advanced':{'autoExpandHorizontalScroll':!![]},'callbacks':{'onOverflowYNone':function(){var _0x1e626a=_0x54bace;_0x499db5[_0x1e626a(0x1fe)](_0x1e626a(0x1f2))[_0x1e626a(0x1c9)](_0x1e626a(0x238));},'onOverflowY':function(){var _0x464d26=_0x54bace;_0x499db5[_0x464d26(0x1fe)](_0x464d26(0x1f2))[_0x464d26(0x1f7)](_0x464d26(0x238));},'onTotalScroll':function(){var _0x504f56=_0x54bace;_0x556f56[_0x504f56(0x244)]();},'alwaysTriggerOffsets':![]}});}else{if(_0x5f4b2d[_0x54bace(0x227)]=='perfect-scrollbar'){if(!_0x11696b&&!_0x467c25(_0x54bace(0x20b))){if(!MVPUtils[_0x54bace(0x22f)](_0x5f4b2d[_0x54bace(0x1d4)]))var _0x1cbf26=MVPUtils[_0x54bace(0x1cb)](_0x5f4b2d[_0x54bace(0x1d6)]+_0x5f4b2d[_0x54bace(0x1d4)]);else var _0x1cbf26=_0x5f4b2d[_0x54bace(0x1d4)];_0x2a0f09(_0x1cbf26),_0x11696b=!![];}if(typeof PerfectScrollbar!==_0x54bace(0x1df)){_0x2fde50['playlistScrollLoading']=!![];var _0x6cd278=document['createElement'](_0x54bace(0x219));_0x6cd278['type']=_0x54bace(0x21e);if(!MVPUtils[_0x54bace(0x22f)](_0x5f4b2d[_0x54bace(0x232)]))var _0x1cbf26=MVPUtils[_0x54bace(0x1cb)](_0x5f4b2d[_0x54bace(0x1d6)]+_0x5f4b2d[_0x54bace(0x232)]);else var _0x1cbf26=_0x5f4b2d['perfectScrollbar_js'];_0x6cd278[_0x54bace(0x23a)]=_0x1cbf26,_0x6cd278[_0x54bace(0x1fa)]=_0x6cd278[_0x54bace(0x1e0)]=function(){var _0x328dde=_0x54bace;(!this[_0x328dde(0x22a)]||this[_0x328dde(0x22a)]=='complete')&&(_0x10974b[_0x328dde(0x235)](),_0x2fde50['playlistScrollLoading']=![]);},_0x6cd278[_0x54bace(0x209)]=function(){var _0x897f7=_0x54bace;alert(_0x897f7(0x1ed)+this[_0x897f7(0x23a)]);};var _0x5063ea=document[_0x54bace(0x1ce)](_0x54bace(0x219))[0x0];_0x5063ea[_0x54bace(0x1cd)]['insertBefore'](_0x6cd278,_0x5063ea);}else{_0x1fa2de=new PerfectScrollbar(_0x499db5[0x0],{'wheelSpeed':0x2,'wheelPropagation':!![],'minScrollbarLength':0x64});var _0x185cf8=_0x71f813=='h'?_0x54bace(0x22c):_0x54bace(0x1d1);_0x499db5[0x0][_0x54bace(0x1fc)](_0x185cf8,()=>{_0x556f56['totalScrollAction']();});}}}}else{if(_0x312cc7=='buttons'){!_0x1e599a&&_0x499db5['on'](_0x54bace(0x1f3),function(_0x13ffde){var _0x2028ea=_0x54bace;if(!_0x556f56[_0x2028ea(0x221)]()||_0x556f56[_0x2028ea(0x213)]())return![];if(!_0x42e76d)return![];if(_0x71f813=='h')var _0x371583=_0x499db5[_0x2028ea(0x222)](),_0x1e3588=_0x2dc795[_0x2028ea(0x222)](),_0x30cf95='translateX';else var _0x371583=_0x499db5[_0x2028ea(0x22e)](),_0x1e3588=_0x2dc795[_0x2028ea(0x22e)](),_0x30cf95=_0x2028ea(0x1ee);if(_0x1e3588<_0x371583)return;_0x2f09fb[_0x2028ea(0x23d)](),_0x5abaed['show']();if(_0x13ffde['originalEvent'][_0x2028ea(0x1e5)])var _0x1d4a19=_0x13ffde[_0x2028ea(0x200)][_0x2028ea(0x1e5)]>0x0?0x1:-0x1,_0x1921d8;else{if(_0x13ffde[_0x2028ea(0x200)][_0x2028ea(0x204)])var _0x1d4a19=_0x13ffde[_0x2028ea(0x200)][_0x2028ea(0x204)]<0x0?0x1:-0x1,_0x1921d8;}!_0x29027a?(_0x1921d8=_0x2dc795[0x0]['style'][_0x2028ea(0x246)][_0x2028ea(0x20c)](/[^\d.]/g,''),_0x1921d8=parseInt(_0x1921d8)||0x0):_0x1921d8=_0x29027a;_0x1921d8+=_0x48dab8*_0x1d4a19;if(_0x1921d8>0x0)_0x1921d8=0x0,_0x2f09fb[_0x2028ea(0x1d0)]();else _0x1921d8<=_0x371583-_0x1e3588&&(_0x1921d8=_0x371583-_0x1e3588,_0x5abaed['hide'](),_0x556f56[_0x2028ea(0x244)]());return _0x29027a=_0x1921d8,_0x2dc795['css']({'-webkit-transform':''+_0x30cf95+'('+_0x1921d8+'px)','-ms-transform':''+_0x30cf95+'('+_0x1921d8+_0x2028ea(0x1e9),'transform':''+_0x30cf95+'('+_0x1921d8+'px)'}),![];});_0x2f09fb['on']('click',function(){var _0x28e5f7=_0x54bace;if(!_0x556f56['getSetupDone']()||_0x556f56[_0x28e5f7(0x213)]())return![];if(_0x48b5cf)return![];_0x48b5cf=!![];if(_0x71f813=='h')var _0x360a9a=_0x499db5[_0x28e5f7(0x222)](),_0x5b42b6=_0x2dc795[_0x28e5f7(0x222)](),_0x3992b9=_0x28e5f7(0x1da);else var _0x360a9a=_0x499db5[_0x28e5f7(0x22e)](),_0x5b42b6=_0x2dc795[_0x28e5f7(0x22e)](),_0x3992b9=_0x28e5f7(0x1ee);if(_0x5b42b6<_0x360a9a)return;_0x2f09fb[_0x28e5f7(0x23d)](),_0x5abaed[_0x28e5f7(0x23d)]();var _0x515a3b;!_0x29027a?(_0x515a3b=_0x2dc795[0x0][_0x28e5f7(0x1e3)][_0x28e5f7(0x246)]['replace'](/[^\d.]/g,''),_0x515a3b=parseInt(_0x515a3b)||0x0):_0x515a3b=_0x29027a;if(_0x515a3b%_0x4ce18f!=0x0){var _0x317bde=-(_0x515a3b%_0x4ce18f);while(_0x317bde<=_0x360a9a-_0x4ce18f*0x2){_0x317bde+=_0x4ce18f;}_0x515a3b+=_0x317bde;}else{var _0x3ef627=Math[_0x28e5f7(0x211)](_0x360a9a/_0x4ce18f);_0x515a3b=_0x515a3b+_0x4ce18f*_0x3ef627;}_0x515a3b>=0x0&&(_0x515a3b=0x0,_0x2f09fb['hide']()),_0x29027a=_0x515a3b,_0x2dc795[_0x28e5f7(0x215)](_0x28e5f7(0x22b),function(){_0x48b5cf=![];})['css']({'-webkit-transform':''+_0x3992b9+'('+_0x515a3b+_0x28e5f7(0x1e9),'-ms-transform':''+_0x3992b9+'('+_0x515a3b+_0x28e5f7(0x1e9),'transform':''+_0x3992b9+'('+_0x515a3b+'px)'});}),_0x5abaed['on'](_0x54bace(0x1ff),function(){var _0x4c662e=_0x54bace;if(!_0x556f56[_0x4c662e(0x221)]()||_0x556f56['isPlaylistLoading']())return![];if(_0x48b5cf)return![];_0x48b5cf=!![];if(_0x71f813=='h')var _0x11d22d=_0x499db5['width'](),_0xab44e3=_0x2dc795['width'](),_0xb23d9d=_0x4c662e(0x1da);else var _0x11d22d=_0x499db5[_0x4c662e(0x22e)](),_0xab44e3=_0x2dc795[_0x4c662e(0x22e)](),_0xb23d9d=_0x4c662e(0x1ee);if(_0xab44e3<_0x11d22d)return;_0x2f09fb['show'](),_0x5abaed[_0x4c662e(0x23d)]();var _0x501c85;!_0x29027a?(_0x501c85=_0x2dc795[0x0][_0x4c662e(0x1e3)][_0x4c662e(0x246)]['replace'](/[^\d.]/g,''),_0x501c85=parseInt(_0x501c85)||0x0):_0x501c85=_0x29027a;if(_0x501c85%_0x4ce18f!=0x0){var _0x44fade=_0x501c85%_0x4ce18f+_0x4ce18f;while(_0x44fade<=_0x11d22d-_0x4ce18f){_0x44fade+=_0x4ce18f;}_0x501c85-=_0x44fade;}else{var _0x51f44d=Math['floor'](_0x11d22d/_0x4ce18f);_0x501c85=_0x501c85-_0x4ce18f*_0x51f44d;}_0x501c85<=_0x11d22d-_0xab44e3&&(_0x501c85=_0x11d22d-_0xab44e3,_0x5abaed['hide'](),_0x556f56['totalScrollAction']()),_0x29027a=_0x501c85,_0x2dc795['one'](_0x4c662e(0x22b),function(){_0x48b5cf=![];})[_0x4c662e(0x1f1)]({'-webkit-transform':''+_0xb23d9d+'('+_0x501c85+'px)','-ms-transform':''+_0xb23d9d+'('+_0x501c85+_0x4c662e(0x1e9),'transform':''+_0xb23d9d+'('+_0x501c85+_0x4c662e(0x1e9)});});if(_0x59345e)_0x394841();}else{if(_0x312cc7=='hover'){!_0x1e599a&&_0x499db5['on'](_0x54bace(0x237),function(_0x416dfe){var _0x590f56=_0x54bace;if(!_0x556f56['getSetupDone']()||_0x556f56['isPlaylistLoading']())return![];if(!_0x42e76d)return![];var _0x5bd243,_0x47c05a;if(_0x71f813=='h'){var _0x1e1542=_0x2698b5[_0x590f56(0x222)](),_0x27f88f=_0x2dc795['width']();if(_0x27f88f<_0x1e1542)return;_0x47c05a=parseInt(_0x499db5[_0x590f56(0x1f1)](_0x590f56(0x1dc)),0xa)+_0x2698b5[_0x590f56(0x1d2)]()[_0x590f56(0x1dc)],_0x5bd243=(_0x1e1542-_0x27f88f)/_0x1e1542*(_0x416dfe['pageX']-_0x47c05a),_0x2dc795[_0x590f56(0x1f1)](_0x590f56(0x1dc),_0x5bd243+'px');}else{var _0x37d786=_0x2698b5[_0x590f56(0x22e)](),_0x27f88f=_0x2dc795['height']();if(_0x27f88f<_0x37d786)return;_0x47c05a=parseInt(_0x499db5['css'](_0x590f56(0x223)),0xa)+_0x2698b5[_0x590f56(0x1d2)]()[_0x590f56(0x223)],_0x5bd243=(_0x37d786-_0x27f88f)/_0x37d786*(_0x416dfe[_0x590f56(0x236)]-_0x47c05a),_0x2dc795[_0x590f56(0x1f1)](_0x590f56(0x223),_0x5bd243+'px');}return![];});if(_0x59345e)_0x394841();}}}},this['updatePosition']=function(){var _0xbd56e1=_0x31b4ba;if(_0x5f4b2d[_0xbd56e1(0x227)]==_0xbd56e1(0x225))_0x499db5[_0xbd56e1(0x1cf)](_0xbd56e1(0x1e6),0x0);else _0x5f4b2d[_0xbd56e1(0x227)]=='perfect-scrollbar'&&(_0x499db5[0x0][_0xbd56e1(0x1f8)]=0x0);};function _0x394841(){var _0x33f7dc=_0x31b4ba,_0x4be324,_0xc18760,_0xc196b8,_0xa48f28,_0x51b469,_0x24caf4=![];_0x2dc795[_0x33f7dc(0x23e)]('touchstart.ap\x20touchmove.ap\x20touchend.ap\x20click.ap-touchclick')['on'](_0x33f7dc(0x1ec),function(_0x312f3d){var _0x4f365f=_0x33f7dc;if(!_0x556f56[_0x4f365f(0x221)]()||_0x556f56[_0x4f365f(0x213)]())return![];var _0x160ac2=_0x312f3d[_0x4f365f(0x200)][_0x4f365f(0x21a)][0x0];_0x4be324=_0x2dc795[_0x4f365f(0x217)]()['left'],_0xc18760=_0x2dc795['position']()['top'],_0xc196b8=_0x160ac2[_0x4f365f(0x1e7)],_0xa48f28=_0x160ac2[_0x4f365f(0x236)],_0x51b469=![],_0x24caf4=!![];})['on'](_0x33f7dc(0x1ef),function(_0x1e5984){var _0x28a136=_0x33f7dc;if(!_0x24caf4)return;var _0xd5fd41=_0x1e5984[_0x28a136(0x200)][_0x28a136(0x21a)][0x0];_0x2f09fb[_0x28a136(0x23d)](),_0x5abaed[_0x28a136(0x23d)]();if(_0x71f813=='h'){var _0x290a12=_0x4be324-_0xc196b8+_0xd5fd41[_0x28a136(0x1e7)],_0x55f438=_0x2698b5['width'](),_0x3e8a6e=_0x2dc795['width']();if(_0x3e8a6e<_0x55f438)return;if(_0x290a12>0x0)_0x290a12=0x0,_0x2f09fb['hide']();else{if(_0x290a12<=_0x55f438-_0x3e8a6e){_0x290a12=_0x55f438-_0x3e8a6e,_0x5abaed['hide']();if(loadMoreOnTotalScroll)nextPageToken&&loadMoreType&&(!playlistTransitionOn&&_0x10974b[_0x28a136(0x1ea)]());else addMoreOnTotalScroll&&(!loadMoreProcess&&addMore());}}_0x2dc795[_0x28a136(0x1f1)](_0x28a136(0x1dc),_0x290a12+'px');}else{var _0x290a12=_0xc18760-_0xa48f28+_0xd5fd41[_0x28a136(0x236)],_0x2315be=_0x2698b5['height'](),_0x3e8a6e=_0x2dc795[_0x28a136(0x22e)]();if(_0x3e8a6e<_0x2315be)return;if(_0x290a12>0x0)_0x290a12=0x0,_0x2f09fb[_0x28a136(0x1d0)]();else _0x290a12<=_0x2315be-_0x3e8a6e&&(_0x290a12=_0x2315be-_0x3e8a6e,_0x5abaed[_0x28a136(0x1d0)](),_0x556f56[_0x28a136(0x244)]());_0x2dc795[_0x28a136(0x1f1)]('top',_0x290a12+'px');}return _0x51b469=_0x51b469||Math[_0x28a136(0x1dd)](_0xc196b8-_0xd5fd41['pageX'])>0x5||Math[_0x28a136(0x1dd)](_0xa48f28-_0xd5fd41[_0x28a136(0x236)])>0x5,![];})['on'](_0x33f7dc(0x207),function(_0x40c608){_0x24caf4=![];})['on'](_0x33f7dc(0x1de),function(_0x18fb6e){if(_0x51b469)return _0x51b469=![],![];});}this[_0x31b4ba(0x1e6)]=function(_0x5b6b91){var _0x2b0a05=_0x31b4ba;if(_0x312cc7==_0x2b0a05(0x1d7)){if(_0x5f4b2d[_0x2b0a05(0x227)]==_0x2b0a05(0x225)){if(typeof mCustomScrollbar!==_0x2b0a05(0x1fb))setTimeout(function(){var _0x276b08=_0x2b0a05;_0x71f813=='h'?_0x499db5['mCustomScrollbar'](_0x276b08(0x1e6),parseInt(_0x5b6b91[_0x276b08(0x217)]()['left']),{'scrollInertia':0x1f4}):_0x499db5[_0x276b08(0x1cf)](_0x276b08(0x1e6),parseInt(_0x5b6b91['position']()[_0x276b08(0x223)]),{'scrollInertia':0x1f4});},0x1f4);else var _0x39f53d=setInterval(function(){var _0x4e74c8=_0x2b0a05;typeof mCustomScrollbar!==_0x4e74c8(0x1fb)&&(clearInterval(_0x39f53d),_0x71f813=='h'?_0x499db5[_0x4e74c8(0x1cf)](_0x4e74c8(0x1e6),parseInt(_0x5b6b91[_0x4e74c8(0x217)]()[_0x4e74c8(0x1dc)]),{'scrollInertia':0x1f4}):_0x499db5[_0x4e74c8(0x1cf)](_0x4e74c8(0x1e6),parseInt(_0x5b6b91[_0x4e74c8(0x217)]()[_0x4e74c8(0x223)]),{'scrollInertia':0x1f4}));},0x1f4);}else _0x5f4b2d['playlistScrollType']==_0x2b0a05(0x20b)&&setTimeout(function(){var _0x423d72=_0x2b0a05;_0x71f813=='h'?_0x499db5[_0x423d72(0x21b)]()[_0x423d72(0x1f9)]({'scrollTop':_0x5b6b91[0x0][_0x423d72(0x20a)]+'px'},{'duration':0x1f4}):_0x499db5[_0x423d72(0x21b)]()[_0x423d72(0x1f9)]({'scrollTop':_0x5b6b91[0x0][_0x423d72(0x1e4)]+'px'},{'duration':0x1f4});},0x3e8);}else{if(_0x312cc7==_0x2b0a05(0x1f5)){if(_0x71f813=='h')var _0x10f172=_0x2698b5['width'](),_0x552a0f=_0x2dc795[_0x2b0a05(0x222)](),_0x294fb9=_0x2b0a05(0x1da);else var _0x10f172=_0x2698b5['height'](),_0x552a0f=_0x2dc795[_0x2b0a05(0x22e)](),_0x294fb9=_0x2b0a05(0x1ee);if(_0x552a0f<_0x10f172)return;_0x2f09fb[_0x2b0a05(0x23d)](),_0x5abaed[_0x2b0a05(0x23d)]();var _0x1f2872=_0x2dc795[_0x2b0a05(0x1fe)](_0x2b0a05(0x1cc))[_0x2b0a05(0x1d3)](_0x5b6b91),_0x586d6c=-_0x1f2872*_0x4ce18f;if(_0x586d6c>=0x0)_0x586d6c=0x0,_0x2f09fb[_0x2b0a05(0x1d0)]();else _0x586d6c<=_0x10f172-_0x552a0f&&(_0x586d6c=_0x10f172-_0x552a0f,_0x5abaed[_0x2b0a05(0x1d0)]());_0x29027a=_0x586d6c,_0x2dc795[_0x2b0a05(0x215)](_0x2b0a05(0x22b),function(){_0x48b5cf=![];})[_0x2b0a05(0x1f1)]({'-webkit-transform':''+_0x294fb9+'('+_0x586d6c+_0x2b0a05(0x1e9),'-ms-transform':''+_0x294fb9+'('+_0x586d6c+_0x2b0a05(0x1e9),'transform':''+_0x294fb9+'('+_0x586d6c+'px)'});}}},this[_0x31b4ba(0x1d9)]=function(_0x3b7ed6){var _0x37ce7a=_0x31b4ba;_0x3b7ed6==_0x37ce7a(0x20e)&&_0x5abaed[_0x37ce7a(0x23d)]();},this['resize']=function(_0x9b2fe3){var _0x260994=_0x31b4ba;if(_0x312cc7==_0x260994(0x1f5)){if(_0x71f813=='h')var _0x5aac9a=_0x499db5['width'](),_0x21706a=_0x2dc795[_0x260994(0x222)](),_0x537598=_0x260994(0x1da);else var _0x5aac9a=_0x499db5[_0x260994(0x22e)](),_0x21706a=_0x2dc795[_0x260994(0x22e)](),_0x537598=_0x260994(0x1ee);console[_0x260994(0x216)](_0x5aac9a,_0x21706a);if(_0x21706a<_0x5aac9a)_0x42e76d=![],_0x2f09fb[_0x260994(0x1d0)](),_0x5abaed[_0x260994(0x1d0)]();else{_0x42e76d=!![];if(_0x9b2fe3)var _0xee3399=_0x2dc795[_0x260994(0x1fe)](_0x260994(0x1cc))['index'](_0x9b2fe3),_0x5f56f7=-_0xee3399*_0x4ce18f;else var _0x5f56f7=0x0;!_0x29027a?(_0x5f56f7=_0x2dc795[0x0][_0x260994(0x1e3)][_0x260994(0x246)]['replace'](/[^\d.]/g,''),_0x5f56f7=parseInt(_0x5f56f7)):_0x5f56f7=_0x29027a;if(_0x5f56f7>0x0)_0x5f56f7=0x0,_0x5abaed[_0x260994(0x23d)]();else{if(_0x5f56f7<_0x5aac9a-_0x21706a)_0x5f56f7=_0x5aac9a-_0x21706a,_0x2f09fb['show']();else isNaN(_0x5f56f7)&&!_0x556f56[_0x260994(0x214)]()&&_0x5abaed[_0x260994(0x23d)]();}_0x29027a=_0x5f56f7,setTimeout(function(){var _0x4ff7c2=_0x260994;_0x2dc795['css']({'-webkit-transform':''+_0x537598+'('+_0x5f56f7+'px)','-ms-transform':''+_0x537598+'('+_0x5f56f7+_0x4ff7c2(0x1e9),'transform':''+_0x537598+'('+_0x5f56f7+_0x4ff7c2(0x1e9)});},0x15e);}}else{if(_0x312cc7==_0x260994(0x228)){if(_0x71f813=='h'){var _0x43d357=_0x499db5['width'](),_0x21706a=_0x2dc795[_0x260994(0x222)]();if(_0x21706a<_0x43d357)_0x42e76d=![];else{_0x42e76d=!![];var _0x5f56f7=parseInt(_0x2dc795[_0x260994(0x1f1)](_0x260994(0x1dc)),0xa);if(_0x5f56f7>0x0)_0x5f56f7=0x0;else _0x5f56f7<_0x43d357-_0x21706a&&(_0x5f56f7=_0x43d357-_0x21706a);_0x2dc795['css'](_0x260994(0x1dc),_0x5f56f7+'px');}}else{var _0x1b0c41=_0x499db5['height'](),_0x21706a=_0x2dc795[_0x260994(0x22e)]();if(_0x21706a<_0x1b0c41)_0x42e76d=![];else{_0x42e76d=!![];var _0x5f56f7=parseInt(_0x2dc795[_0x260994(0x1f1)](_0x260994(0x223)),0xa);if(_0x5f56f7>0x0)_0x5f56f7=0x0;else _0x5f56f7<_0x1b0c41-_0x21706a&&(_0x5f56f7=_0x1b0c41-_0x21706a);_0x2dc795[_0x260994(0x1f1)](_0x260994(0x223),_0x5f56f7+'px');}}}}},this[_0x31b4ba(0x21f)]=function(){_0x48b5cf=![];},this[_0x31b4ba(0x23c)]=function(){var _0x526c92=_0x31b4ba;if(_0x5f4b2d[_0x526c92(0x227)]==_0x526c92(0x20b)){if(_0x1fa2de)_0x1fa2de[_0x526c92(0x241)]();}},this[_0x31b4ba(0x201)]=function(){var _0xbd4ac=_0x31b4ba;if(_0x312cc7=='scroll'){if(_0x5f4b2d['playlistScrollType']==_0xbd4ac(0x225)){if(typeof mCustomScrollbar!==_0xbd4ac(0x1fb))_0x499db5[_0xbd4ac(0x1cf)](_0xbd4ac(0x201));}else _0x5f4b2d['playlistScrollType']==_0xbd4ac(0x20b)&&(_0x1fa2de&&(_0x1fa2de[_0xbd4ac(0x201)](),_0x1fa2de=null));}else{if(_0x312cc7==_0xbd4ac(0x1f5)){_0x499db5[_0xbd4ac(0x23e)](_0xbd4ac(0x1f3)),_0x2f09fb[_0xbd4ac(0x23e)](_0xbd4ac(0x1ff)),_0x5abaed['off'](_0xbd4ac(0x1ff));if(_0x71f813=='h')var _0x379c6a=_0xbd4ac(0x1da);else var _0x379c6a=_0xbd4ac(0x1ee);var _0x3e996e=0x0;_0x29027a=_0x3e996e,_0x2dc795[_0xbd4ac(0x1f1)]({'-webkit-transform':''+_0x379c6a+'('+_0x3e996e+_0xbd4ac(0x1e9),'-ms-transform':''+_0x379c6a+'('+_0x3e996e+_0xbd4ac(0x1e9),'transform':''+_0x379c6a+'('+_0x3e996e+_0xbd4ac(0x1e9)});}else _0x312cc7==_0xbd4ac(0x228)&&_0x499db5['off'](_0xbd4ac(0x237));}if(_0x59345e)_0x2dc795[_0xbd4ac(0x23e)](_0xbd4ac(0x231));_0x71f813=='h'?_0x2dc795[_0xbd4ac(0x1f1)](_0xbd4ac(0x1dc),0x0):_0x2dc795[_0xbd4ac(0x1f1)]('top',0x0);},_0x10974b['checkPlaylistNavigation']();};_0x2fde50[_0x4680a3(0x1db)]=_0x395e0b;}(window,jQuery));function _0x5bf2(){var _0x1c7820=['scrollTop','animate','onload','undefined','addEventListener','attr','find','click','originalEvent','destroy','wrapper','href','detail','mCustomScrollbar_js','rel','touchend.ap','423tNzFLy','onerror','offsetLeft','perfect-scrollbar','replace','each','forward','indexOf','thumbScrollValue','floor','setAttribute','isPlaylistLoading','getMediaType','one','log','position','239916FAhLCe','script','touches','stop','head\x20link','playlistInner','text/javascript','setScrollActive','isMobile','getSetupDone','width','top','playlistScrollTheme','mcustomscrollbar','playlistScrollLoading','playlistScrollType','hover','parent','readyState','transitionend\x20webkitTransitionEnd\x20oTransitionEnd\x20MSTransitionEnd','ps-x-reach-end','text/css','height','relativePath','insertBefore','touchstart.ap\x20touchmove.ap\x20touchend.ap\x20click.ap-touchclick','perfectScrollbar_js','toLowerCase','149630avRpYf','checkPlaylistNavigation','pageY','mousemove','mvp-mCSB_full','455914sQAGBg','src','stylesheet','updateScrollPosition','show','off','29144VgVTTu','navigationDirection','update','playlistHolder','pi_size','totalScrollAction','1429761ievvoT','transform','addClass','976491ekjZAF','qualifyURL','.mvp-playlist-item','parentNode','getElementsByTagName','mCustomScrollbar','hide','ps-y-reach-end','offset','index','perfectScrollbar_css','55sivpwT','sourcePath','scroll','navigationType','showButtons','translateX','MVPPlaylistNavigation','left','abs','click.ap-touchclick','function','onreadystatechange','1939fZMtWy','mCustomScrollbar_css','style','offsetTop','wheelDelta','scrollTo','pageX','append','px)','loadMore','playlistContent','touchstart.ap','Error\x20loading\x20','translateY','touchmove.ap','1268780xswtuz','css','.mCSB_container','wheel','.mvp-nav-forward','buttons','type','removeClass'];_0x5bf2=function(){return _0x1c7820;};return _0x5bf2();}
+(function (_0x2fde50, _0x26b4bc) {
+    'use strict';
+  
+    var _0x395e0b = function (_0x5f4b2d) {
+      var _0x10974b = this;
+      var _0x1e599a = MVPUtils.isMobile();
+      var _0x59345e = 'ontouchstart' in _0x2fde50;
+      var _0x556f56 = _0x5f4b2d.parent;
+      var _0x2e95d0 = _0x5f4b2d.wrapper;
+      var _0x2698b5 = _0x5f4b2d.playlistHolder;
+      var _0x499db5 = _0x5f4b2d.playlistInner;
+      var _0x2dc795 = _0x5f4b2d.playlistContent;
+      var _0x2f09fb = _0x2e95d0.find('.mvp-nav-backward');
+      var _0x5abaed = _0x2e95d0.find(".mvp-nav-forward");
+      var _0x71f813 = _0x5f4b2d.navigationDirection;
+      var _0x312cc7 = _0x5f4b2d.navigationType;
+      var _0x4ce18f = _0x5f4b2d.pi_size;
+      var _0x48dab8 = _0x5f4b2d.thumbScrollValue;
+      var _0x42e76d = true;
+      var _0x48b5cf;
+      var _0x29027a;
+      var _0x1fa2de;
+      var _0x11696b;
+      function _0x467c25(_0x3d3d77) {
+        var _0x7f7c44;
+        _0x26b4bc.each(_0x26b4bc("head link"), function () {
+          if (_0x26b4bc(this).attr('href').toLowerCase().indexOf(_0x3d3d77.toLowerCase()) > -0x1) {
+            _0x7f7c44 = true;
+            return false;
+          }
+        });
+        return _0x7f7c44;
+      }
+      function _0x2a0f09(_0x4694fe) {
+        var _0x5540ed = document.createElement('link');
+        _0x5540ed.setAttribute("type", "text/css");
+        _0x5540ed.setAttribute("rel", "stylesheet");
+        _0x5540ed.setAttribute("href", _0x4694fe);
+        _0x26b4bc('head').append(_0x5540ed);
+      }
+      this.checkPlaylistNavigation = function () {
+        if (_0x312cc7 == "scroll") {
+          if (_0x2fde50.playlistScrollLoading) {
+            var _0x3b7f54 = setInterval(function () {
+              if (!_0x2fde50.playlistScrollLoading) {
+                clearInterval(_0x3b7f54);
+                _0x10974b.checkPlaylistNavigation();
+                return;
+              }
+            }, 0x64);
+            return;
+          }
+          if (_0x5f4b2d.playlistScrollType == "mcustomscrollbar") {
+            if (!_0x11696b && !_0x467c25("mcustomscrollbar")) {
+              if (!MVPUtils.relativePath(_0x5f4b2d.mCustomScrollbar_css)) {
+                var _0x1cbf26 = MVPUtils.qualifyURL(_0x5f4b2d.sourcePath + _0x5f4b2d.mCustomScrollbar_css);
+              } else {
+                var _0x1cbf26 = _0x5f4b2d.mCustomScrollbar_css;
+              }
+              _0x2a0f09(_0x1cbf26);
+              _0x11696b = true;
+            }
+            if (typeof mCustomScrollbar === "undefined") {
+              _0x2fde50.playlistScrollLoading = true;
+              var _0x6cd278 = document.createElement("script");
+              _0x6cd278.type = 'text/javascript';
+              if (!MVPUtils.relativePath(_0x5f4b2d.mCustomScrollbar_js)) {
+                var _0x1cbf26 = MVPUtils.qualifyURL(_0x5f4b2d.sourcePath + _0x5f4b2d.mCustomScrollbar_js);
+              } else {
+                var _0x1cbf26 = _0x5f4b2d.mCustomScrollbar_js;
+              }
+              _0x6cd278.src = _0x1cbf26;
+              _0x6cd278.onload = _0x6cd278.onreadystatechange = function () {
+                if (!this.readyState || this.readyState == 'complete') {
+                  _0x10974b.checkPlaylistNavigation();
+                  _0x2fde50.playlistScrollLoading = false;
+                }
+              };
+              _0x6cd278.onerror = function () {
+                alert("Error loading " + this.src);
+              };
+              var _0x5063ea = document.getElementsByTagName("script")[0x0];
+              _0x5063ea.parentNode.insertBefore(_0x6cd278, _0x5063ea);
+              return;
+            }
+            var _0x133af1 = _0x71f813 == 'h' ? 'x' : 'y';
+            _0x499db5.mCustomScrollbar({
+              'axis': _0x133af1,
+              'theme': _0x5f4b2d.playlistScrollTheme,
+              'scrollInertia': 0x0,
+              'scrollButtons': {
+                'enable': true
+              },
+              'mouseWheel': {
+                'normalizeDelta': true,
+                'deltaFactor': 0x32,
+                'preventDefault': true
+              },
+              'keyboard': {
+                'enable': false
+              },
+              'advanced': {
+                'autoExpandHorizontalScroll': true
+              },
+              'callbacks': {
+                'onOverflowYNone': function () {
+                  _0x499db5.find(".mCSB_container").addClass("mvp-mCSB_full");
+                },
+                'onOverflowY': function () {
+                  _0x499db5.find(".mCSB_container").removeClass("mvp-mCSB_full");
+                },
+                'onTotalScroll': function () {
+                  _0x556f56.totalScrollAction();
+                },
+                'alwaysTriggerOffsets': false
+              }
+            });
+          } else {
+            if (_0x5f4b2d.playlistScrollType == 'perfect-scrollbar') {
+              if (!_0x11696b && !_0x467c25("perfect-scrollbar")) {
+                if (!MVPUtils.relativePath(_0x5f4b2d.perfectScrollbar_css)) {
+                  var _0x1cbf26 = MVPUtils.qualifyURL(_0x5f4b2d.sourcePath + _0x5f4b2d.perfectScrollbar_css);
+                } else {
+                  var _0x1cbf26 = _0x5f4b2d.perfectScrollbar_css;
+                }
+                _0x2a0f09(_0x1cbf26);
+                _0x11696b = true;
+              }
+              if (typeof PerfectScrollbar !== "function") {
+                _0x2fde50.playlistScrollLoading = true;
+                var _0x6cd278 = document.createElement("script");
+                _0x6cd278.type = "text/javascript";
+                if (!MVPUtils.relativePath(_0x5f4b2d.perfectScrollbar_js)) {
+                  var _0x1cbf26 = MVPUtils.qualifyURL(_0x5f4b2d.sourcePath + _0x5f4b2d.perfectScrollbar_js);
+                } else {
+                  var _0x1cbf26 = _0x5f4b2d.perfectScrollbar_js;
+                }
+                _0x6cd278.src = _0x1cbf26;
+                _0x6cd278.onload = _0x6cd278.onreadystatechange = function () {
+                  if (!this.readyState || this.readyState == 'complete') {
+                    _0x10974b.checkPlaylistNavigation();
+                    _0x2fde50.playlistScrollLoading = false;
+                  }
+                };
+                _0x6cd278.onerror = function () {
+                  alert("Error loading " + this.src);
+                };
+                var _0x5063ea = document.getElementsByTagName("script")[0x0];
+                _0x5063ea.parentNode.insertBefore(_0x6cd278, _0x5063ea);
+              } else {
+                _0x1fa2de = new PerfectScrollbar(_0x499db5[0x0], {
+                  'wheelSpeed': 0x2,
+                  'wheelPropagation': true,
+                  'minScrollbarLength': 0x64
+                });
+                var _0x185cf8 = _0x71f813 == 'h' ? "ps-x-reach-end" : "ps-y-reach-end";
+                _0x499db5[0x0].addEventListener(_0x185cf8, () => {
+                  _0x556f56.totalScrollAction();
+                });
+              }
+            }
+          }
+        } else {
+          if (_0x312cc7 == 'buttons') {
+            if (!_0x1e599a) {
+              _0x499db5.on("wheel", function (_0x13ffde) {
+                if (!_0x556f56.getSetupDone() || _0x556f56.isPlaylistLoading()) {
+                  return false;
+                }
+                if (!_0x42e76d) {
+                  return false;
+                }
+                if (_0x71f813 == 'h') {
+                  var _0x371583 = _0x499db5.width();
+                  var _0x1e3588 = _0x2dc795.width();
+                  var _0x30cf95 = 'translateX';
+                } else {
+                  var _0x371583 = _0x499db5.height();
+                  var _0x1e3588 = _0x2dc795.height();
+                  var _0x30cf95 = "translateY";
+                }
+                if (_0x1e3588 < _0x371583) {
+                  return;
+                }
+                _0x2f09fb.show();
+                _0x5abaed.show();
+                if (_0x13ffde.originalEvent.wheelDelta) {
+                  var _0x1d4a19 = _0x13ffde.originalEvent.wheelDelta > 0x0 ? 0x1 : -0x1;
+                  var _0x1921d8;
+                } else {
+                  if (_0x13ffde.originalEvent.detail) {
+                    var _0x1d4a19 = _0x13ffde.originalEvent.detail < 0x0 ? 0x1 : -0x1;
+                    var _0x1921d8;
+                  }
+                }
+                if (!_0x29027a) {
+                  _0x1921d8 = _0x2dc795[0x0].style.transform.replace(/[^\d.]/g, '');
+                  _0x1921d8 = parseInt(_0x1921d8) || 0x0;
+                } else {
+                  _0x1921d8 = _0x29027a;
+                }
+                _0x1921d8 += _0x48dab8 * _0x1d4a19;
+                if (_0x1921d8 > 0x0) {
+                  _0x1921d8 = 0x0;
+                  _0x2f09fb.hide();
+                } else if (_0x1921d8 <= _0x371583 - _0x1e3588) {
+                  _0x1921d8 = _0x371583 - _0x1e3588;
+                  _0x5abaed.hide();
+                  _0x556f56.totalScrollAction();
+                }
+                _0x29027a = _0x1921d8;
+                _0x2dc795.css({
+                  '-webkit-transform': '' + _0x30cf95 + '(' + _0x1921d8 + 'px)',
+                  '-ms-transform': '' + _0x30cf95 + '(' + _0x1921d8 + "px)",
+                  'transform': '' + _0x30cf95 + '(' + _0x1921d8 + 'px)'
+                });
+                return false;
+              });
+            }
+            _0x2f09fb.on('click', function () {
+              if (!_0x556f56.getSetupDone() || _0x556f56.isPlaylistLoading()) {
+                return false;
+              }
+              if (_0x48b5cf) {
+                return false;
+              }
+              _0x48b5cf = true;
+              if (_0x71f813 == 'h') {
+                var _0x360a9a = _0x499db5.width();
+                var _0x5b42b6 = _0x2dc795.width();
+                var _0x3992b9 = "translateX";
+              } else {
+                var _0x360a9a = _0x499db5.height();
+                var _0x5b42b6 = _0x2dc795.height();
+                var _0x3992b9 = "translateY";
+              }
+              if (_0x5b42b6 < _0x360a9a) {
+                return;
+              }
+              _0x2f09fb.show();
+              _0x5abaed.show();
+              var _0x515a3b;
+              if (!_0x29027a) {
+                _0x515a3b = _0x2dc795[0x0].style.transform.replace(/[^\d.]/g, '');
+                _0x515a3b = parseInt(_0x515a3b) || 0x0;
+              } else {
+                _0x515a3b = _0x29027a;
+              }
+              if (_0x515a3b % _0x4ce18f != 0x0) {
+                var _0x317bde = -(_0x515a3b % _0x4ce18f);
+                while (_0x317bde <= _0x360a9a - _0x4ce18f * 0x2) {
+                  _0x317bde += _0x4ce18f;
+                }
+                _0x515a3b += _0x317bde;
+              } else {
+                var _0x3ef627 = Math.floor(_0x360a9a / _0x4ce18f);
+                _0x515a3b = _0x515a3b + _0x4ce18f * _0x3ef627;
+              }
+              if (_0x515a3b >= 0x0) {
+                _0x515a3b = 0x0;
+                _0x2f09fb.hide();
+              }
+              _0x29027a = _0x515a3b;
+              _0x2dc795.one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function () {
+                _0x48b5cf = false;
+              }).css({
+                '-webkit-transform': '' + _0x3992b9 + '(' + _0x515a3b + "px)",
+                '-ms-transform': '' + _0x3992b9 + '(' + _0x515a3b + "px)",
+                'transform': '' + _0x3992b9 + '(' + _0x515a3b + 'px)'
+              });
+            });
+            _0x5abaed.on("click", function () {
+              if (!_0x556f56.getSetupDone() || _0x556f56.isPlaylistLoading()) {
+                return false;
+              }
+              if (_0x48b5cf) {
+                return false;
+              }
+              _0x48b5cf = true;
+              if (_0x71f813 == 'h') {
+                var _0x11d22d = _0x499db5.width();
+                var _0xab44e3 = _0x2dc795.width();
+                var _0xb23d9d = "translateX";
+              } else {
+                var _0x11d22d = _0x499db5.height();
+                var _0xab44e3 = _0x2dc795.height();
+                var _0xb23d9d = "translateY";
+              }
+              if (_0xab44e3 < _0x11d22d) {
+                return;
+              }
+              _0x2f09fb.show();
+              _0x5abaed.show();
+              var _0x501c85;
+              if (!_0x29027a) {
+                _0x501c85 = _0x2dc795[0x0].style.transform.replace(/[^\d.]/g, '');
+                _0x501c85 = parseInt(_0x501c85) || 0x0;
+              } else {
+                _0x501c85 = _0x29027a;
+              }
+              if (_0x501c85 % _0x4ce18f != 0x0) {
+                var _0x44fade = _0x501c85 % _0x4ce18f + _0x4ce18f;
+                while (_0x44fade <= _0x11d22d - _0x4ce18f) {
+                  _0x44fade += _0x4ce18f;
+                }
+                _0x501c85 -= _0x44fade;
+              } else {
+                var _0x51f44d = Math.floor(_0x11d22d / _0x4ce18f);
+                _0x501c85 = _0x501c85 - _0x4ce18f * _0x51f44d;
+              }
+              if (_0x501c85 <= _0x11d22d - _0xab44e3) {
+                _0x501c85 = _0x11d22d - _0xab44e3;
+                _0x5abaed.hide();
+                _0x556f56.totalScrollAction();
+              }
+              _0x29027a = _0x501c85;
+              _0x2dc795.one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function () {
+                _0x48b5cf = false;
+              }).css({
+                '-webkit-transform': '' + _0xb23d9d + '(' + _0x501c85 + 'px)',
+                '-ms-transform': '' + _0xb23d9d + '(' + _0x501c85 + "px)",
+                'transform': '' + _0xb23d9d + '(' + _0x501c85 + "px)"
+              });
+            });
+            if (_0x59345e) {
+              _0x394841();
+            }
+          } else {
+            if (_0x312cc7 == 'hover') {
+              if (!_0x1e599a) {
+                _0x499db5.on("mousemove", function (_0x416dfe) {
+                  if (!_0x556f56.getSetupDone() || _0x556f56.isPlaylistLoading()) {
+                    return false;
+                  }
+                  if (!_0x42e76d) {
+                    return false;
+                  }
+                  var _0x5bd243;
+                  var _0x47c05a;
+                  if (_0x71f813 == 'h') {
+                    var _0x1e1542 = _0x2698b5.width();
+                    var _0x27f88f = _0x2dc795.width();
+                    if (_0x27f88f < _0x1e1542) {
+                      return;
+                    }
+                    _0x47c05a = parseInt(_0x499db5.css("left"), 0xa) + _0x2698b5.offset().left;
+                    _0x5bd243 = (_0x1e1542 - _0x27f88f) / _0x1e1542 * (_0x416dfe.pageX - _0x47c05a);
+                    _0x2dc795.css("left", _0x5bd243 + 'px');
+                  } else {
+                    var _0x37d786 = _0x2698b5.height();
+                    var _0x27f88f = _0x2dc795.height();
+                    if (_0x27f88f < _0x37d786) {
+                      return;
+                    }
+                    _0x47c05a = parseInt(_0x499db5.css("top"), 0xa) + _0x2698b5.offset().top;
+                    _0x5bd243 = (_0x37d786 - _0x27f88f) / _0x37d786 * (_0x416dfe.pageY - _0x47c05a);
+                    _0x2dc795.css("top", _0x5bd243 + 'px');
+                  }
+                  return false;
+                });
+              }
+              if (_0x59345e) {
+                _0x394841();
+              }
+            }
+          }
+        }
+      };
+      this.updatePosition = function () {
+        if (_0x5f4b2d.playlistScrollType == "mcustomscrollbar") {
+          _0x499db5.mCustomScrollbar("scrollTo", 0x0);
+        } else if (_0x5f4b2d.playlistScrollType == 'perfect-scrollbar') {
+          _0x499db5[0x0].scrollTop = 0x0;
+        }
+      };
+      function _0x394841() {
+        var _0x4be324;
+        var _0xc18760;
+        var _0xc196b8;
+        var _0xa48f28;
+        var _0x51b469;
+        var _0x24caf4 = false;
+        _0x2dc795.off("touchstart.ap touchmove.ap touchend.ap click.ap-touchclick").on("touchstart.ap", function (_0x312f3d) {
+          if (!_0x556f56.getSetupDone() || _0x556f56.isPlaylistLoading()) {
+            return false;
+          }
+          var _0x160ac2 = _0x312f3d.originalEvent.touches[0x0];
+          _0x4be324 = _0x2dc795.position().left;
+          _0xc18760 = _0x2dc795.position().top;
+          _0xc196b8 = _0x160ac2.pageX;
+          _0xa48f28 = _0x160ac2.pageY;
+          _0x51b469 = false;
+          _0x24caf4 = true;
+        }).on("touchmove.ap", function (_0x1e5984) {
+          if (!_0x24caf4) {
+            return;
+          }
+          var _0xd5fd41 = _0x1e5984.originalEvent.touches[0x0];
+          _0x2f09fb.show();
+          _0x5abaed.show();
+          if (_0x71f813 == 'h') {
+            var _0x290a12 = _0x4be324 - _0xc196b8 + _0xd5fd41.pageX;
+            var _0x55f438 = _0x2698b5.width();
+            var _0x3e8a6e = _0x2dc795.width();
+            if (_0x3e8a6e < _0x55f438) {
+              return;
+            }
+            if (_0x290a12 > 0x0) {
+              _0x290a12 = 0x0;
+              _0x2f09fb.hide();
+            } else {
+              if (_0x290a12 <= _0x55f438 - _0x3e8a6e) {
+                _0x290a12 = _0x55f438 - _0x3e8a6e;
+                _0x5abaed.hide();
+                if (loadMoreOnTotalScroll) {
+                  if (nextPageToken && loadMoreType) {
+                    if (!playlistTransitionOn) {
+                      _0x10974b.loadMore();
+                    }
+                  }
+                } else if (addMoreOnTotalScroll) {
+                  if (!loadMoreProcess) {
+                    addMore();
+                  }
+                }
+              }
+            }
+            _0x2dc795.css("left", _0x290a12 + 'px');
+          } else {
+            var _0x290a12 = _0xc18760 - _0xa48f28 + _0xd5fd41.pageY;
+            var _0x2315be = _0x2698b5.height();
+            var _0x3e8a6e = _0x2dc795.height();
+            if (_0x3e8a6e < _0x2315be) {
+              return;
+            }
+            if (_0x290a12 > 0x0) {
+              _0x290a12 = 0x0;
+              _0x2f09fb.hide();
+            } else if (_0x290a12 <= _0x2315be - _0x3e8a6e) {
+              _0x290a12 = _0x2315be - _0x3e8a6e;
+              _0x5abaed.hide();
+              _0x556f56.totalScrollAction();
+            }
+            _0x2dc795.css('top', _0x290a12 + 'px');
+          }
+          _0x51b469 = _0x51b469 || Math.abs(_0xc196b8 - _0xd5fd41.pageX) > 0x5 || Math.abs(_0xa48f28 - _0xd5fd41.pageY) > 0x5;
+          return false;
+        }).on("touchend.ap", function (_0x40c608) {
+          _0x24caf4 = false;
+        }).on("click.ap-touchclick", function (_0x18fb6e) {
+          if (_0x51b469) {
+            _0x51b469 = false;
+            return false;
+          }
+        });
+      }
+      this.scrollTo = function (_0x5b6b91) {
+        if (_0x312cc7 == "scroll") {
+          if (_0x5f4b2d.playlistScrollType == "mcustomscrollbar") {
+            if (typeof mCustomScrollbar !== "undefined") {
+              setTimeout(function () {
+                if (_0x71f813 == 'h') {
+                  _0x499db5.mCustomScrollbar("scrollTo", parseInt(_0x5b6b91.position().left), {
+                    'scrollInertia': 0x1f4
+                  });
+                } else {
+                  _0x499db5.mCustomScrollbar("scrollTo", parseInt(_0x5b6b91.position().top), {
+                    'scrollInertia': 0x1f4
+                  });
+                }
+              }, 0x1f4);
+            } else {
+              var _0x39f53d = setInterval(function () {
+                if (typeof mCustomScrollbar !== "undefined") {
+                  clearInterval(_0x39f53d);
+                  if (_0x71f813 == 'h') {
+                    _0x499db5.mCustomScrollbar("scrollTo", parseInt(_0x5b6b91.position().left), {
+                      'scrollInertia': 0x1f4
+                    });
+                  } else {
+                    _0x499db5.mCustomScrollbar("scrollTo", parseInt(_0x5b6b91.position().top), {
+                      'scrollInertia': 0x1f4
+                    });
+                  }
+                }
+              }, 0x1f4);
+            }
+          } else if (_0x5f4b2d.playlistScrollType == "perfect-scrollbar") {
+            setTimeout(function () {
+              if (_0x71f813 == 'h') {
+                _0x499db5.stop().animate({
+                  'scrollTop': _0x5b6b91[0x0].offsetLeft + 'px'
+                }, {
+                  'duration': 0x1f4
+                });
+              } else {
+                _0x499db5.stop().animate({
+                  'scrollTop': _0x5b6b91[0x0].offsetTop + 'px'
+                }, {
+                  'duration': 0x1f4
+                });
+              }
+            }, 0x3e8);
+          }
+        } else {
+          if (_0x312cc7 == "buttons") {
+            if (_0x71f813 == 'h') {
+              var _0x10f172 = _0x2698b5.width();
+              var _0x552a0f = _0x2dc795.width();
+              var _0x294fb9 = "translateX";
+            } else {
+              var _0x10f172 = _0x2698b5.height();
+              var _0x552a0f = _0x2dc795.height();
+              var _0x294fb9 = "translateY";
+            }
+            if (_0x552a0f < _0x10f172) {
+              return;
+            }
+            _0x2f09fb.show();
+            _0x5abaed.show();
+            var _0x1f2872 = _0x2dc795.find(".mvp-playlist-item").index(_0x5b6b91);
+            var _0x586d6c = -_0x1f2872 * _0x4ce18f;
+            if (_0x586d6c >= 0x0) {
+              _0x586d6c = 0x0;
+              _0x2f09fb.hide();
+            } else if (_0x586d6c <= _0x10f172 - _0x552a0f) {
+              _0x586d6c = _0x10f172 - _0x552a0f;
+              _0x5abaed.hide();
+            }
+            _0x29027a = _0x586d6c;
+            _0x2dc795.one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function () {
+              _0x48b5cf = false;
+            }).css({
+              '-webkit-transform': '' + _0x294fb9 + '(' + _0x586d6c + "px)",
+              '-ms-transform': '' + _0x294fb9 + '(' + _0x586d6c + "px)",
+              'transform': '' + _0x294fb9 + '(' + _0x586d6c + 'px)'
+            });
+          }
+        }
+      };
+      this.showButtons = function (_0x3b7ed6) {
+        if (_0x3b7ed6 == "forward") {
+          _0x5abaed.show();
+        }
+      };
+      this.resize = function (_0x9b2fe3) {
+        if (_0x312cc7 == "buttons") {
+          if (_0x71f813 == 'h') {
+            var _0x5aac9a = _0x499db5.width();
+            var _0x21706a = _0x2dc795.width();
+            var _0x537598 = "translateX";
+          } else {
+            var _0x5aac9a = _0x499db5.height();
+            var _0x21706a = _0x2dc795.height();
+            var _0x537598 = "translateY";
+          }
+          console.log(_0x5aac9a, _0x21706a);
+          if (_0x21706a < _0x5aac9a) {
+            _0x42e76d = false;
+            _0x2f09fb.hide();
+            _0x5abaed.hide();
+          } else {
+            _0x42e76d = true;
+            if (_0x9b2fe3) {
+              var _0xee3399 = _0x2dc795.find(".mvp-playlist-item").index(_0x9b2fe3);
+              var _0x5f56f7 = -_0xee3399 * _0x4ce18f;
+            } else {
+              var _0x5f56f7 = 0x0;
+            }
+            if (!_0x29027a) {
+              _0x5f56f7 = _0x2dc795[0x0].style.transform.replace(/[^\d.]/g, '');
+              _0x5f56f7 = parseInt(_0x5f56f7);
+            } else {
+              _0x5f56f7 = _0x29027a;
+            }
+            if (_0x5f56f7 > 0x0) {
+              _0x5f56f7 = 0x0;
+              _0x5abaed.show();
+            } else {
+              if (_0x5f56f7 < _0x5aac9a - _0x21706a) {
+                _0x5f56f7 = _0x5aac9a - _0x21706a;
+                _0x2f09fb.show();
+              } else if (isNaN(_0x5f56f7) && !_0x556f56.getMediaType()) {
+                _0x5abaed.show();
+              }
+            }
+            _0x29027a = _0x5f56f7;
+            setTimeout(function () {
+              _0x2dc795.css({
+                '-webkit-transform': '' + _0x537598 + '(' + _0x5f56f7 + 'px)',
+                '-ms-transform': '' + _0x537598 + '(' + _0x5f56f7 + "px)",
+                'transform': '' + _0x537598 + '(' + _0x5f56f7 + "px)"
+              });
+            }, 0x15e);
+          }
+        } else {
+          if (_0x312cc7 == "hover") {
+            if (_0x71f813 == 'h') {
+              var _0x43d357 = _0x499db5.width();
+              var _0x21706a = _0x2dc795.width();
+              if (_0x21706a < _0x43d357) {
+                _0x42e76d = false;
+              } else {
+                _0x42e76d = true;
+                var _0x5f56f7 = parseInt(_0x2dc795.css("left"), 0xa);
+                if (_0x5f56f7 > 0x0) {
+                  _0x5f56f7 = 0x0;
+                } else if (_0x5f56f7 < _0x43d357 - _0x21706a) {
+                  _0x5f56f7 = _0x43d357 - _0x21706a;
+                }
+                _0x2dc795.css("left", _0x5f56f7 + 'px');
+              }
+            } else {
+              var _0x1b0c41 = _0x499db5.height();
+              var _0x21706a = _0x2dc795.height();
+              if (_0x21706a < _0x1b0c41) {
+                _0x42e76d = false;
+              } else {
+                _0x42e76d = true;
+                var _0x5f56f7 = parseInt(_0x2dc795.css("top"), 0xa);
+                if (_0x5f56f7 > 0x0) {
+                  _0x5f56f7 = 0x0;
+                } else if (_0x5f56f7 < _0x1b0c41 - _0x21706a) {
+                  _0x5f56f7 = _0x1b0c41 - _0x21706a;
+                }
+                _0x2dc795.css("top", _0x5f56f7 + 'px');
+              }
+            }
+          }
+        }
+      };
+      this.setScrollActive = function () {
+        _0x48b5cf = false;
+      };
+      this.updateScrollPosition = function () {
+        if (_0x5f4b2d.playlistScrollType == "perfect-scrollbar") {
+          if (_0x1fa2de) {
+            _0x1fa2de.update();
+          }
+        }
+      };
+      this.destroy = function () {
+        if (_0x312cc7 == 'scroll') {
+          if (_0x5f4b2d.playlistScrollType == "mcustomscrollbar") {
+            if (typeof mCustomScrollbar !== "undefined") {
+              _0x499db5.mCustomScrollbar("destroy");
+            }
+          } else if (_0x5f4b2d.playlistScrollType == "perfect-scrollbar") {
+            if (_0x1fa2de) {
+              _0x1fa2de.destroy();
+              _0x1fa2de = null;
+            }
+          }
+        } else {
+          if (_0x312cc7 == "buttons") {
+            _0x499db5.off("wheel");
+            _0x2f09fb.off("click");
+            _0x5abaed.off("click");
+            if (_0x71f813 == 'h') {
+              var _0x379c6a = "translateX";
+            } else {
+              var _0x379c6a = "translateY";
+            }
+            _0x29027a = 0x0;
+            _0x2dc795.css({
+              '-webkit-transform': '' + _0x379c6a + '(' + 0x0 + "px)",
+              '-ms-transform': '' + _0x379c6a + '(' + 0x0 + "px)",
+              'transform': '' + _0x379c6a + '(' + 0x0 + "px)"
+            });
+          } else if (_0x312cc7 == "hover") {
+            _0x499db5.off("mousemove");
+          }
+        }
+        if (_0x59345e) {
+          _0x2dc795.off("touchstart.ap touchmove.ap touchend.ap click.ap-touchclick");
+        }
+        if (_0x71f813 == 'h') {
+          _0x2dc795.css("left", 0x0);
+        } else {
+          _0x2dc795.css('top', 0x0);
+        }
+      };
+      _0x10974b.checkPlaylistNavigation();
+    };
+    _0x2fde50.MVPPlaylistNavigation = _0x395e0b;
+  })(window, jQuery);

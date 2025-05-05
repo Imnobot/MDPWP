@@ -249,8 +249,8 @@ $global_custom_css = isset($settings['global_custom_css']) ? stripslashes($setti
 			            <tr valign="top">
 			                <th><?php esc_html_e('Cache time', MVP_TEXTDOMAIN); ?></th>
 			                <td>
-			                    <input type="number" min="0" name="cacheTime" value="<?php echo($settings['cacheTime']); ?>"><br>
-			                    <span class="info"><?php esc_html_e('How long to cache playlist in browser. For example, if you load a Youtube playlist or a Vimeo channel, and set cacheTime:3600 (1 hour), everytime the page is reloaded within that hour, playlist will be loaded from cache.', MVP_TEXTDOMAIN); ?></span>
+							<input type="number" min="0" name="cacheTime" value="<?php echo isset($settings['cacheTime']) ? esc_attr($settings['cacheTime']) : '60'; ?>"><br>
+							<span class="info"><?php esc_html_e('How long to cache playlist in browser. For example, if you load a Youtube playlist or a Vimeo channel, and set cacheTime:3600 (1 hour), everytime the page is reloaded within that hour, playlist will be loaded from cache.', MVP_TEXTDOMAIN); ?></span>
 			                </td>
 			            </tr>
 

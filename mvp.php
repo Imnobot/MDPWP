@@ -1502,59 +1502,51 @@ Author URI: https://codecanyon.net/user/Tean/
  */
 function mvp_sanitize_options_recursive( $data ) {
     if ( is_array( $data ) ) {
-        // Recursively sanitize array elements
-        // *** Keep original keys ***
         foreach ( $data as $key => $value ) {
-            // Sanitize the value, but use the original key
             $data[ $key ] = mvp_sanitize_options_recursive( $value );
         }
         return $data;
     } elseif ( is_object( $data ) ) {
-        // Recursively sanitize object properties
-        // *** Keep original keys ***
         $vars = get_object_vars( $data );
         foreach ( $vars as $key => $value ) {
-            // Sanitize the value, but use the original key
             $data->$key = mvp_sanitize_options_recursive( $value );
         }
         return $data;
     } elseif ( is_string( $data ) ) {
-        // Determine sanitization based on context (this is tricky without knowing all options)
-        // Heuristic: If it looks like a URL, sanitize as URL. If it might contain HTML, use wp_kses_post. Otherwise, sanitize_text_field.
-        // This needs refinement based on the specific settings fields expected.
-
-        // Use wp_check_invalid_utf8 to prevent potential issues, then sanitize
+        // Trim whitespace first
+        $data = trim( $data );
         $data = wp_check_invalid_utf8( $data );
 
-        // Basic check for common script/event handlers - strip if found (adjust list as needed)
-        // This is a basic attempt, not foolproof XSS protection.
         if ( preg_match( '/<(script|style|iframe|object|embed)/i', $data ) || preg_match( '/(on[a-z]+)=/i', $data ) ) {
-             // If it contains potentially dangerous tags or inline event handlers, strip all tags.
-             // Consider wp_kses() with specific allowed tags if some HTML is needed.
              return strip_tags( $data );
         } elseif ( filter_var( $data, FILTER_VALIDATE_URL ) ) {
-             // Allow valid URLs
-            return esc_url_raw( $data );
+            // Check if it's a URL-like structure *before* extensive HTML checks
+            // Check specifically for common protocols if filter_var is too broad
+             if (preg_match('!^(https?|ftp)://!i', $data)) {
+                 return esc_url_raw( $data );
+             } else {
+                 // If it looks like a URL but filter_var passed it and it lacks http/https,
+                 // treat as text to avoid potential issues. Or return empty if it MUST be a URL.
+                  return sanitize_text_field( $data );
+             }
+
         } elseif ( preg_match( '/^rgba?\([\d.,\s]+\)$/i', $data ) || preg_match('/^#([a-f0-9]{3}){1,2}$/i', $data) ) {
-             // Allow CSS color values (basic check)
-             return sanitize_text_field( $data ); // Sanitize just in case, but allows format
+             return sanitize_text_field( $data );
         } elseif ( preg_match( '/<[a-z][\s\S]*>/i', $data ) ) {
-            // If it seems to contain general HTML (and didn't match dangerous tags above)
-            // Use wp_kses_post for general content HTML.
-             // Ensure this allows necessary HTML for specific fields if any.
             return wp_kses_post( $data );
         } else {
-            // Default fallback for plain text, CSS classes, selectors etc.
             return sanitize_text_field( $data );
         }
     } elseif ( is_numeric( $data ) ) {
-         // Allow numbers (integers, floats)
          return $data;
     } elseif ( is_bool( $data ) ) {
-        // Allow booleans
         return $data;
+    } elseif ( is_null( $data ) ) {
+        // Explicitly handle null - return null or an empty string depending on needs
+        return null; // Keep null as null
     } else {
-        // Handle other types (null, etc.) - return as is
+        // Handle other types (resource, etc.) - return as is or cast to string?
+        // For safety, maybe return empty string or log an error for unexpected types.
         return $data;
     }
 }
@@ -5008,32 +5000,38 @@ function mvp_sanitize_options_recursive( $data ) {
     /**
      * AJAX handler to export selected playlists as JSON.
      */
-    function mvp_export_playlists_json() {
-		// 1. Security Checks (Nonce first, then Capability)
-		// Use check_ajax_referer for AJAX actions
-		if ( ! check_ajax_referer( 'mvp-security-nonce', 'nonce', false ) ) { // Check nonce passed in POST data under the name 'nonce'
-			wp_send_json_error( ['message' => 'Invalid security token sent.'], 403 );
-			wp_die(); // wp_send_json_* includes wp_die()
+	function mvp_sanitize_export_filename( $filename ) {
+		// Use WordPress core function to handle accents, spaces, and special chars -> turns into lowercase-with-hyphens
+		$sanitized = sanitize_title( $filename );
+	
+		// Optional: Limit length if sanitize_title can still produce very long names
+		$sanitized = mb_substr( $sanitized, 0, 100 );
+	
+		if ( empty( $sanitized ) ) {
+			$sanitized = 'playlist-export'; // Default if sanitization results in empty string
 		}
+		return $sanitized;
+	}
+
+    function mvp_export_playlists_json() {
+		// 1. Security Checks (Nonce passed as 'nonce' in POST, then Capability)
+		check_ajax_referer( 'mvp-security-nonce', 'nonce' ); // Checks $_POST['nonce']
+
 		if (!current_user_can(MVP_CAPABILITY)) {
-			wp_send_json_error( ['message' => 'You do not have permission to export playlists.'], 403 );
-			wp_die();
+			wp_die(esc_html__('You do not have permission to export playlists.', MVP_TEXTDOMAIN), esc_html__('Permission Denied', MVP_TEXTDOMAIN), ['response' => 403]);
 		}
 		if (!isset($_POST['playlist_ids']) || !is_array($_POST['playlist_ids'])) {
-			wp_send_json_error( ['message' => 'No playlist IDs provided.'], 400 );
-			wp_die();
+			 wp_die(esc_html__('No playlist IDs provided.', MVP_TEXTDOMAIN), esc_html__('Bad Request', MVP_TEXTDOMAIN), ['response' => 400]);
 		}
-	
-		$playlist_ids_raw = $_POST['playlist_ids']; // No need to unslash AJAX data usually
-		$playlist_ids = array_map('intval', $playlist_ids_raw); // Sanitize IDs
+
+		$playlist_ids_raw = $_POST['playlist_ids'];
+		$playlist_ids = array_map('intval', $playlist_ids_raw);
 		$valid_playlist_ids = array_filter($playlist_ids, function($id) { return $id > 0; });
-	
-	
+
 		if (empty($valid_playlist_ids)) {
-			wp_send_json_error( ['message' => 'No valid playlist IDs provided.'], 400 );
-			wp_die();
+			wp_die(esc_html__('No valid playlist IDs provided.', MVP_TEXTDOMAIN), esc_html__('Bad Request', MVP_TEXTDOMAIN), ['response' => 400]);
 		}
-	
+
 		// 2. Database Access
 		global $wpdb;
 		$playlist_table = $wpdb->prefix . "mvp_playlists";
@@ -5042,52 +5040,43 @@ function mvp_sanitize_options_recursive( $data ) {
 		$subtitle_table = $wpdb->prefix . "mvp_subtitle";
 		$ad_table = $wpdb->prefix . "mvp_ad";
 		$annotation_table = $wpdb->prefix . "mvp_annotation";
-	
-		$playlists_data_to_export = []; // Array to hold data for each playlist file
-	
-		// 3. Loop through requested playlists
+
+		// --- Initialize an array to hold data for each playlist ---
+        $all_playlists_data = [];
+        $found_playlist_titles = []; // To store titles for filename generation
+
+		// 3. Loop through requested playlists and fetch data
 		foreach ($valid_playlist_ids as $playlist_id) {
 			$playlist_row = $wpdb->get_row($wpdb->prepare("SELECT title, options FROM {$playlist_table} WHERE id = %d", $playlist_id), ARRAY_A);
-	
+
 			if (!$playlist_row) {
-				// Optionally log skipped playlist
-				// error_log("MVP Export JSON: Playlist ID {$playlist_id} not found, skipping.");
 				continue; // Skip if playlist not found
 			}
-	
+
+            $playlist_title = $playlist_row['title'];
+            $found_playlist_titles[$playlist_id] = $playlist_title; // Store title with ID
+
 			$playlist_options = maybe_unserialize($playlist_row['options']);
-			if (!is_array($playlist_options)) { // Ensure options is an array/object
-				 $playlist_options = [];
-			}
-	
-			$playlist_title = $playlist_row['title'];
-	
-			// --- Build the export structure for THIS playlist ---
-			$single_playlist_export_structure = [
-				'version'     => '1.0-mvp-json-single', // Indicate single playlist export format
-				'exported_at' => gmdate('c'),
-				'playlist'    => [ // Wrap the single playlist data
-					'title'   => $playlist_title,
-					'options' => $playlist_options,
-					'media'   => [],
-				]
+			if (!is_array($playlist_options)) $playlist_options = [];
+
+			$playlist_export_item = [
+                'playlist_id' => $playlist_id, // Store original ID for reference if needed
+				'title'   => $playlist_title,
+				'options' => $playlist_options,
+				'media'   => [],
 			];
-			// --- End structure definition ---
-	
-	
-			// 4. Fetch media for this playlist
+
+			// Fetch media for this playlist
 			$media_rows = $wpdb->get_results($wpdb->prepare("SELECT id, title, options, order_id FROM {$media_table} WHERE playlist_id = %d ORDER BY order_id ASC", $playlist_id), ARRAY_A);
-	
+
 			if ($media_rows) {
 				foreach ($media_rows as $media_row) {
-					$media_id = $media_row['id']; // This is the OLD media ID
+					$media_id = $media_row['id'];
 					$media_options = maybe_unserialize($media_row['options']);
-					 if (!is_array($media_options)) {
-						 $media_options = [];
-					 }
-	
+					 if (!is_array($media_options)) $media_options = [];
+
 					$media_export_item = [
-						'title'       => $media_row['title'], // Include the title!
+						'title'       => $media_row['title'],
 						'order_id'    => (int) $media_row['order_id'],
 						'options'     => $media_options,
 						'paths'       => [],
@@ -5095,76 +5084,150 @@ function mvp_sanitize_options_recursive( $data ) {
 						'ads'         => [],
 						'annotations' => [],
 					];
-	
-					// 5. Fetch related data for this media item (Paths, Subs, Ads, Annotations)
+
+					// Fetch related data (Paths, Subs, Ads, Annotations)
 					// Paths
 					$path_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$path_table} WHERE media_id = %d", $media_id), ARRAY_A);
-					if ($path_rows) {
-						foreach ($path_rows as $path_row) {
-							$path_options = maybe_unserialize($path_row['options']);
-							if (is_array($path_options)) {
-								 $media_export_item['paths'][] = ['options' => $path_options];
-							}
-						}
-					}
+					if ($path_rows) { foreach ($path_rows as $row) { $opts = maybe_unserialize($row['options']); if (is_array($opts)) $media_export_item['paths'][] = ['options' => $opts]; } }
 					// Subtitles
 					$subtitle_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$subtitle_table} WHERE media_id = %d", $media_id), ARRAY_A);
-					if ($subtitle_rows) {
-						foreach ($subtitle_rows as $subtitle_row) {
-							 $subtitle_options = maybe_unserialize($subtitle_row['options']);
-							 if (is_array($subtitle_options)) {
-								$media_export_item['subtitles'][] = ['options' => $subtitle_options];
-							 }
-						}
-					}
-					// Ads (associated with media)
+					if ($subtitle_rows) { foreach ($subtitle_rows as $row) { $opts = maybe_unserialize($row['options']); if (is_array($opts)) $media_export_item['subtitles'][] = ['options' => $opts]; } }
+					// Ads (Media Specific)
 					 $ad_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$ad_table} WHERE media_id = %d AND ad_id IS NULL", $media_id), ARRAY_A);
-					 if ($ad_rows) {
-						foreach ($ad_rows as $ad_row) {
-							 $ad_options = maybe_unserialize($ad_row['options']);
-							 if (is_array($ad_options)) {
-								$media_export_item['ads'][] = ['options' => $ad_options];
-							 }
-						}
-					}
-					// Annotations (associated with media)
+					 if ($ad_rows) { foreach ($ad_rows as $row) { $opts = maybe_unserialize($row['options']); if (is_array($opts)) $media_export_item['ads'][] = ['options' => $opts]; } }
+					// Annotations (Media Specific)
 					 $annotation_rows = $wpdb->get_results($wpdb->prepare("SELECT options FROM {$annotation_table} WHERE media_id = %d AND ad_id IS NULL", $media_id), ARRAY_A);
-					 if ($annotation_rows) {
-						foreach ($annotation_rows as $annotation_row) {
-							 $annotation_options = maybe_unserialize($annotation_row['options']);
-							 if (is_array($annotation_options)) {
-								 $media_export_item['annotations'][] = ['options' => $annotation_options];
-							 }
-						}
-					}
-					// --- End Fetching Related Data ---
-	
-					$single_playlist_export_structure['playlist']['media'][] = $media_export_item;
-	
+					 if ($annotation_rows) { foreach ($annotation_rows as $row) { $opts = maybe_unserialize($row['options']); if (is_array($opts)) $media_export_item['annotations'][] = ['options' => $opts]; } }
+
+					$playlist_export_item['media'][] = $media_export_item;
 				} // end foreach media_row
 			} // end if media_rows
-	
-	
-			// Encode the data for *this* playlist into a JSON string
-			$playlist_json_content = wp_json_encode($single_playlist_export_structure, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-	
-			// Add this playlist's data to the main array for the response
-			$playlists_data_to_export[] = [
-				'title' => $playlist_title, // Original title for filename generation
-				'json_data' => $playlist_json_content
-			];
-	
+
+			// Add this playlist's complete data structure to our collection
+            $all_playlists_data[] = $playlist_export_item;
+
 		} // end foreach valid_playlist_ids
-	
-		// 6. Send JSON Response containing data for all requested playlists
-		if (empty($playlists_data_to_export)) {
-			 wp_send_json_error( ['message' => 'No valid playlists found for the selected IDs.'], 404 );
-		} else {
-			 wp_send_json_success( $playlists_data_to_export ); // Send the array of playlist data objects
+
+
+		// Check if any playlists were actually found and processed
+		$found_count = count($all_playlists_data);
+		if ($found_count === 0) {
+			wp_die(esc_html__('No valid playlists found for the selected IDs to export.', MVP_TEXTDOMAIN), esc_html__('Not Found', MVP_TEXTDOMAIN), ['response' => 404]);
 		}
-	
-		wp_die(); // Should be called by wp_send_json_* anyway
-	
+
+        // --- Determine Export Format (Single JSON or ZIP) ---
+
+        if ($found_count === 1) {
+            // --- SINGLE JSON EXPORT ---
+            $single_playlist_data = $all_playlists_data[0];
+            $playlist_title = $single_playlist_data['title']; // Get title from the fetched data
+            $export_structure = [
+                'version'     => '1.0-mvp-json-single', // Indicate single playlist export format
+                'exported_at' => gmdate('c'),
+                'playlist'    => $single_playlist_data, // Embed the single playlist data
+            ];
+
+            // Use the improved sanitize function, NO prefix
+            $filename = mvp_sanitize_export_filename($playlist_title) . '_' . $single_playlist_data['playlist_id'] . '.json';
+            $json_output = wp_json_encode($export_structure, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+            // Set headers for single JSON download
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/json; charset=utf-8');
+            header('Content-Length: ' . strlen($json_output));
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            header('Expires: 0');
+            header('Pragma: public');
+
+            if (ob_get_level()) ob_end_clean(); // Clean output buffer
+            echo $json_output;
+            wp_die();
+
+        } else {
+            // --- MULTIPLE PLAYLISTS - ZIP EXPORT ---
+
+            if (!class_exists('ZipArchive')) {
+                wp_die(esc_html__('ZipArchive class not found. Please ensure the PHP zip extension is installed and enabled on your server to export multiple playlists.', MVP_TEXTDOMAIN), esc_html__('Server Configuration Error', MVP_TEXTDOMAIN), ['response' => 500]);
+            }
+
+            // Define ZIP filename
+            $zip_filename_base = 'mvp_playlists_export_' . date('Y-m-d_His');
+            $zip_filename = $zip_filename_base . '.zip';
+            $temp_zip_dir = MVP_FILE_DIR . 'plzip/'; // Use existing temp dir
+            $temp_zip_path = $temp_zip_dir . $zip_filename;
+
+            // Ensure the temp directory exists
+            if (!file_exists($temp_zip_dir)) {
+                wp_mkdir_p($temp_zip_dir);
+            }
+            if (!is_writable($temp_zip_dir)) {
+                 wp_die(esc_html__('Temporary export directory is not writable:', MVP_TEXTDOMAIN) . ' ' . esc_html($temp_zip_dir), esc_html__('File System Error', MVP_TEXTDOMAIN), ['response' => 500]);
+            }
+
+
+            $zip = new ZipArchive();
+            $res = $zip->open($temp_zip_path, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+            if ($res !== TRUE) {
+                wp_die(esc_html__('Failed to create the ZIP archive. Error Code:', MVP_TEXTDOMAIN) . ' ' . $res, esc_html__('ZIP Creation Error', MVP_TEXTDOMAIN), ['response' => 500]);
+            }
+
+            // Loop through the collected playlist data and add each as a JSON file to the ZIP
+            foreach ($all_playlists_data as $playlist_data) {
+                $playlist_id = $playlist_data['playlist_id'];
+                $playlist_title = $playlist_data['title'];
+
+                // Structure for individual JSON file
+                 $individual_export_structure = [
+                    'version'     => '1.0-mvp-json-single', // Mark as single format for easier import later
+                    'exported_at' => gmdate('c'),
+                    'playlist'    => $playlist_data,
+                ];
+
+                $json_content = wp_json_encode($individual_export_structure, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                // *** Use improved sanitize function AND remove 'playlist_' prefix ***
+                $json_filename_in_zip = mvp_sanitize_export_filename($playlist_title) . '_' . $playlist_id . '.json';
+
+                // Add JSON content to the zip
+                if (!$zip->addFromString($json_filename_in_zip, $json_content)) {
+                     $zip->close(); // Attempt to close before dying
+                     @unlink($temp_zip_path); // Attempt cleanup
+                     wp_die(esc_html__('Failed to add file to ZIP archive:', MVP_TEXTDOMAIN) . ' ' . esc_html($json_filename_in_zip), esc_html__('ZIP Add Error', MVP_TEXTDOMAIN), ['response' => 500]);
+                }
+            }
+
+            // Close the zip file
+            if (!$zip->close()) {
+                 @unlink($temp_zip_path); // Attempt cleanup
+                 wp_die(esc_html__('Failed to close the ZIP archive after adding files.', MVP_TEXTDOMAIN), esc_html__('ZIP Close Error', MVP_TEXTDOMAIN), ['response' => 500]);
+            }
+
+            // Check if file exists and is readable before sending headers
+            if (!file_exists($temp_zip_path) || !is_readable($temp_zip_path)) {
+                 @unlink($temp_zip_path); // Attempt cleanup if exists but not readable
+                 wp_die(esc_html__('Failed to create or read the final ZIP archive on the server.', MVP_TEXTDOMAIN), esc_html__('File System Error', MVP_TEXTDOMAIN), ['response' => 500]);
+            }
+
+            // Send headers for ZIP download
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/zip');
+            header('Content-Length: ' . filesize($temp_zip_path));
+            header('Content-Disposition: attachment; filename="' . $zip_filename . '"');
+            header('Expires: 0');
+            header('Pragma: public');
+
+            if (ob_get_level()) ob_end_clean(); // Clean output buffer
+
+            // Output the zip file content
+            readfile($temp_zip_path);
+
+            // Delete the temporary zip file AFTER sending it
+            unlink($temp_zip_path);
+
+            wp_die();
+        }
 	}
 
 
@@ -5172,265 +5235,343 @@ function mvp_sanitize_options_recursive( $data ) {
      * AJAX handler to import playlists from an uploaded JSON file.
      */
     function mvp_import_playlists_json() {
-        // 1. Security and File Upload Checks
-        // Use the nonce from the form in playlist_manager.php
-        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'mvp-import-playlist-nonce')) {
-             wp_send_json_error(['message' => 'Invalid security token sent.'], 403);
-             wp_die();
-        }
-         if (!current_user_can(MVP_CAPABILITY)) {
-            wp_send_json_error(['message' => 'You do not have permission to import playlists.'], 403);
-            wp_die();
-        }
-        if (!isset($_FILES['mvp_import_file'])) {
-            wp_send_json_error(['message' => 'No file uploaded.'], 400);
-            wp_die();
-        }
+		// 1. Security and File Upload Checks
+		if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'mvp-import-playlist-nonce')) {
+			 wp_send_json_error(['message' => 'Invalid security token sent.'], 403);
+		}
+		 if (!current_user_can(MVP_CAPABILITY)) {
+			wp_send_json_error(['message' => 'You do not have permission to import playlists.'], 403);
+		}
+		if (!isset($_FILES['mvp_import_file'])) {
+			wp_send_json_error(['message' => 'No file uploaded.'], 400);
+		}
 
-        $file = $_FILES['mvp_import_file'];
+		$file = $_FILES['mvp_import_file'];
 
-        // Check for upload errors
         if ($file['error'] !== UPLOAD_ERR_OK) {
-            $upload_errors = [
-                UPLOAD_ERR_INI_SIZE   => "The uploaded file exceeds the upload_max_filesize directive in php.ini.",
-                UPLOAD_ERR_FORM_SIZE  => "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.",
-                UPLOAD_ERR_PARTIAL    => "The uploaded file was only partially uploaded.",
-                UPLOAD_ERR_NO_FILE    => "No file was uploaded.",
-                UPLOAD_ERR_NO_TMP_DIR => "Missing a temporary folder.",
-                UPLOAD_ERR_CANT_WRITE => "Failed to write file to disk.",
-                UPLOAD_ERR_EXTENSION  => "A PHP extension stopped the file upload.",
-            ];
-            $error_message = isset($upload_errors[$file['error']]) ? $upload_errors[$file['error']] : 'Unknown upload error.';
+            $error_message = 'File upload error. Code: ' . $file['error'];
             wp_send_json_error(['message' => $error_message], 500);
-            wp_die();
         }
 
-        // Check file type (basic check)
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime_type = finfo_file($finfo, $file['tmp_name']);
         finfo_close($finfo);
-
-        // Allow application/json and text/plain (sometimes JSON is uploaded as plain text)
-        if ($mime_type !== 'application/json' && $mime_type !== 'text/plain') {
-             // More specific check for file extension as fallback
-             $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-             if ($file_ext !== 'json') {
-                wp_send_json_error(['message' => 'Invalid file type detected (' . esc_html($mime_type) . '). Please upload a .json file.'], 415);
-                wp_die();
-             }
+        $allowed_mime_types = ['application/json', 'text/plain'];
+        $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if (!in_array($mime_type, $allowed_mime_types) && $file_ext !== 'json') {
+            wp_send_json_error(['message' => 'Invalid file type detected (' . esc_html($mime_type) . '/' . esc_html($file_ext) . '). Please upload a .json file.'], 415);
         }
 
+		// 2. Read and Decode JSON
+		$json_content = file_get_contents($file['tmp_name']);
+		if ($json_content === false) {
+			wp_send_json_error(['message' => 'Could not read uploaded file.'], 500);
+		}
+		if (substr($json_content, 0, 3) === "\xEF\xBB\xBF") { $json_content = substr($json_content, 3); }
+		$import_data = json_decode($json_content, true);
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			wp_send_json_error(['message' => 'Invalid JSON file: ' . json_last_error_msg()], 400);
+		}
 
-        // 2. Read and Decode JSON
-        $json_content = file_get_contents($file['tmp_name']);
-        if ($json_content === false) {
-            wp_send_json_error(['message' => 'Could not read uploaded file.'], 500);
-            wp_die();
-        }
+		// 3. Normalize Input Structure
+		$playlists_to_process = [];
+		if (isset($import_data['playlists']) && is_array($import_data['playlists'])) {
+			$playlists_to_process = $import_data['playlists'];
+		} elseif (isset($import_data['playlist']) && is_array($import_data['playlist'])) {
+			$playlists_to_process = [$import_data['playlist']];
+		} else {
+			wp_send_json_error(['message' => 'Invalid JSON structure: Missing expected "playlists" array or "playlist" object.'], 400);
+		}
 
-        // Remove UTF-8 BOM if present (can interfere with json_decode)
-        if (substr($json_content, 0, 3) === "\xEF\xBB\xBF") {
-            $json_content = substr($json_content, 3);
-        }
+		// 4. Database Access
+		global $wpdb;
+		$playlist_table = $wpdb->prefix . "mvp_playlists";
+		$media_table = $wpdb->prefix . "mvp_media";
+		$path_table = $wpdb->prefix . "mvp_path";
+		$subtitle_table = $wpdb->prefix . "mvp_subtitle";
+		$ad_table = $wpdb->prefix . "mvp_ad";
+		$annotation_table = $wpdb->prefix . "mvp_annotation";
 
-        $import_data = json_decode($json_content, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            wp_send_json_error(['message' => 'Invalid JSON file: ' . json_last_error_msg()], 400);
-            wp_die();
-        }
+		$created_playlists_count = 0;
+		$updated_playlists_count = 0;
+		$total_media_added = 0;
+        $total_media_skipped = 0;
+		$errors = [];
+		$overall_success = true;
 
-        // 3. Validate Basic Structure
-        if (!isset($import_data['playlists']) || !is_array($import_data['playlists'])) {
-            wp_send_json_error(['message' => 'Invalid JSON structure: Missing "playlists" array.'], 400);
-            wp_die();
-        }
+		// 5. Start Transaction
+		$wpdb->query('START TRANSACTION');
 
-        // 4. Database Access
-        global $wpdb;
-        $playlist_table = $wpdb->prefix . "mvp_playlists";
-        $media_table = $wpdb->prefix . "mvp_media";
-        $path_table = $wpdb->prefix . "mvp_path";
-        $subtitle_table = $wpdb->prefix . "mvp_subtitle";
-        $ad_table = $wpdb->prefix . "mvp_ad";
-        $annotation_table = $wpdb->prefix . "mvp_annotation";
+		try {
+			foreach ($playlists_to_process as $playlist_index => $playlist_item) {
 
-        $imported_playlists = 0;
-        $imported_media = 0;
-        $errors = [];
+                // --- Validate Current Playlist Item ---
+				if (!isset($playlist_item['title']) || !is_string($playlist_item['title']) || empty(trim($playlist_item['title']))) {
+					$errors[] = "Playlist #" . ($playlist_index + 1) . " in JSON is missing a valid title. Skipping.";
+					$overall_success = false;
+					continue; // Skip this playlist entirely
+				}
+				$json_playlist_title = trim($playlist_item['title']);
+				$json_playlist_options_raw = isset($playlist_item['options']) && is_array($playlist_item['options']) ? $playlist_item['options'] : [];
+				$json_media_items_raw = isset($playlist_item['media']) && is_array($playlist_item['media']) ? $playlist_item['media'] : [];
 
-        // 5. Start Transaction (Optional but recommended for bulk inserts)
-        $wpdb->query('START TRANSACTION');
+                // --- Sanitize Playlist Options ---
+                $sanitized_playlist_options = mvp_sanitize_options_recursive($json_playlist_options_raw);
+                $options_to_save = maybe_serialize($sanitized_playlist_options);
 
-        try {
-            // 6. Loop through Playlists in JSON
-            foreach ($import_data['playlists'] as $playlist_index => $playlist_item) {
-                if (!isset($playlist_item['title'])) {
-                    $errors[] = "Playlist #" . ($playlist_index + 1) . " is missing a title. Skipping.";
-                    continue;
-                }
+				// --- Check if Playlist Exists By Title ---
+				$existing_playlist = $wpdb->get_row(
+					$wpdb->prepare("SELECT id FROM {$playlist_table} WHERE title = %s", $json_playlist_title),
+					ARRAY_A
+				);
 
-                // Sanitize and prepare playlist data
-                $playlist_title = sanitize_text_field($playlist_item['title']);
-                // Add suffix to avoid exact title conflicts (you might want a setting for this)
-                $playlist_title .= ' (Imported ' . date('Y-m-d H:i:s') . ')';
-                $playlist_options = isset($playlist_item['options']) && is_array($playlist_item['options']) ? $playlist_item['options'] : [];
+				$target_playlist_id = null;
+				$is_update = false;
+                $existing_media_paths = [];
+                $next_order_id = 0;
 
-                // Insert Playlist
-                $inserted_playlist = $wpdb->insert(
-                    $playlist_table,
-                    [
-                        'title'   => $playlist_title,
-                        'options' => maybe_serialize($playlist_options), // Re-serialize for DB
-                    ],
-                    ['%s', '%s']
-                );
+				if ($existing_playlist) {
+					// --- UPDATE EXISTING PLAYLIST ---
+					$is_update = true;
+					$updated_playlists_count++;
+					$target_playlist_id = (int) $existing_playlist['id'];
 
-                if (!$inserted_playlist) {
-                    $errors[] = "Failed to insert playlist: " . esc_html($playlist_title) . ". Error: " . esc_html($wpdb->last_error);
-                    continue; // Skip media if playlist insertion failed
-                }
+					// Update playlist options
+					$updated = $wpdb->update( $playlist_table, ['options' => $options_to_save], ['id' => $target_playlist_id], ['%s'], ['%d'] );
+					if ($updated === false) {
+						 $errors[] = "Failed to update options for playlist '{$json_playlist_title}' (ID: {$target_playlist_id}). Error: " . esc_html($wpdb->last_error);
+						 $overall_success = false;
+						 continue; // Skip media if options fail
+					}
 
-                $new_playlist_id = $wpdb->insert_id;
-                $imported_playlists++;
-
-                // 7. Loop through Media in the current Playlist
-                if (isset($playlist_item['media']) && is_array($playlist_item['media'])) {
-                    foreach ($playlist_item['media'] as $media_index => $media_item) {
-                         if (!isset($media_item['title'])) {
-                            $errors[] = "Media item #" . ($media_index + 1) . " in playlist '" . esc_html($playlist_title) . "' is missing a title. Skipping.";
-                            continue;
-                        }
-
-                        // Sanitize and prepare media data
-                        $media_title = sanitize_text_field($media_item['title']);
-                        $media_order_id = isset($media_item['order_id']) ? intval($media_item['order_id']) : 0;
-                        $media_options = isset($media_item['options']) && is_array($media_item['options']) ? $media_item['options'] : [];
-
-                         // Insert Media
-                        $inserted_media = $wpdb->insert(
-                            $media_table,
-                            [
-                                'title'       => $media_title,
-                                'options'     => maybe_serialize($media_options),
-                                'order_id'    => $media_order_id,
-                                'playlist_id' => $new_playlist_id,
-                                'disabled'    => 0, // Ensure imported items are enabled by default
-                            ],
-                            ['%s', '%s', '%d', '%d', '%d']
-                        );
-
-                        if (!$inserted_media) {
-                             $errors[] = "Failed to insert media: " . esc_html($media_title) . " for playlist '" . esc_html($playlist_title) . "'. Error: " . esc_html($wpdb->last_error);
-                             continue; // Skip related data if media insertion failed
-                        }
-
-                        $new_media_id = $wpdb->insert_id;
-                        $imported_media++;
-
-                        // 8. Loop through and Insert Related Data (Paths, Subs, Ads, Annotations)
-                        // Paths
-                        if (isset($media_item['paths']) && is_array($media_item['paths'])) {
-                            foreach ($media_item['paths'] as $path_item) {
-                                 if (isset($path_item['options']) && is_array($path_item['options'])) {
-                                    $wpdb->insert(
-                                        $path_table,
-                                        [
-                                            'options'     => maybe_serialize($path_item['options']),
-                                            'media_id'    => $new_media_id,
-                                            'playlist_id' => $new_playlist_id, // Add playlist ID here too
-                                        ],
-                                        ['%s', '%d', '%d']
-                                    );
-                                    // Basic error check - could be more robust
-                                    if ($wpdb->last_error) $errors[] = "Error inserting path for media '" . esc_html($media_title) . "': " . esc_html($wpdb->last_error);
-                                }
+                    // Fetch existing media paths for duplicate checking
+                    $existing_path_rows = $wpdb->get_results( $wpdb->prepare("SELECT media_id, options FROM {$path_table} WHERE playlist_id = %d", $target_playlist_id), ARRAY_A );
+                    if ($existing_path_rows) {
+                        foreach($existing_path_rows as $path_row) {
+                            $path_options = maybe_unserialize($path_row['options']);
+                            if (is_array($path_options) && isset($path_options['path']) && !empty($path_options['path'])) {
+                                $existing_media_paths[trim($path_options['path'])] = (int)$path_row['media_id']; // Trim path for matching
                             }
                         }
-                        // Subtitles
-                        if (isset($media_item['subtitles']) && is_array($media_item['subtitles'])) {
-                             foreach ($media_item['subtitles'] as $sub_item) {
-                                 if (isset($sub_item['options']) && is_array($sub_item['options'])) {
-                                    $wpdb->insert(
-                                        $subtitle_table,
-                                        [
-                                            'options'     => maybe_serialize($sub_item['options']),
-                                            'media_id'    => $new_media_id,
-                                            'playlist_id' => $new_playlist_id,
-                                        ],
-                                         ['%s', '%d', '%d']
-                                    );
-                                    if ($wpdb->last_error) $errors[] = "Error inserting subtitle for media '" . esc_html($media_title) . "': " . esc_html($wpdb->last_error);
+                    }
+
+                    // Get next order_id
+					$max_order_result = $wpdb->get_var( $wpdb->prepare("SELECT MAX(order_id) FROM {$media_table} WHERE playlist_id = %d", $target_playlist_id) );
+					$next_order_id = ($max_order_result === null) ? 0 : (int) $max_order_result + 1;
+
+				} else {
+					// --- CREATE NEW PLAYLIST ---
+					$is_update = false;
+					$created_playlists_count++;
+
+					$inserted = $wpdb->insert( $playlist_table, ['title' => $json_playlist_title, 'options' => $options_to_save], ['%s', '%s'] );
+					if (!$inserted) {
+						$errors[] = "Failed to insert new playlist with title '{$json_playlist_title}'. Error: " . esc_html($wpdb->last_error);
+						$overall_success = false;
+						continue; // Skip media if playlist creation failed
+					}
+					$target_playlist_id = $wpdb->insert_id;
+                    $next_order_id = 0;
+				}
+
+				// --- Process Media Items for the target_playlist_id ---
+				foreach ($json_media_items_raw as $media_index => $media_item_raw) {
+
+                    // --- Validate Current Media Item ---
+                    $media_title_raw = $media_item_raw['title'] ?? null; // Get title, allow null for now
+                    $media_title = is_null($media_title_raw) ? '' : sanitize_text_field($media_title_raw); // Sanitize or default to empty string
+
+                    $media_options_raw = isset($media_item_raw['options']) && is_array($media_item_raw['options']) ? $media_item_raw['options'] : [];
+                    $media_paths_raw = isset($media_item_raw['paths']) && is_array($media_item_raw['paths']) ? $media_item_raw['paths'] : [];
+
+                    if (empty($media_paths_raw)) {
+                         $errors[] = "Media item " . ($media_title ? "'" . esc_html($media_title) . "'" : "#" . ($media_index + 1)) . " in JSON playlist '{$json_playlist_title}' is missing 'paths' data. Skipping.";
+                         $overall_success = false;
+                         continue;
+                    }
+
+                    // --- Extract and Validate Primary Path ---
+                    // We need the primary path to check for duplicates when updating
+                    // We will re-validate/sanitize all paths later during insertion of related data
+                    $primary_path_for_check = null;
+                    $first_path_options_raw = $media_paths_raw[0]['options'] ?? null;
+                    if ($first_path_options_raw) {
+                        $first_path_options = is_array($first_path_options_raw) ? $first_path_options_raw : maybe_unserialize($first_path_options_raw);
+                        if (is_array($first_path_options) && isset($first_path_options['path'])) {
+                            $primary_path_for_check = trim($first_path_options['path']); // Use trimmed raw value for check
+                             // Basic validation to ensure it's not completely empty before checking
+                             if (empty($primary_path_for_check)) {
+                                $primary_path_for_check = null; // Treat empty path as unable to check
+                                $errors[] = "Media item '" . esc_html($media_title) . "' in JSON playlist '{$json_playlist_title}' has an empty primary path. Skipping duplicate check, will validate on insert.";
+                            }
+                        }
+                    }
+                     if ($primary_path_for_check === null) {
+                         $errors[] = "Media item '" . esc_html($media_title) . "' in JSON playlist '{$json_playlist_title}' could not determine a primary path for duplicate check. Skipping duplicate check, will validate on insert.";
+                    }
+
+
+					// --- Duplicate Media Check (using raw primary path for check key) ---
+                    // Note: We use the raw (trimmed) path for the check because that's what's stored in $existing_media_paths
+					if ($is_update && $primary_path_for_check !== null && isset($existing_media_paths[$primary_path_for_check])) {
+						$total_media_skipped++;
+						continue; // Skip this media item as its path exists
+					}
+					// --- End Duplicate Check ---
+
+
+					// --- Sanitize and Prepare Media Data for Insert ---
+                    $sanitized_media_options = mvp_sanitize_options_recursive($media_options_raw);
+					$media_options_to_save = maybe_serialize($sanitized_media_options);
+                    $media_order_id = $next_order_id;
+
+					$inserted_media = $wpdb->insert(
+						$media_table,
+						[
+							'title'       => $media_title, // Use sanitized or empty title
+							'options'     => $media_options_to_save,
+							'order_id'    => $media_order_id,
+							'playlist_id' => $target_playlist_id,
+							'disabled'    => 0,
+						],
+						['%s', '%s', '%d', '%d', '%d']
+					);
+
+					if (!$inserted_media) {
+						$errors[] = "Failed to insert media: " . esc_html($media_title) . " for playlist ID {$target_playlist_id}. Error: " . esc_html($wpdb->last_error);
+						$overall_success = false;
+						continue; // Skip related data if media insertion failed
+					}
+
+					$new_media_id = $wpdb->insert_id;
+					$total_media_added++;
+                    $next_order_id++;
+
+
+					// --- Insert Related Data (Paths, Subs, Ads, Annotations) ---
+                     // Define this helper function within the loop or outside, but ensure it uses $wpdb, etc. correctly
+                     $insert_related = function($items_raw, $table, $column_formats) use ($wpdb, $new_media_id, $target_playlist_id, $media_title, &$errors, &$overall_success) {
+                         $items = isset($items_raw) && is_array($items_raw) ? $items_raw : []; // Ensure items is an array
+                         foreach ($items as $item_index => $item) {
+                             if (isset($item['options'])) {
+                                 $related_options_raw = is_array($item['options']) ? $item['options'] : maybe_unserialize($item['options']);
+                                 if(is_array($related_options_raw)) {
+                                     $sanitized_related_options = mvp_sanitize_options_recursive($related_options_raw);
+
+                                     // --- START REPLACEMENT: Modified URL/Path Validation Block ---
+                                     $is_path_or_src_table = ($table === $wpdb->prefix . 'mvp_path' || $table === $wpdb->prefix . 'mvp_subtitle');
+                                     $url_key = ($table === $wpdb->prefix . 'mvp_path') ? 'path' : 'src'; // Key to check ('path' or 'src')
+
+                                     if ($is_path_or_src_table) {
+                                         $url_value = trim($sanitized_related_options[$url_key] ?? '');
+                                         $sanitized_url_final = ''; // Initialize
+
+                                         if (!empty($url_value)) {
+                                             // Check if it looks like a URL or absolute path
+                                             if (strpos($url_value, '://') !== false || strpos($url_value, '//') === 0 || strpos($url_value, '/') === 0) {
+                                                 // Validate as URL
+                                                 $temp_sanitized = esc_url_raw($url_value);
+                                                 // Basic check esc_url_raw didn't reject/mangle it AND it wasn't empty to begin with
+                                                 if (!empty($temp_sanitized) && $temp_sanitized === $url_value) {
+                                                     $sanitized_url_final = $temp_sanitized;
+                                                 }
+                                             } else {
+                                                 // Assume it's a relative path or filename - use basic text sanitization
+                                                 // Using sanitize_text_field is generally safe here.
+                                                 // If you need stricter filename rules, you could use sanitize_file_name($url_value),
+                                                 // but sanitize_text_field prevents harmful characters effectively.
+                                                 $sanitized_url_final = sanitize_text_field($url_value);
+                                             }
+                                         }
+
+                                         // Check if validation failed or resulted in empty string after processing
+                                         if (empty($sanitized_url_final)) {
+                                             $table_basename = str_replace($wpdb->prefix . 'mvp_', '', $table);
+                                             $errors[] = "Skipping " . esc_html($table_basename) . " #" . ($item_index + 1) . " for media '" . esc_html($media_title) . "' due to invalid or empty ".esc_html($url_key)." ('" . esc_html($url_value) . "').";
+                                             $overall_success = false;
+                                             continue; // Skip this related item
+                                         }
+                                         // Store the validated/sanitized value back into the array
+                                         $sanitized_related_options[$url_key] = $sanitized_url_final;
+                                     }
+                                     // --- END REPLACEMENT: Modified URL/Path Validation Block ---
+
+
+                                     $related_options_to_save = maybe_serialize($sanitized_related_options);
+                                     $data_to_insert = [
+                                         'options'     => $related_options_to_save,
+                                         'media_id'    => $new_media_id,
+                                         'playlist_id' => $target_playlist_id,
+                                     ];
+                                     if ($table === $wpdb->prefix . 'mvp_ad' || $table === $wpdb->prefix . 'mvp_annotation') {
+                                         $data_to_insert['ad_id'] = null;
+                                         if(count($column_formats) < 4) { $column_formats = array_pad($column_formats, 4, null); }
+                                     }
+                                     $inserted_related = $wpdb->insert($table, $data_to_insert, $column_formats);
+                                     if ($inserted_related === false) {
+                                         $table_basename = str_replace($wpdb->prefix . 'mvp_', '', $table);
+                                         $error_msg = "Error inserting " . esc_html($table_basename) . " item #" . ($item_index+1) . " for media '" . esc_html($media_title) . "' (ID: {$new_media_id}). Error: " . esc_html($wpdb->last_error);
+                                         $errors[] = $error_msg;
+                                         $overall_success = false;
+                                     }
+                                 } else {
+                                      $table_basename = str_replace($wpdb->prefix . 'mvp_', '', $table);
+                                      $errors[] = "Skipping " . esc_html($table_basename) . " item #" . ($item_index+1) . " for media '" . esc_html($media_title) . "' - invalid 'options' data.";
+                                      $overall_success = false; // Mark as error if options are bad
                                  }
-                            }
-                        }
-                        // Ads
-                        if (isset($media_item['ads']) && is_array($media_item['ads'])) {
-                             foreach ($media_item['ads'] as $ad_item) {
-                                if (isset($ad_item['options']) && is_array($ad_item['options'])) {
-                                    $wpdb->insert(
-                                        $ad_table,
-                                        [
-                                            'options'     => maybe_serialize($ad_item['options']),
-                                            'media_id'    => $new_media_id,
-                                            'playlist_id' => $new_playlist_id,
-                                            'ad_id'       => null, // Ensure it's linked to media, not global ad
-                                        ],
-                                        ['%s', '%d', '%d', null] // Use specific format types
-                                    );
-                                    if ($wpdb->last_error) $errors[] = "Error inserting ad for media '" . esc_html($media_title) . "': " . esc_html($wpdb->last_error);
-                                }
-                            }
-                        }
-                        // Annotations
-                        if (isset($media_item['annotations']) && is_array($media_item['annotations'])) {
-                            foreach ($media_item['annotations'] as $ann_item) {
-                                if (isset($ann_item['options']) && is_array($ann_item['options'])) {
-                                    $wpdb->insert(
-                                        $annotation_table,
-                                        [
-                                            'options'     => maybe_serialize($ann_item['options']),
-                                            'media_id'    => $new_media_id,
-                                            'playlist_id' => $new_playlist_id,
-                                            'ad_id'       => null, // Ensure it's linked to media, not global ad
-                                        ],
-                                         ['%s', '%d', '%d', null] // Use specific format types
-                                    );
-                                    if ($wpdb->last_error) $errors[] = "Error inserting annotation for media '" . esc_html($media_title) . "': " . esc_html($wpdb->last_error);
-                                }
-                            }
-                        }
+                             } else {
+                                   $table_basename = str_replace($wpdb->prefix . 'mvp_', '', $table);
+                                   $errors[] = "Skipping " . esc_html($table_basename) . " item #" . ($item_index+1) . " for media '" . esc_html($media_title) . "' due to missing 'options' key.";
+                                   $overall_success = false; // Mark as error if structure is bad
+                             }
+                         }
+					}; // End of $insert_related function definition
 
-                    } // end foreach media_item
-                } // end if has media
-            } // end foreach playlist_item
+                    $path_formats = ['%s', '%d', '%d'];
+                    $subtitle_formats = ['%s', '%d', '%d'];
+                    $ad_formats = ['%s', '%d', '%d', null];
+                    $annotation_formats = ['%s', '%d', '%d', null];
 
-            // 9. Commit or Rollback Transaction
-            if (empty($errors)) {
-                $wpdb->query('COMMIT');
-                 wp_send_json_success([
-                    'message' => sprintf(
-                        'Successfully imported %d playlist(s) and %d media item(s). Page will reload.',
-                        $imported_playlists,
-                        $imported_media
-                    )
-                ]);
-            } else {
-                $wpdb->query('ROLLBACK');
-                 wp_send_json_error([
-                    'message' => 'Import failed with errors. No changes were made. Please check the error details.',
-                    'errors'  => $errors // Send back the specific errors
-                ], 500); // Use 500 for server-side processing error during transaction
-            }
+					$insert_related($media_paths_raw, $path_table, $path_formats); // Pass raw paths here
+					$insert_related($media_item_raw['subtitles'] ?? null, $subtitle_table, $subtitle_formats);
+					$insert_related($media_item_raw['ads'] ?? null, $ad_table, $ad_formats);
+					$insert_related($media_item_raw['annotations'] ?? null, $annotation_table, $annotation_formats);
+                    // --- End Inserting Related Data ---
 
-        } catch (Exception $e) {
-            $wpdb->query('ROLLBACK');
-            wp_send_json_error(['message' => 'An unexpected critical error occurred during import: ' . $e->getMessage()], 500);
-        }
+				} // end foreach media_item
 
-        // This line should technically not be reached if commit/rollback works and wp_send_json_* calls wp_die()
-        wp_die();
+			} // end foreach playlists_to_process
 
-    }
+			// 9. Commit or Rollback Transaction
+			if ($overall_success && empty($errors)) {
+				$wpdb->query('COMMIT');
+                 $success_message = sprintf(
+                     'Import finished. Created: %d playlist(s). Updated: %d playlist(s). Total Media Added: %d. Media Skipped (duplicates/invalid): %d.',
+                     $created_playlists_count,
+                     $updated_playlists_count,
+                     $total_media_added,
+                     $total_media_skipped
+                 );
+				 wp_send_json_success(['message' => $success_message . ' Page will reload.']);
+			} else {
+				$wpdb->query('ROLLBACK');
+				 $final_error_message = 'Import finished with errors. No changes were made. Please check the error details below.';
+				 if (!$overall_success && empty($errors)) { $errors[] = 'An unspecified error caused the import to fail.'; }
+                 if (!empty($errors)) { error_log("MVP Playlist Import Errors:\n" . print_r($errors, true)); }
+				 wp_send_json_error([
+					'message' => $final_error_message,
+					'errors'  => $errors
+				], 400);
+			}
+
+		} catch (Exception $e) {
+			$wpdb->query('ROLLBACK');
+            error_log("MVP Import Critical Error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+			wp_send_json_error(['message' => 'An unexpected critical error occurred during import: ' . $e->getMessage()], 500);
+		}
+
+		wp_die();
+	}
 
     // ------------------------------------
 

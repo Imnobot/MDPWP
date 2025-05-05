@@ -4420,3 +4420,66 @@ iframe.mvp-yt-clean {
     box-shadow: none!important;
     text-decoration: none!important;
 }
+
+.mvp-player.mvp-vb {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Or -webkit-fill-available */
+    overflow: hidden; /* Prevent main container scroll */
+  }
+
+  /* 2. Player holder takes its natural height */
+  .mvp-player.mvp-vb .mvp-player-holder {
+    flex-shrink: 0; /* Don't shrink player */
+    position: relative;
+    height: auto;
+  }
+
+  /* 3. Playlist holder: Override inline height, let it grow */
+  /* Using more specific selector */
+  .mvp-player.mvp-vb .mvp-playlist-holder.mvp-playlist-holder-bottom {
+    height: auto !important; /* CRITICAL: Override inline style */
+    max-height: none !important; /* Just in case */
+    width: 100% !important;
+    position: relative !important; /* Override potential absolute */
+    flex-grow: 1; /* Allow this holder to take remaining space */
+    min-height: 0; /* Essential for flex children that scroll */
+    overflow: hidden; /* Holder itself should not scroll */
+    display: flex; /* Use flex for its direct children */
+    flex-direction: column;
+  }
+
+  /* 4. Inner Wrap: Let it grow to fill the holder */
+  .mvp-player.mvp-vb .mvp-playlist-holder .mvp-playlist-inner-wrap {
+      flex-grow: 1; /* Takes space within the holder */
+      min-height: 0;
+      position: relative; /* Important for positioning scrollbars */
+      overflow: hidden; /* Let PerfectScrollbar handle scrolling inside */
+      display: flex; /* Contains the .mvp-playlist-inner */
+      flex-direction: column;
+  }
+
+  /* 5. Perfect Scrollbar Container (.mvp-playlist-inner):
+        Must fill the inner-wrap so PS knows its bounds */
+  .mvp-player.mvp-vb .mvp-playlist-holder .mvp-playlist-inner.ps {
+      flex-grow: 1; /* Fill the available space in inner-wrap */
+      position: relative !important; /* PS needs relative/absolute */
+      overflow: hidden !important; /* PS adds its own scrollbars */
+      height: 100%; /* Fill the parent inner-wrap */
+      max-height: none !important;
+  }
+
+  /* Optional: Explicitly ensure Perfect Scrollbar's generated scrollbars are visible */
+  .mvp-player.mvp-vb .mvp-playlist-holder .ps__rail-y {
+      opacity: 1 !important;
+      /* background-color: rgba(0, 0, 0, 0.1); You can style if needed */
+  }
+  .mvp-player.mvp-vb .mvp-playlist-holder .ps__thumb-y {
+      /* background-color: #888; You can style if needed */
+  }
+
+  /* 6. Playlist Search Bar/Footer (if present): Don't let it grow */
+  .mvp-player.mvp-vb .mvp-playlist-holder .mvp-playlist-bar {
+      flex-shrink: 0;
+  }
+
